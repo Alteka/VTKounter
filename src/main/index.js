@@ -49,7 +49,7 @@ function createWindow () {
 }
 
 app.on('ready', function() {
-  log.info('Launching Device Kontrol')
+  log.info('Launching VT Kounter')
   createWindow()
 })
 
@@ -76,36 +76,7 @@ ipcMain.on('openLogs', (event, w, h) => {
 //========================//
 //     Device Control     //
 //========================//
-var child = null
 
-ipcMain.on('controlDevice', (event, device) => {
-  log.info('Control Device: ', device)
-
-  var pathToFfmpeg = '"' + require('ffmpeg-static').replace('app.asar', 'app.asar.unpacked') + '"'
-  var cmd = pathToFfmpeg + ' -hide_banner -f dshow -show_video_device_dialog true -i video="' + device + '"'
-
-  log.info('Executing ffmpeg: ' + cmd)
-
-  if (child != null) {
-    child.kill()
-    log.verbose('killing old process')
-  }
-
-  child = exec(cmd, (error, stdout, stderr) => {
-    if (error) {
-      log.error(error)
-      if (error.message.includes('requested filter does not have a property page')) {
-        controlWindow.webContents.send('message', 'Device does not have any editable properties')
-        dialog.showErrorBox('Oops', device + ' does not have any editable properties')
-      } else if (error.message.includes('Failure showing property pages for')) {
-        controlWindow.webContents.send('message', 'Can not access properties for device')
-        dialog.showErrorBox('Oops', device + ' does not have any editable properties')
-      }
-      return
-    }
-  })
-  
-})
 
 
 
@@ -114,7 +85,7 @@ setTimeout(function() {
   let current = require('./../../package.json').version
 
 // Make a request for a user with a given ID
-axios.get('https://api.github.com/repos/alteka/devicekontrol/releases/latest')
+axios.get('https://api.github.com/repos/alteka/vtkounter/releases/latest')
   .then(function (response) {
     let status = compareVersions(response.data.tag_name, current, '>')
     if (status == 1) { 
