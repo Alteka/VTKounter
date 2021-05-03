@@ -12,8 +12,18 @@
     <div style="font-size: 70%; position: absolute; top: 50px; right: 18px;">v{{ version }}</div>
 
     <el-divider content-position="center" v-if="!configMode">Time Remaining</el-divider>
-    <el-row v-if="!configMode">
-      Timer!
+    <el-row v-if="!configMode" style="font-size: 200%; text-align: center;">
+      {{timer}}
+    </el-row>
+    <el-row v-if="!configMode" style="padding: 10px; text-align: center;">
+      <el-col :span="12">
+        <span v-if="vtStatus"><i class="fas fa-link green"></i> Connected to {{appChoice}}</span>
+        <span v-if="!vtStatus"><i class="fas fa-link"></i> Not Connected to {{appChoice}}</span>
+      </el-col>
+      <el-col :span="12">
+        <span v-if="obsStatus"><i class="fas fa-link green"></i> Connected to OBS</span>
+        <span v-if="!obsStatus"><i class="fas fa-link"></i> Not Connected to OBS</span>
+      </el-col>
     </el-row>
 
     <el-form v-if="configMode" label-width="100px" size="small">
@@ -50,6 +60,44 @@
       </el-form-item>
     </el-row>
 
+    <el-divider content-position="center">Configure Output (Just OBS)</el-divider>
+
+    <el-row style="padding-left: 10px; padding-right: 10px;">
+      <el-col :span="12">
+        <el-form-item label="IP Address">
+          <el-input v-model="obs.ip"></el-input>
+        </el-form-item>
+      </el-col>
+      <el-col :span="12">
+        <el-form-item label="Port">
+          <el-input v-model="obs.port"></el-input>
+        </el-form-item>
+      </el-col>
+    </el-row>
+
+    <el-row style="padding-left: 10px; padding-right: 10px;">
+      <el-col :span="12">
+        <el-form-item label="Password">
+          <el-input v-model="obs.password"></el-input>
+        </el-form-item>
+      </el-col>
+      <el-col :span="12">
+        <el-form-item label="OBS is on a Mac" label-width="140px">
+          <el-switch v-model="obs.platformIsMac"></el-switch>
+        </el-form-item>
+      </el-col>
+    </el-row>
+
+
+    <el-row style="padding-left: 10px; padding-right: 10px;">
+      
+        <el-form-item label="Name of text source to update" label-width="240px">
+          <el-input v-model="obs.source"></el-input>
+        </el-form-item>
+      
+      
+    </el-row>
+
     
 
     </el-form>
@@ -71,8 +119,11 @@ import { Notification } from 'element-ui'
         configMode: true,
         appChoice: 'QLab',
         qlab: {ip: '127.0.0.1', port: '53000', filter: ['red']},
+        obs: {ip: '127.0.0.1', port: '4444', password: '', source: 'QLab Time', platformIsMac: false},
         qlabFilters: ['red', 'green'],
-        config: {},
+        vtStatus: false,
+        obsStatus: false,
+        timer: 'Not Connected',
         version: require('./../../../package.json').version
       }
     },
@@ -82,6 +133,27 @@ import { Notification } from 'element-ui'
         let w = document.getElementById('wrapper').clientWidth
         ipcRenderer.send('controlResize', w, h)
       })
+      vm = this
+      ipcRenderer.on('vtStatus', function(event, status) {
+        vm.vtStatus = status
+      })
+      ipcRenderer.on('obsStatus', function(event, status) {
+        vm.obsStatus = status
+      })
+      ipcRenderer.on('timer', function(event, timer) {
+        vm.timer = timer
+      })
+    },
+    watch: {
+      configMode: function(newVal) {
+        if (newVal) {
+          // going into config mode
+          ipcRenderer.send('configMode')
+        } else {
+          // going into show mode
+          ipcRenderer.send('showMode', {appChoice: this.appChoice, qlab: this.qlab, obs: this.obs})
+        }
+      }
     },
     methods: {
       handleResize: function({ width, height }) {
