@@ -2,19 +2,57 @@
   <div id="wrapper" style="position: relative; padding-bottom: 5px">
 
     <el-row style="padding-top: 10px;">
-      <el-col :span="18" style="font-size: 36px; padding-left: 10px;">
-        <img src="~@/assets/bug.png" height="26" @click="openLogs()" />
-        Device Kontrol
+      <el-col :span="16" style="font-size: 36px; padding-left: 10px;">
+        <img src="~@/assets/bug.png" height="26" @click="openLogs()" /> VT Kounter
       </el-col>
-      <el-col :span="6" style="text-align: right;">
-        <el-button round size="small" style="margin-right: 10px;" @click="reload();"><i class="fas fa-sync-alt"></i></el-button>
+      <el-col :span="8">
+        <el-switch style="display: block" v-model="configMode" active-color="#6ab42f" inactive-color="#6ab42f" active-text="Setup" inactive-text="Show Mode"></el-switch>
+      </el-col>
+    </el-row>
+    <div style="font-size: 70%; position: absolute; top: 50px; right: 18px;">v{{ version }}</div>
+
+    <el-divider content-position="center" v-if="!configMode">Time Remaining</el-divider>
+    <el-row v-if="!configMode">
+      Timer!
+    </el-row>
+
+    <el-form v-if="configMode" label-width="100px" size="small">
+    <el-divider content-position="center">Configure VT App</el-divider>
+    <el-row style="padding-left: 10px; padding-right: 10px;">
+      
+        <el-form-item label="App Choice"><i class="fas fa-photo-video green"></i>
+          <el-radio-group v-model="appChoice" size="small">
+            <el-radio-button label="QLab"></el-radio-button>
+            <el-radio-button label="Mitti"></el-radio-button>
+          </el-radio-group>
+        </el-form-item>
+     
+    </el-row>
+
+    <el-row v-if="appChoice=='QLab'" style="padding-left: 10px; padding-right: 10px;">
+      <el-col :span="12">
+        <el-form-item label="IP Address">
+          <el-input v-model="qlab.ip"></el-input>
+        </el-form-item>
+      </el-col>
+      <el-col :span="12">
+        <el-form-item label="Port">
+          <el-input v-model="qlab.port"></el-input>
+        </el-form-item>
       </el-col>
     </el-row>
 
-      <div style="font-size: 70%; position: absolute; top: 50px; right: 18px;">v{{ version }}</div>
-    <el-divider content-position="center">Select Video Device</el-divider>
+    <el-row v-if="appChoice=='QLab'" style="padding-left: 10px; padding-right: 10px;">
+      <el-form-item label="Filter Cues">
+        <el-checkbox-group v-model="qlab.filter" size="medium">
+          <el-checkbox-button v-for="filter in qlabFilters" :label="filter" :key="filter">{{filter}}</el-checkbox-button>
+        </el-checkbox-group>
+      </el-form-item>
+    </el-row>
 
-    <device v-for="device in devices" :key="device.deviceId" :device="device"></device>
+    
+
+    </el-form>
 
     <resize-observer @notify="handleResize" />
   </div>
@@ -30,7 +68,11 @@ import { Notification } from 'element-ui'
     components: { Device },
     data: function () {
       return {
-        devices: [],
+        configMode: true,
+        appChoice: 'QLab',
+        qlab: {ip: '127.0.0.1', port: '53000', filter: ['red']},
+        qlabFilters: ['red', 'green'],
+        config: {},
         version: require('./../../../package.json').version
       }
     },
@@ -40,7 +82,6 @@ import { Notification } from 'element-ui'
         let w = document.getElementById('wrapper').clientWidth
         ipcRenderer.send('controlResize', w, h)
       })
-      this.getDevices()
     },
     methods: {
       handleResize: function({ width, height }) {
@@ -48,15 +89,6 @@ import { Notification } from 'element-ui'
       },
       openLogs: function() {
         ipcRenderer.send('openLogs')
-      },
-      reload: function() {
-window.document.location.reload()
-      },
-      getDevices: function() {
-        navigator.mediaDevices.enumerateDevices().then((devices) => {
-          this.devices = devices.filter(device => device.kind === 'videoinput').filter(device => !device.label.includes('Virtual Camera')).filter(device => !device.label.includes('Virtual Camera')).filter(device => !device.label.includes('NewTek NDI Video'))
-          console.log('Update devices... count: ', devices.length)
-        })  
       }
     }
   }

@@ -24,7 +24,7 @@ function createWindow () {
   log.info('Showing control window')
   const winURL = process.env.NODE_ENV === 'development' ? `http://localhost:9080` : `file://${__dirname}/index.html`
 
-  controlWindow = new BrowserWindow({ show: false, height: 450, resizable: false, maximizable: false, useContentSize: true, width: 460, webPreferences: { nodeIntegration: true } })
+  controlWindow = new BrowserWindow({ show: false, height: 450, resizable: false, maximizable: false, useContentSize: true, width: 540, webPreferences: { nodeIntegration: true } })
 
   if (process.platform == 'darwin') {
     Menu.setApplicationMenu(menu)
@@ -64,7 +64,7 @@ app.on('activate', () => {
 //       IPC Handlers     //
 //========================//
 ipcMain.on('controlResize', (event, w, h) => {
-  controlWindow.setContentSize(460, h)
+  controlWindow.setContentSize(540, h)
 })
 
 ipcMain.on('openLogs', (event, w, h) => {
