@@ -12,17 +12,17 @@
     <div style="font-size: 70%; position: absolute; top: 50px; right: 18px;">v{{ version }}</div>
 
     <el-divider content-position="center" v-if="!configMode">Time Remaining</el-divider>
-    <el-row v-if="!configMode" style="font-size: 200%; text-align: center;">
+    <el-row v-if="!configMode" style="font-size: 400%; text-align: center;">
       {{timer}}
     </el-row>
     <el-row v-if="!configMode" style="padding: 10px; text-align: center;">
       <el-col :span="12">
-        <span v-if="vtStatus"><i class="fas fa-link green"></i> Connected to {{appChoice}}</span>
-        <span v-if="!vtStatus"><i class="fas fa-link"></i> Not Connected to {{appChoice}}</span>
+        <span v-if="vtStatus">{{appChoice}} <i class="fas fa-link green"></i> Connected</span>
+        <span v-if="!vtStatus">{{appChoice}} <i class="fas fa-link"></i> Not Connected</span>
       </el-col>
       <el-col :span="12">
-        <span v-if="obsStatus"><i class="fas fa-link green"></i> Connected to OBS</span>
-        <span v-if="!obsStatus"><i class="fas fa-link"></i> Not Connected to OBS</span>
+        <span v-if="obsStatus">OBS <i class="fas fa-link green"></i> Connected</span>
+        <span v-if="!obsStatus">OBS <i class="fas fa-link"></i> Not Connected: {{obsMessage}}</span>
       </el-col>
     </el-row>
 
@@ -88,14 +88,14 @@
       </el-col>
     </el-row>
 
-
     <el-row style="padding-left: 10px; padding-right: 10px;">
-      
         <el-form-item label="Name of text source to update" label-width="240px">
           <el-input v-model="obs.source"></el-input>
         </el-form-item>
-      
-      
+    </el-row>
+
+    <el-row style="text-align: center; font-size: 80%;">
+      OBS Needs to have the WebSocket Server enabled, and have a password set. 
     </el-row>
 
     
@@ -120,9 +120,10 @@ import { Notification } from 'element-ui'
         appChoice: 'QLab',
         qlab: {ip: '127.0.0.1', port: '53000', filter: ['red']},
         obs: {ip: '127.0.0.1', port: '4444', password: '', source: 'QLab Time', platformIsMac: false},
-        qlabFilters: ['red', 'green'],
+        qlabFilters: ['red', 'yellow', 'green', 'blue', 'purple'],
         vtStatus: false,
         obsStatus: false,
+        obsMessage: '',
         timer: 'Not Connected',
         version: require('./../../../package.json').version
       }
@@ -133,15 +134,22 @@ import { Notification } from 'element-ui'
         let w = document.getElementById('wrapper').clientWidth
         ipcRenderer.send('controlResize', w, h)
       })
-      vm = this
+      let vm = this
       ipcRenderer.on('vtStatus', function(event, status) {
         vm.vtStatus = status
       })
-      ipcRenderer.on('obsStatus', function(event, status) {
+      ipcRenderer.on('obsStatus', function(event, status, msg) {
         vm.obsStatus = status
+        vm.obsMessage = msg
       })
       ipcRenderer.on('timer', function(event, timer) {
         vm.timer = timer
+      })
+
+      ipcRenderer.send('getConfig')
+      ipcRenderer.on('config', function(event, cfg) {
+        vm.obs = cfg.obs
+        vm.qlab = cfg.qlab
       })
     },
     watch: {
