@@ -1,13 +1,13 @@
-# Alteka Device Kontrol
+# Alteka VT Kounter
 
-A simple utility for Windows, to access Webcam Settings easily. 
+A simple cross-platform utility for Video Engineers, to nicely show you the Time Remaining of your current VT playout. It can then route that information to a text source in OBS.
 
 [![License: GPL v3](https://img.shields.io/badge/License-GPLv3-blue.svg)](https://www.gnu.org/licenses/gpl-3.0)
-[![GitHub release](https://img.shields.io/github/release/Alteka/DeviceKontrol.svg)](https://GitHub.com/Alteka/DeviceKontrol/releases/)
-[![GitHub issues](https://img.shields.io/github/issues/Alteka/DeviceKontrol.svg)](https://GitHub.com/Alteka/DeviceKontrol/issues/)
+[![GitHub release](https://img.shields.io/github/release/Alteka/VTKounter.svg)](https://GitHub.com/Alteka/VTKounter/releases/)
+[![GitHub issues](https://img.shields.io/github/issues/Alteka/VTKounter.svg)](https://GitHub.com/Alteka/VTKounter/issues/)
 
 ## About
-Most webcams on windows use USB 'Video Input Device Class' specifications. This can let you control certain parameters but these aren't exposed in any kind of user interface very well. This app simply wraps the devices out to a basic control window (rendered by ffmpeg).
+At the moment we're aiming to support QLab and Mitti, but we could add more support in the future. 
 
 
 #### Design
@@ -32,4 +32,4 @@ npm run build
 
 ---
 
-For more information please see our website: [Alteka Solutions](https://alteka.solutions/kards)
+For more information please see our website: [Alteka Solutions](https://alteka.solutions/)
