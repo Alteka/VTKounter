@@ -50,6 +50,8 @@
     "electron-store": "^5.2.0",
     "element-ui": "^2.14.1",
     "image-size": "^0.9.3",
+    "node-osc": "^5.2.3",
+    "obs-websocket-js": "^4.0.2",
     "say": "^0.16.0",
     "vue": "^2.6.12",
     "vue-electron": "^1.0.6",
