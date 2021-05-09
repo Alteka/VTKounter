@@ -28,6 +28,13 @@
     </el-row>
 
     <el-form v-if="configMode" label-width="100px" size="small">
+    <el-divider content-position="center">Configure Timer Format</el-divider>
+    <el-row style="padding-left: 10px; padding-right: 10px;">
+        <el-form-item label="Timer Format">
+          <el-input v-model="timerFormat"></el-input>
+        </el-form-item>
+    </el-row>
+
     <el-divider content-position="center">Configure VT App</el-divider>
     <el-row style="padding-left: 10px; padding-right: 10px;">
       
@@ -127,6 +134,7 @@ import { Notification } from 'element-ui'
       return {
         configMode: true,
         appChoice: 'QLab',
+        timerFormat: 'H:mm:ss',
         qlab: {ip: '127.0.0.1', port: '53000', filter: ['red']},
         obs: {ip: '127.0.0.1', port: '4444', password: '', source: 'QLab Time', platformIsMac: false, enabled: true},
         qlabFilters: ['red', 'yellow', 'green', 'blue', 'purple'],
@@ -159,6 +167,7 @@ import { Notification } from 'element-ui'
       ipcRenderer.on('config', function(event, cfg) {
         vm.obs = cfg.obs
         vm.qlab = cfg.qlab
+        vm.timerFormat = cfg.timerFormat
       })
     },
     watch: {
@@ -168,7 +177,7 @@ import { Notification } from 'element-ui'
           ipcRenderer.send('configMode')
         } else {
           // going into show mode
-          ipcRenderer.send('showMode', {appChoice: this.appChoice, qlab: this.qlab, obs: this.obs})
+          ipcRenderer.send('showMode', {appChoice: this.appChoice,qlab: this.qlab, obs: this.obs, timerFormat: this.timerFormat})
         }
       }
     },

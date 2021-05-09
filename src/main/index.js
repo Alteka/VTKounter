@@ -2,6 +2,7 @@ import { app, BrowserWindow, ipcMain, webContents, nativeTheme, dialog, screen, 
 import { create } from 'domain'
 const menu = require('./menu.js').menu
 const log = require('electron-log')
+const moment = require('moment')
 const { exec } = require('child_process')
 const axios = require('axios')
 var compareVersions = require('compare-versions')
@@ -76,6 +77,7 @@ app.on('activate', () => {
 
 function getDefaultConfig() {
   return {
+    timerFormat: 'H:mm:ss',
     qlab: {
       ip: '127.0.0.1',
       port: '53000',
@@ -212,15 +214,16 @@ oscServer.on('message', function (msg) {
   if (cmd == 'actionElapsed' && redCues.includes(cue)) {
     var remaining = Math.round(currentDuration - data.data)
     if (remaining <0) { remaining = 0 }
-    var s = remaining % 60
-    var m = Math.floor(remaining / 60)
-    updateTimer(pad(m,2) + ':' + pad(s,2))
+
+    updateTimer(moment().startOf('day').seconds(remaining).format(config.timerFormat))
   }
 })
 
 function updateTimer(time = '-') {
   if (showMode) {
     if (time != lastSet) {
+
+      controlWindow.webContents.send('timer', time)
 
       if (ConnectedToOBS) {
         var type = 'SetTextGDIPlusProperties'
@@ -235,21 +238,18 @@ function updateTimer(time = '-') {
         })
       }
 
-        controlWindow.webContents.send('timer', time)
-
-        lastSet = time
-        if (time == 'No VT') {
-          log.info('--==##==--  VT Finished  --==##==--')
-        } else {
-          log.info('Time Remaining:' + ' ' + time)
-        }
+      lastSet = time
+      if (time == 'No VT') {
+        log.info('--==##==--  VT Finished  --==##==--')
+      } else {
+        log.info('Time Remaining:' + ' ' + time)
+      }
     }
   }
 }
 
-setTimeout(function() {
-  let current = require('./../../package.json').version
-
+// setTimeout(function() {
+//   let current = require('./../../package.json').version
 // Make a request for a user with a given ID
 // axios.get('https://api.github.com/repos/alteka/vtkounter/releases/latest')
 //   .then(function (response) {
@@ -285,7 +285,7 @@ setTimeout(function() {
 //   .catch(function (error) {
 //     console.log(error);
 //   })
-}, 3000)
+// }, 3000)
 
 function pad(num, size) {
   var s = num+"";
