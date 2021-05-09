@@ -16,11 +16,12 @@
       {{timer}}
     </el-row>
     <el-row v-if="!configMode" style="padding: 10px; text-align: center;">
+      <el-col :span="6" v-if="!obs.enabled">&nbsp;</el-col>
       <el-col :span="12">
         <span v-if="vtStatus">{{appChoice}} <i class="fas fa-link green"></i> Connected</span>
         <span v-if="!vtStatus">{{appChoice}} <i class="fas fa-link"></i> Not Connected</span>
       </el-col>
-      <el-col :span="12">
+      <el-col :span="12" v-if="obs.enabled">
         <span v-if="obsStatus">OBS <i class="fas fa-link green"></i> Connected</span>
         <span v-if="!obsStatus">OBS <i class="fas fa-link"></i> Not Connected: {{obsMessage}}</span>
       </el-col>
@@ -62,7 +63,15 @@
 
     <el-divider content-position="center">Configure Output (Just OBS)</el-divider>
 
-    <el-row style="padding-left: 10px; padding-right: 10px;">
+    <el-row style="padding-left: 160px; padding-right: 10px;">
+      <el-col :span="24">
+        <el-form-item label="Enable OBS Output" label-width="160px">
+          <el-switch v-model="obs.enabled"></el-switch>
+        </el-form-item>
+      </el-col>
+    </el-row>
+
+    <el-row style="padding-left: 10px; padding-right: 10px;" v-if="obs.enabled">
       <el-col :span="12">
         <el-form-item label="IP Address">
           <el-input v-model="obs.ip"></el-input>
@@ -75,7 +84,7 @@
       </el-col>
     </el-row>
 
-    <el-row style="padding-left: 10px; padding-right: 10px;">
+    <el-row style="padding-left: 10px; padding-right: 10px;" v-if="obs.enabled">
       <el-col :span="12">
         <el-form-item label="Password">
           <el-input v-model="obs.password"></el-input>
@@ -88,13 +97,13 @@
       </el-col>
     </el-row>
 
-    <el-row style="padding-left: 10px; padding-right: 10px;">
+    <el-row style="padding-left: 10px; padding-right: 10px;" v-if="obs.enabled">
         <el-form-item label="Name of text source to update" label-width="240px">
           <el-input v-model="obs.source"></el-input>
         </el-form-item>
     </el-row>
 
-    <el-row style="text-align: center; font-size: 80%;">
+    <el-row style="text-align: center; font-size: 80%;" v-if="obs.enabled">
       OBS Needs to have the WebSocket Server enabled, and have a password set. 
     </el-row>
 
@@ -119,7 +128,7 @@ import { Notification } from 'element-ui'
         configMode: true,
         appChoice: 'QLab',
         qlab: {ip: '127.0.0.1', port: '53000', filter: ['red']},
-        obs: {ip: '127.0.0.1', port: '4444', password: '', source: 'QLab Time', platformIsMac: false},
+        obs: {ip: '127.0.0.1', port: '4444', password: '', source: 'QLab Time', platformIsMac: false, enabled: true},
         qlabFilters: ['red', 'yellow', 'green', 'blue', 'purple'],
         vtStatus: false,
         obsStatus: false,

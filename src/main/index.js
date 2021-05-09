@@ -86,7 +86,8 @@ function getDefaultConfig() {
       port: '4444',
       password: 'password',
       source: 'QLab Time',
-      platformIsMac: false
+      platformIsMac: false,
+      enabled: true
     }
   }
 }
@@ -121,13 +122,12 @@ var showMode = false
 
 setInterval(function() {
   if (showMode) {
-    log.info('sending messages to qlab')
     qlab.send('/cue/active/currentDuration', 200, () => { })
     qlab.send('/cue/active/actionElapsed', 200, () => { })
     qlab.send('/runningCues', 200, () => { })
   }
 
-  if (!ConnectedToOBS && showMode) {
+  if (!ConnectedToOBS && showMode && config.obs.enabled) {
       obsConnect()
   }
 }, 1000)
@@ -145,8 +145,10 @@ ipcMain.on('configMode', (event) => {
 ipcMain.on('showMode', (event, cfg) => {
   // start connections based on config
   config = cfg;
-  qlab = new Client(config.qlab.ip, config.qlab.port);
-  obsConnect()
+  qlab = new Client(config.qlab.ip, config.qlab.port)
+  if (config.obs.enabled) {
+    obsConnect()
+  }
   showMode = true
 
   store.set('VTKounterConfig', config)
@@ -185,12 +187,12 @@ oscServer.on('message', function (msg) {
   var data = JSON.parse(msg[1])
   var cue = msg[0].split('/')[3]
 
-if (cmd == 'runningCues') {
+  if (cmd == 'runningCues') {
     controlWindow.webContents.send('vtStatus', true)
     redCues = [];
     if (data.data.length > 1) {
         for (var i = 1; i < data.data.length; i++) {
-            if (config.qlab.filter.includes(data.data[i].colorName)) {
+            if (config.qlab.filter.includes(data.data[i].colorName) || config.qlab.filter.length == 0) {
                 redCues.push(data.data[i].uniqueID)
             }
         }
@@ -200,35 +202,38 @@ if (cmd == 'runningCues') {
     if (redCues.length == 0) {
         updateTimer('No VT')
     }
-}
-if (cmd == 'currentDuration' && redCues.includes(cue)) {
+  }
+  if (cmd == 'currentDuration' && redCues.includes(cue)) {
     if (currentDuration !== data.data) {
         log.info('--==--  VT Started with Duration ' + data.data + '  --==--')
     }
     currentDuration = data.data
-}
-if (cmd == 'actionElapsed' && redCues.includes(cue)) {
+  }
+  if (cmd == 'actionElapsed' && redCues.includes(cue)) {
     var remaining = Math.round(currentDuration - data.data)
     if (remaining <0) { remaining = 0 }
     var s = remaining % 60
     var m = Math.floor(remaining / 60)
     updateTimer(pad(m,2) + ':' + pad(s,2))
-}
+  }
 })
 
 function updateTimer(time = '-') {
   if (showMode) {
-    if (time != lastSet && ConnectedToOBS) {
-      var type = 'SetTextGDIPlusProperties'
-      if (config.obs.platformIsMac) {
-        type = 'SetTextFreetype2Properties'
-      }
+    if (time != lastSet) {
+
+      if (ConnectedToOBS) {
+        var type = 'SetTextGDIPlusProperties'
+        if (config.obs.platformIsMac) {
+          type = 'SetTextFreetype2Properties'
+        }
         obs.send(type, {
             'source': config.obs.source,
             'text': time
         }).catch(err => { // Promise convention dicates you have a catch on every chain.
             console.log(err);
         })
+      }
 
         controlWindow.webContents.send('timer', time)
 
