@@ -278,6 +278,9 @@ import { Notification } from 'element-ui'
 .darkMode label {
   color: #bbb;
 }
+.darkMode .el-progress__text {
+  color: #bbb;
+}
 .darkMode .el-switch__label {
   color: #bbb;
 }
