@@ -74,14 +74,9 @@
 
       <el-tab-pane label="QLab" name="qlab" v-if="config.appChoice=='QLab'">
         <el-row>
-          <el-col :span="12">
+          <el-col>
             <el-form-item label="IP Address">
               <el-input v-model="config.qlab.ip"></el-input>
-            </el-form-item>
-          </el-col>
-          <el-col :span="12">
-            <el-form-item label="Port">
-              <el-input v-model="config.qlab.port"></el-input>
             </el-form-item>
           </el-col>
         </el-row>
@@ -102,16 +97,9 @@
       </el-tab-pane>
       <el-tab-pane label="Mitti" name="mitti" v-if="config.appChoice=='Mitti'">
         <el-row>
-          <el-col :span="12">
-            <el-form-item label="IP Address">
-              <el-input v-model="config.mitti.ip"></el-input>
-            </el-form-item>
-          </el-col>
-          <el-col :span="12">
-            <el-form-item label="Port">
-              <el-input v-model="config.mitti.port"></el-input>
-            </el-form-item>
-          </el-col>
+          <el-form-item label="IP Address">
+            <el-input v-model="config.mitti.ip"></el-input>
+          </el-form-item>
         </el-row>
         <el-row style="text-align: center;">
           Feedback port must be set to 5151

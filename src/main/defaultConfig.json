@@ -4,13 +4,11 @@
 "noVTText": "No VT",
 "qlab": {
     "ip": "127.0.0.1",
-    "port": "53000",
     "filterColour": [],
     "filterCueType": []
 },
 "mitti": {
-    "ip": "127.0.0.1",
-    "port": "51000"
+    "ip": "127.0.0.1"
 },
 "obs": {
     "ip": "127.0.0.1",

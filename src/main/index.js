@@ -150,11 +150,11 @@ ipcMain.on('showMode', (event, cfg) => {
   // start connections based on config
   config = cfg;
   if (config.appChoice == 'QLab') {
-    qlab = new Client(config.qlab.ip, config.qlab.port)
+    qlab = new Client(config.qlab.ip, 53000)
   }
 
   if (config.appChoice == 'Mitti') {
-    mitti = new Client(config.mitti.ip, config.mitti.port)
+    mitti = new Client(config.mitti.ip, 51000)
     mitti.send('/mitti/resendOSCFeedback', 200, () => { })
   }
 
