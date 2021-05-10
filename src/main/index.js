@@ -100,6 +100,7 @@ ipcMain.on('openLogs', (event, w, h) => {
 
 ipcMain.on('getConfig', (event) => {
   controlWindow.webContents.send('config', config)
+  controlWindow.webContents.send('darkMode', nativeTheme.shouldUseDarkColors)
 })
 
 

@@ -1,5 +1,5 @@
 <template>
-  <div id="wrapper" style="position: relative; padding-bottom: 5px">
+  <div id="wrapper" style="position: relative; padding-bottom: 5px" :class="{ darkMode : darkMode }">
 
     <el-row style="padding-top: 10px;">
       <el-col :span="16" style="font-size: 36px; padding-left: 10px;">
@@ -12,7 +12,7 @@
     <div style="font-size: 70%; position: absolute; top: 50px; right: 18px;">v{{ version }}</div>
 
     <el-divider content-position="center" v-if="!configMode">Time Remaining</el-divider>
-    <el-row v-if="!configMode" style="font-size: 400%; text-align: center;">
+    <el-row v-if="!configMode" style="font-size: 400%; text-align: center;" class="timer">
       {{timer}}
     </el-row>
     <el-row v-if="!configMode" style="padding: 10px; text-align: center;">
@@ -173,6 +173,7 @@ import { Notification } from 'element-ui'
         obsStatus: false,
         obsMessage: '',
         timer: 'Not Connected',
+        darkMode: false,
         version: require('./../../../package.json').version
       }
     },
@@ -192,6 +193,9 @@ import { Notification } from 'element-ui'
       })
       ipcRenderer.on('timer', function(event, timer) {
         vm.timer = timer
+      })
+      ipcRenderer.on('darkMode', function(event, val) {
+        vm.darkMode = val
       })
 
       ipcRenderer.on('config', function(event, cfg) {
@@ -236,5 +240,80 @@ import { Notification } from 'element-ui'
 .green {
   color: #6ab42f;
   margin-right: 5px;
+}
+.timer {
+  font-weight: bold;
+  color: black;
+}
+
+.darkMode .timer {
+  color: white;
+}
+.darkMode {
+  background: #222;
+  color: #aaa;
+}
+.darkMode .el-divider {
+  background: #555;
+}
+.darkMode .el-divider__text {
+  background: #222;
+  color: #aaa;
+}
+.darkMode label {
+  color: #bbb;
+}
+.darkMode .el-switch__label {
+  color: #bbb;
+}
+.darkMode .el-tabs--border-card {
+  background: #333;
+  border: 1px solid #111;
+}
+.darkMode .el-tabs--border-card>.el-tabs__header {
+  background: #292929;
+  border-bottom: 1px solid #111;
+}
+.darkMode .el-tabs--border-card>.el-tabs__header .el-tabs__item.is-active {
+  background: #333;
+  border-right: 1px solid #111;
+  border-left: 1px solid #111;
+}
+.darkMode .el-color-picker__trigger {
+  border: 1px solid #666;
+}
+.darkMode .el-radio-button__inner {
+  background: #3d3d3d;
+  color: #ddd;
+  border: 1px solid #666;
+}
+.darkMode .el-radio-button:first-child .el-radio-button__inner {
+  border-left: 1px solid #666;
+}
+.darkMode .el-button {
+  background: #3d3d3d;
+  color: #ddd;
+  border: 1px solid #666;
+}
+.darkMode .el-input__inner {
+  background: #3d3d3d;
+  color: #ddd;
+  border: 1px solid #666;
+}
+.darkMode .el-input-number__increase {
+  background: #292929;
+  color: #ddd;
+}
+.darkMode .el-input-number__decrease {
+  background: #292929;
+  color: #ddd;
+}
+.darkMode .el-drawer {
+  background: #292929;
+  border-top: 3px solid #6ab42f;
+  color: #ddd;
+}
+.darkMode .el-checkbox-button__inner {
+  background: none;
 }
 </style>
