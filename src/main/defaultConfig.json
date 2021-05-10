@@ -1,0 +1,17 @@
+{
+"timerFormat": "H:mm:ss",
+"appChoice": "QLab",
+"qlab": {
+    "ip": "127.0.0.1",
+    "port": "53000",
+    "filter": ["red"]
+},
+"obs": {
+    "ip": "127.0.0.1",
+    "port": "4444",
+    "password": "",
+    "source": "VTKounter",
+    "platformIsMac": false,
+    "enabled": true
+}
+}

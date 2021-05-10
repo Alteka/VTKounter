@@ -16,53 +16,56 @@
       {{timer}}
     </el-row>
     <el-row v-if="!configMode" style="padding: 10px; text-align: center;">
-      <el-col :span="6" v-if="!obs.enabled">&nbsp;</el-col>
+      <el-col :span="6" v-if="!config.obs.enabled">&nbsp;</el-col>
       <el-col :span="12">
-        <span v-if="vtStatus">{{appChoice}} <i class="fas fa-link green"></i> Connected</span>
-        <span v-if="!vtStatus">{{appChoice}} <i class="fas fa-link"></i> Not Connected</span>
+        <span v-if="vtStatus">{{config.appChoice}} <i class="fas fa-link green"></i> Connected</span>
+        <span v-if="!vtStatus">{{config.appChoice}} <i class="fas fa-link"></i> Not Connected</span>
       </el-col>
-      <el-col :span="12" v-if="obs.enabled">
+      <el-col :span="12" v-if="config.obs.enabled">
         <span v-if="obsStatus">OBS <i class="fas fa-link green"></i> Connected</span>
         <span v-if="!obsStatus">OBS <i class="fas fa-link"></i> Not Connected: {{obsMessage}}</span>
       </el-col>
     </el-row>
 
     <el-form v-if="configMode" label-width="100px" size="small">
-    <el-divider content-position="center">Configure Timer Format</el-divider>
+    <el-divider content-position="center">Core Settings</el-divider>
     <el-row style="padding-left: 10px; padding-right: 10px;">
+      <el-col :span="18">
         <el-form-item label="Timer Format">
-          <el-input v-model="timerFormat"></el-input>
+          <el-input v-model="config.timerFormat"></el-input>
         </el-form-item>
+      </el-col>
+      <el-col :span="6" style="text-align: right;">
+        <el-button round size="small" @click="factoryReset" type="info"><i class="fas fa-undo green"></i> Full Reset</el-button>
+      </el-col>
     </el-row>
-
-    <el-divider content-position="center">Configure VT App</el-divider>
     <el-row style="padding-left: 10px; padding-right: 10px;">
-      
-        <el-form-item label="App Choice"><i class="fas fa-photo-video green"></i>
-          <el-radio-group v-model="appChoice" size="small">
+        <el-form-item label="App Choice">
+          <el-radio-group v-model="config.appChoice" size="small">
             <el-radio-button label="QLab"></el-radio-button>
             <el-radio-button label="Mitti"></el-radio-button>
           </el-radio-group>
         </el-form-item>
-     
     </el-row>
 
-    <el-row v-if="appChoice=='QLab'" style="padding-left: 10px; padding-right: 10px;">
+    <el-divider content-position="center">Configure {{ config.appChoice }}</el-divider>
+
+    <el-row v-if="config.appChoice=='QLab'" style="padding-left: 10px; padding-right: 10px;">
       <el-col :span="12">
         <el-form-item label="IP Address">
-          <el-input v-model="qlab.ip"></el-input>
+          <el-input v-model="config.qlab.ip"></el-input>
         </el-form-item>
       </el-col>
       <el-col :span="12">
         <el-form-item label="Port">
-          <el-input v-model="qlab.port"></el-input>
+          <el-input v-model="config.qlab.port"></el-input>
         </el-form-item>
       </el-col>
     </el-row>
 
-    <el-row v-if="appChoice=='QLab'" style="padding-left: 10px; padding-right: 10px;">
+    <el-row v-if="config.appChoice=='QLab'" style="padding-left: 10px; padding-right: 10px;">
       <el-form-item label="Filter Cues">
-        <el-checkbox-group v-model="qlab.filter" size="medium">
+        <el-checkbox-group v-model="config.qlab.filter" size="medium">
           <el-checkbox-button v-for="filter in qlabFilters" :label="filter" :key="filter">{{filter}}</el-checkbox-button>
         </el-checkbox-group>
       </el-form-item>
@@ -73,44 +76,44 @@
     <el-row style="padding-left: 160px; padding-right: 10px;">
       <el-col :span="24">
         <el-form-item label="Enable OBS Output" label-width="160px">
-          <el-switch v-model="obs.enabled"></el-switch>
+          <el-switch v-model="config.obs.enabled"></el-switch>
         </el-form-item>
       </el-col>
     </el-row>
 
-    <el-row style="padding-left: 10px; padding-right: 10px;" v-if="obs.enabled">
+    <el-row style="padding-left: 10px; padding-right: 10px;" v-if="config.obs.enabled">
       <el-col :span="12">
         <el-form-item label="IP Address">
-          <el-input v-model="obs.ip"></el-input>
+          <el-input v-model="config.obs.ip"></el-input>
         </el-form-item>
       </el-col>
       <el-col :span="12">
         <el-form-item label="Port">
-          <el-input v-model="obs.port"></el-input>
+          <el-input v-model="config.obs.port"></el-input>
         </el-form-item>
       </el-col>
     </el-row>
 
-    <el-row style="padding-left: 10px; padding-right: 10px;" v-if="obs.enabled">
+    <el-row style="padding-left: 10px; padding-right: 10px;" v-if="config.obs.enabled">
       <el-col :span="12">
         <el-form-item label="Password">
-          <el-input v-model="obs.password"></el-input>
+          <el-input v-model="config.obs.password"></el-input>
         </el-form-item>
       </el-col>
       <el-col :span="12">
         <el-form-item label="OBS is on a Mac" label-width="140px">
-          <el-switch v-model="obs.platformIsMac"></el-switch>
+          <el-switch v-model="config.obs.platformIsMac"></el-switch>
         </el-form-item>
       </el-col>
     </el-row>
 
-    <el-row style="padding-left: 10px; padding-right: 10px;" v-if="obs.enabled">
+    <el-row style="padding-left: 10px; padding-right: 10px;" v-if="config.obs.enabled">
         <el-form-item label="Name of text source to update" label-width="240px">
-          <el-input v-model="obs.source"></el-input>
+          <el-input v-model="config.obs.source"></el-input>
         </el-form-item>
     </el-row>
 
-    <el-row style="text-align: center; font-size: 80%;" v-if="obs.enabled">
+    <el-row style="text-align: center; font-size: 80%;" v-if="config.obs.enabled">
       OBS Needs to have the WebSocket Server enabled, and have a password set. 
     </el-row>
 
@@ -133,10 +136,7 @@ import { Notification } from 'element-ui'
     data: function () {
       return {
         configMode: true,
-        appChoice: 'QLab',
-        timerFormat: 'H:mm:ss',
-        qlab: {ip: '127.0.0.1', port: '53000', filter: ['red']},
-        obs: {ip: '127.0.0.1', port: '4444', password: '', source: 'QLab Time', platformIsMac: false, enabled: true},
+        config: require('../../main/defaultConfig.json'),
         qlabFilters: ['red', 'yellow', 'green', 'blue', 'purple'],
         vtStatus: false,
         obsStatus: false,
@@ -163,12 +163,10 @@ import { Notification } from 'element-ui'
         vm.timer = timer
       })
 
-      ipcRenderer.send('getConfig')
       ipcRenderer.on('config', function(event, cfg) {
-        vm.obs = cfg.obs
-        vm.qlab = cfg.qlab
-        vm.timerFormat = cfg.timerFormat
+        vm.config = cfg
       })
+      ipcRenderer.send('getConfig')
     },
     watch: {
       configMode: function(newVal) {
@@ -177,7 +175,7 @@ import { Notification } from 'element-ui'
           ipcRenderer.send('configMode')
         } else {
           // going into show mode
-          ipcRenderer.send('showMode', {appChoice: this.appChoice,qlab: this.qlab, obs: this.obs, timerFormat: this.timerFormat})
+          ipcRenderer.send('showMode', this.config)
         }
       }
     },
@@ -187,6 +185,9 @@ import { Notification } from 'element-ui'
       },
       openLogs: function() {
         ipcRenderer.send('openLogs')
+      },
+      factoryReset: function() {
+        this.config = require('../../main/defaultConfig.json')
       }
     }
   }

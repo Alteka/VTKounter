@@ -76,22 +76,8 @@ app.on('activate', () => {
 })
 
 function getDefaultConfig() {
-  return {
-    timerFormat: 'H:mm:ss',
-    qlab: {
-      ip: '127.0.0.1',
-      port: '53000',
-      filter: ['red']
-    },
-    obs: {
-      ip: '127.0.0.1',
-      port: '4444',
-      password: 'password',
-      source: 'QLab Time',
-      platformIsMac: false,
-      enabled: true
-    }
-  }
+  let defaultConfig = require('./defaultConfig.json')
+  return defaultConfig
 }
 
 
