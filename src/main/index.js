@@ -213,9 +213,11 @@ oscServer.on('message', function (msg) {
         }
     }  else {
         updateTimer(config.noVTText)
+        controlWindow.webContents.send('percentage', 0)
     }
     if (matchingCues.length == 0) {
         updateTimer(config.noVTText)
+        controlWindow.webContents.send('percentage', 0)
     }
     if (matchingCues.length > 1) {
       log.warn('Multiple matching QLab Cues are running')
@@ -234,6 +236,8 @@ oscServer.on('message', function (msg) {
     var QLabPrefix = ''
     if (matchingCues.length > 1) QLabPrefix = '1st: '
     updateTimer(QLabPrefix + moment().startOf('day').seconds(remaining).format(config.timerFormat))
+
+    controlWindow.webContents.send('percentage', 100-Math.round(remaining/currentDuration*1000)/10)
   }
 })
 

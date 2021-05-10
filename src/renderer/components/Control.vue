@@ -15,6 +15,9 @@
     <el-row v-if="!configMode" style="font-size: 400%; text-align: center;" class="timer">
       {{timer}}
     </el-row>
+    <el-row v-if="!configMode && showPercentage" style="padding: 10px; text-align: center;">
+      <el-progress :percentage="percentage"></el-progress>
+    </el-row>
     <el-row v-if="!configMode" style="padding: 10px; text-align: center;">
       <el-col :span="6" v-if="!config.obs.enabled">&nbsp;</el-col>
       <el-col :span="12">
@@ -45,12 +48,19 @@
         </el-form-item>
     </el-row>
     <el-row style="padding-left: 10px; padding-right: 10px;">
+      <el-col :span="12">
         <el-form-item label="App Choice" label-width="125px">
           <el-radio-group v-model="config.appChoice" size="small">
             <el-radio-button label="QLab"></el-radio-button>
             <el-radio-button label="Mitti"></el-radio-button>
           </el-radio-group>
         </el-form-item>
+      </el-col>
+      <el-col :span="12">
+        <el-form-item label="Show Percentage" label-width="125px">
+          <el-switch v-model="showPercentage"></el-switch>            
+        </el-form-item>
+      </el-col>
     </el-row>
 
     <el-divider content-position="center">Configure {{ config.appChoice }}</el-divider>
@@ -172,6 +182,8 @@ import { Notification } from 'element-ui'
         vtStatus: false,
         obsStatus: false,
         obsMessage: '',
+        percentage: 0,
+        showPercentage: true,
         timer: 'Not Connected',
         darkMode: false,
         version: require('./../../../package.json').version
@@ -193,6 +205,9 @@ import { Notification } from 'element-ui'
       })
       ipcRenderer.on('timer', function(event, timer) {
         vm.timer = timer
+      })
+      ipcRenderer.on('percentage', function(event, data) {
+        vm.percentage = data
       })
       ipcRenderer.on('darkMode', function(event, val) {
         vm.darkMode = val
