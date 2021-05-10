@@ -37,134 +37,128 @@
     </el-row>
 
     <el-form v-if="configMode" label-width="100px" size="small">
-    <el-divider content-position="center">Core Settings</el-divider>
-    <el-row style="padding-left: 10px; padding-right: 10px;">
-      <el-col :span="18">
-        <el-form-item label="Timer Format" label-width="125px">
-          <el-input v-model="config.timerFormat"></el-input>
-        </el-form-item>
-      </el-col>
-      <el-col :span="6" style="text-align: right;">
-        <el-button round size="small" @click="factoryReset" type="info"><i class="fas fa-undo green"></i> Full Reset</el-button>
-      </el-col>
-    </el-row>
-    <el-row style="padding-left: 10px; padding-right: 10px;">
-        <el-form-item label="Text for no VT" label-width="125px">
-          <el-input v-model="config.noVTText"></el-input>
-        </el-form-item>
-    </el-row>
-    <el-row style="padding-left: 10px; padding-right: 10px;">
-      <el-col :span="12">
-        <el-form-item label="App Choice" label-width="125px">
-          <el-radio-group v-model="config.appChoice" size="small">
-            <el-radio-button label="QLab"></el-radio-button>
-            <el-radio-button label="Mitti"></el-radio-button>
-          </el-radio-group>
-        </el-form-item>
-      </el-col>
-      <el-col :span="12">
-        <el-form-item label="Show Percentage" label-width="125px">
-          <el-switch v-model="showPercentage"></el-switch>            
-        </el-form-item>
-      </el-col>
-    </el-row>
+    <el-tabs v-model="tab" style="padding-left: 10px; padding-right: 10px;">
 
-    <el-divider content-position="center">Configure {{ config.appChoice }}</el-divider>
+      <el-tab-pane label="Core Settings" name="core">
+         <el-row >
+          <el-col :span="18">
+            <el-form-item label="Timer Format" label-width="125px">
+              <el-input v-model="config.timerFormat"></el-input>
+            </el-form-item>
+          </el-col>
+          <el-col :span="6" style="text-align: right;">
+            <el-button round size="small" @click="factoryReset" type="info"><i class="fas fa-undo green"></i> Full Reset</el-button>
+          </el-col>
+        </el-row>
+        <el-row>
+            <el-form-item label="Text for no VT" label-width="125px">
+              <el-input v-model="config.noVTText"></el-input>
+            </el-form-item>
+        </el-row>
+        <el-row>
+          <el-col :span="12">
+            <el-form-item label="App Choice" label-width="125px">
+              <el-radio-group v-model="config.appChoice" size="small">
+                <el-radio-button label="QLab"></el-radio-button>
+                <el-radio-button label="Mitti"></el-radio-button>
+              </el-radio-group>
+            </el-form-item>
+          </el-col>
+          <el-col :span="12">
+            <el-form-item label="Show Percentage" label-width="125px">
+              <el-switch v-model="showPercentage"></el-switch>            
+            </el-form-item>
+          </el-col>
+        </el-row>
+      </el-tab-pane>
 
-    <el-row v-if="config.appChoice=='QLab'" style="padding-left: 10px; padding-right: 10px;">
-      <el-col :span="12">
-        <el-form-item label="IP Address">
-          <el-input v-model="config.qlab.ip"></el-input>
-        </el-form-item>
-      </el-col>
-      <el-col :span="12">
-        <el-form-item label="Port">
-          <el-input v-model="config.qlab.port"></el-input>
-        </el-form-item>
-      </el-col>
-    </el-row>
-
-    <el-row v-if="config.appChoice=='QLab'" style="padding-left: 10px; padding-right: 10px;">
-      <el-form-item label="Filter by Colour" label-width="125px">
-        <el-checkbox-group v-model="config.qlab.filterColour" size="small">
-          <el-checkbox-button v-for="filter in qlabFilters" :label="filter" :key="filter">{{filter}}</el-checkbox-button>
-        </el-checkbox-group>
-      </el-form-item>
-    </el-row>
-
-    <el-row v-if="config.appChoice=='QLab'" style="padding-left: 10px; padding-right: 10px;">
-      <el-form-item label="Filter by Type" label-width="125px">
-        <el-checkbox-group v-model="config.qlab.filterCueType" size="small">
-          <el-checkbox-button v-for="filter in qlabCueTypes" :label="filter" :key="filter">{{filter}}</el-checkbox-button>
-        </el-checkbox-group>
-      </el-form-item>
-    </el-row>
-
-    <el-row v-if="config.appChoice=='Mitti'" style="padding-left: 10px; padding-right: 10px;">
-      <el-col :span="12">
-        <el-form-item label="IP Address">
-          <el-input v-model="config.mitti.ip"></el-input>
-        </el-form-item>
-      </el-col>
-      <el-col :span="12">
-        <el-form-item label="Port">
-          <el-input v-model="config.mitti.port"></el-input>
-        </el-form-item>
-      </el-col>
-    </el-row>
-
-    <el-row v-if="config.appChoice=='Mitti'" style="padding-left: 10px; padding-right: 10px; text-align: center; font-size: 80%;">
-      Feedback port must be set to 5151
-    </el-row>
-
-    <el-divider content-position="center">Configure Output (Just OBS)</el-divider>
-
-    <el-row style="padding-left: 160px; padding-right: 10px;">
-      <el-col :span="24">
-        <el-form-item label="Enable OBS Output" label-width="160px">
-          <el-switch v-model="config.obs.enabled"></el-switch>
-        </el-form-item>
-      </el-col>
-    </el-row>
-
-    <el-row style="padding-left: 10px; padding-right: 10px;" v-if="config.obs.enabled">
-      <el-col :span="12">
-        <el-form-item label="IP Address">
-          <el-input v-model="config.obs.ip"></el-input>
-        </el-form-item>
-      </el-col>
-      <el-col :span="12">
-        <el-form-item label="Port">
-          <el-input v-model="config.obs.port"></el-input>
-        </el-form-item>
-      </el-col>
-    </el-row>
-
-    <el-row style="padding-left: 10px; padding-right: 10px;" v-if="config.obs.enabled">
-      <el-col :span="12">
-        <el-form-item label="Password">
-          <el-input v-model="config.obs.password"></el-input>
-        </el-form-item>
-      </el-col>
-      <el-col :span="12">
-        <el-form-item label="OBS is on a Mac" label-width="140px">
-          <el-switch v-model="config.obs.platformIsMac"></el-switch>
-        </el-form-item>
-      </el-col>
-    </el-row>
-
-    <el-row style="padding-left: 10px; padding-right: 10px;" v-if="config.obs.enabled">
-        <el-form-item label="Name of text source to update" label-width="240px">
-          <el-input v-model="config.obs.source"></el-input>
-        </el-form-item>
-    </el-row>
-
-    <el-row style="text-align: center; font-size: 80%;" v-if="config.obs.enabled">
-      OBS Needs to have the WebSocket Server enabled, and have a password set. 
-    </el-row>
-
-    
-
+      <el-tab-pane label="QLab" name="qlab" v-if="config.appChoice=='QLab'">
+        <el-row>
+          <el-col :span="12">
+            <el-form-item label="IP Address">
+              <el-input v-model="config.qlab.ip"></el-input>
+            </el-form-item>
+          </el-col>
+          <el-col :span="12">
+            <el-form-item label="Port">
+              <el-input v-model="config.qlab.port"></el-input>
+            </el-form-item>
+          </el-col>
+        </el-row>
+        <el-row>
+          <el-form-item label="Filter by Colour" label-width="125px">
+            <el-checkbox-group v-model="config.qlab.filterColour" size="small">
+              <el-checkbox-button v-for="filter in qlabFilters" :label="filter" :key="filter">{{filter}}</el-checkbox-button>
+            </el-checkbox-group>
+          </el-form-item>
+        </el-row>
+        <el-row>
+          <el-form-item label="Filter by Type" label-width="125px">
+            <el-checkbox-group v-model="config.qlab.filterCueType" size="small">
+              <el-checkbox-button v-for="filter in qlabCueTypes" :label="filter" :key="filter">{{filter}}</el-checkbox-button>
+            </el-checkbox-group>
+          </el-form-item>
+        </el-row>
+      </el-tab-pane>
+      <el-tab-pane label="Mitti" name="mitti" v-if="config.appChoice=='Mitti'">
+        <el-row>
+          <el-col :span="12">
+            <el-form-item label="IP Address">
+              <el-input v-model="config.mitti.ip"></el-input>
+            </el-form-item>
+          </el-col>
+          <el-col :span="12">
+            <el-form-item label="Port">
+              <el-input v-model="config.mitti.port"></el-input>
+            </el-form-item>
+          </el-col>
+        </el-row>
+        <el-row style="text-align: center;">
+          Feedback port must be set to 5151
+        </el-row>
+      </el-tab-pane>
+      <el-tab-pane label="OBS" name="fourth">
+        <el-row>
+          <el-col :span="24">
+            <el-form-item label="Enable OBS Output" label-width="160px">
+              <el-switch v-model="config.obs.enabled"></el-switch>
+            </el-form-item>
+          </el-col>
+        </el-row>
+        <el-row v-if="config.obs.enabled">
+          <el-col :span="12">
+            <el-form-item label="IP Address">
+              <el-input v-model="config.obs.ip"></el-input>
+            </el-form-item>
+          </el-col>
+          <el-col :span="12">
+            <el-form-item label="Port">
+              <el-input v-model="config.obs.port"></el-input>
+            </el-form-item>
+          </el-col>
+        </el-row>
+        <el-row v-if="config.obs.enabled">
+          <el-col :span="12">
+            <el-form-item label="Password">
+              <el-input v-model="config.obs.password"></el-input>
+            </el-form-item>
+          </el-col>
+          <el-col :span="12">
+            <el-form-item label="OBS is on a Mac" label-width="140px">
+              <el-switch v-model="config.obs.platformIsMac"></el-switch>
+            </el-form-item>
+          </el-col>
+        </el-row>
+        <el-row v-if="config.obs.enabled">
+          <el-form-item label="Name of text source to update" label-width="240px">
+            <el-input v-model="config.obs.source"></el-input>
+          </el-form-item>
+        </el-row>
+        <el-row style="text-align: center;" v-if="config.obs.enabled">
+          OBS Needs to have the WebSocket Server enabled.<br />The socket server must have a password set. 
+        </el-row>
+      </el-tab-pane>
+    </el-tabs>
     </el-form>
 
     <resize-observer @notify="handleResize" />
@@ -181,6 +175,7 @@ import { Notification } from 'element-ui'
     components: { Device },
     data: function () {
       return {
+        tab: 'core',
         configMode: true,
         config: require('../../main/defaultConfig.json'),
         qlabFilters: ['red', 'yellow', 'green', 'blue', 'purple'],
@@ -304,6 +299,9 @@ import { Notification } from 'element-ui'
   color: #bbb;
 }
 .darkMode .el-progress__text {
+  color: #bbb;
+}
+.darkMode .el-tabs__item {
   color: #bbb;
 }
 .darkMode .el-switch__label {
