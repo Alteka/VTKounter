@@ -5,8 +5,8 @@
 "qlab": {
     "ip": "127.0.0.1",
     "port": "53000",
-    "filterColour": ["red"],
-    "filterCueType": ["Video"]
+    "filterColour": [],
+    "filterCueType": []
 },
 "mitti": {
     "ip": "127.0.0.1",
