@@ -9,10 +9,16 @@
         <el-switch style="display: block" v-model="configMode" active-color="#6ab42f" inactive-color="#6ab42f" active-text="Setup" inactive-text="Show Mode"></el-switch>
       </el-col>
     </el-row>
-    <div style="font-size: 70%; position: absolute; top: 50px; right: 18px;">v{{ version }}</div>
+    <div style="position: absolute; top: 40px; right: 10px; font-size: 80%;" v-if="!configMode">Size&nbsp;
+      <el-button-group>
+        <el-button round type="success" size="mini" @click="size -= 25">-</el-button>
+        <el-button round type="success" size="mini" @click="size+=25">+</el-button>
+      </el-button-group>
+    </div>
+    <div style="font-size: 70%; position: absolute; top: 50px; right: 18px;" v-if="configMode">v{{ version }}</div>
 
     <el-divider content-position="center" v-if="!configMode">Time Remaining</el-divider>
-    <el-row v-if="!configMode" style="font-size: 400%; text-align: center;" class="timer" :style="{ color: warningColour }">
+    <el-row v-if="!configMode" style="font-size: 400%; text-align: center;" class="timer" :style="{ color: warningColour, 'font-size': size + '%'}">
       {{timer}}
     </el-row>
     <el-row v-if="!configMode && showPercentage" style="padding: 10px; text-align: center;">
@@ -107,7 +113,7 @@
       </el-col>
     </el-row>
 
-    <el-row v-if="config.appChoice=='Mitti'" style="padding-left: 10px; padding-right: 10px;">
+    <el-row v-if="config.appChoice=='Mitti'" style="padding-left: 10px; padding-right: 10px; text-align: center; font-size: 80%;">
       Feedback port must be set to 5151
     </el-row>
 
@@ -187,6 +193,7 @@ import { Notification } from 'element-ui'
         timer: 'No VT',
         warning: false,
         darkMode: false,
+        size: 400,
         version: require('./../../../package.json').version
       }
     },
