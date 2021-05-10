@@ -64,11 +64,32 @@
     </el-row>
 
     <el-row v-if="config.appChoice=='QLab'" style="padding-left: 10px; padding-right: 10px;">
-      <el-form-item label="Filter Cues">
-        <el-checkbox-group v-model="config.qlab.filter" size="medium">
+      <el-form-item label="Filter by Colour" label-width="125px">
+        <el-checkbox-group v-model="config.qlab.filterColour" size="small">
           <el-checkbox-button v-for="filter in qlabFilters" :label="filter" :key="filter">{{filter}}</el-checkbox-button>
         </el-checkbox-group>
       </el-form-item>
+    </el-row>
+
+    <el-row v-if="config.appChoice=='QLab'" style="padding-left: 10px; padding-right: 10px;">
+      <el-form-item label="Filter by Type" label-width="125px">
+        <el-checkbox-group v-model="config.qlab.filterCueType" size="small">
+          <el-checkbox-button v-for="filter in qlabCueTypes" :label="filter" :key="filter">{{filter}}</el-checkbox-button>
+        </el-checkbox-group>
+      </el-form-item>
+    </el-row>
+
+    <el-row v-if="config.appChoice=='Mitti'" style="padding-left: 10px; padding-right: 10px;">
+      <el-col :span="12">
+        <el-form-item label="IP Address">
+          <el-input v-model="config.mitti.ip"></el-input>
+        </el-form-item>
+      </el-col>
+      <el-col :span="12">
+        <el-form-item label="Port">
+          <el-input v-model="config.mitti.port"></el-input>
+        </el-form-item>
+      </el-col>
     </el-row>
 
     <el-divider content-position="center">Configure Output (Just OBS)</el-divider>
@@ -138,6 +159,7 @@ import { Notification } from 'element-ui'
         configMode: true,
         config: require('../../main/defaultConfig.json'),
         qlabFilters: ['red', 'yellow', 'green', 'blue', 'purple'],
+        qlabCueTypes: ['Video', 'Audio', 'Text', 'Camera', 'Mic', 'Group'],
         vtStatus: false,
         obsStatus: false,
         obsMessage: '',

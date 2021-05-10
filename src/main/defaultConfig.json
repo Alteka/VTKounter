@@ -4,7 +4,12 @@
 "qlab": {
     "ip": "127.0.0.1",
     "port": "53000",
-    "filter": ["red"]
+    "filterColour": ["red"],
+    "filterCueType": ["Video"]
+},
+"mitti": {
+    "ip": "127.0.0.1",
+    "port": "51000"
 },
 "obs": {
     "ip": "127.0.0.1",

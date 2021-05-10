@@ -102,7 +102,7 @@ ipcMain.on('getConfig', (event) => {
 //       VT Kounter       //
 //========================//
 var currentDuration
-var redCues = []
+var matchingCues = []
 var lastSet = ""
 var ConnectedToOBS = false
 var showMode = false
@@ -177,31 +177,38 @@ oscServer.on('message', function (msg) {
 
   if (cmd == 'runningCues') {
     controlWindow.webContents.send('vtStatus', true)
-    redCues = [];
+    matchingCues = [];
     if (data.data.length > 1) {
         for (var i = 1; i < data.data.length; i++) {
-            if (config.qlab.filter.includes(data.data[i].colorName) || config.qlab.filter.length == 0) {
-                redCues.push(data.data[i].uniqueID)
+            if (config.qlab.filterColour.includes(data.data[i].colorName) || config.qlab.filterColour.length == 0) {
+              if (config.qlab.filterCueType.includes(data.data[i].type) || config.qlab.filterCueType.length == 0) {
+                matchingCues.push(data.data[i].uniqueID)
+              }                
             }
         }
-    }   else {
+    }  else {
         updateTimer('No VT')
     }
-    if (redCues.length == 0) {
+    if (matchingCues.length == 0) {
         updateTimer('No VT')
+    }
+    if (matchingCues.length > 1) {
+      log.warn('Multiple matching QLab Cues are running')
     }
   }
-  if (cmd == 'currentDuration' && redCues.includes(cue)) {
+  if (cmd == 'currentDuration' && matchingCues[0] == cue) {
     if (currentDuration !== data.data) {
         log.info('--==--  VT Started with Duration ' + data.data + '  --==--')
     }
     currentDuration = data.data
   }
-  if (cmd == 'actionElapsed' && redCues.includes(cue)) {
+  if (cmd == 'actionElapsed' && matchingCues[0] == cue) {
     var remaining = Math.round(currentDuration - data.data)
     if (remaining <0) { remaining = 0 }
 
-    updateTimer(moment().startOf('day').seconds(remaining).format(config.timerFormat))
+    var QLabPrefix = ''
+    if (matchingCues.length > 1) QLabPrefix = '1st: '
+    updateTimer(QLabPrefix + moment().startOf('day').seconds(remaining).format(config.timerFormat))
   }
 })
 
