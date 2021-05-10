@@ -12,11 +12,11 @@
     <div style="font-size: 70%; position: absolute; top: 50px; right: 18px;">v{{ version }}</div>
 
     <el-divider content-position="center" v-if="!configMode">Time Remaining</el-divider>
-    <el-row v-if="!configMode" style="font-size: 400%; text-align: center;" class="timer">
+    <el-row v-if="!configMode" style="font-size: 400%; text-align: center;" class="timer" :style="{ color: warningColour }">
       {{timer}}
     </el-row>
     <el-row v-if="!configMode && showPercentage" style="padding: 10px; text-align: center;">
-      <el-progress :percentage="percentage"></el-progress>
+      <el-progress :percentage="percentage" :color="warningColour" :show-text="false"></el-progress>
     </el-row>
     <el-row v-if="!configMode" style="padding: 10px; text-align: center;">
       <el-col :span="6" v-if="!config.obs.enabled">&nbsp;</el-col>
@@ -184,7 +184,8 @@ import { Notification } from 'element-ui'
         obsMessage: '',
         percentage: 0,
         showPercentage: true,
-        timer: 'Not Connected',
+        timer: 'No VT',
+        warning: false,
         darkMode: false,
         version: require('./../../../package.json').version
       }
@@ -212,6 +213,9 @@ import { Notification } from 'element-ui'
       ipcRenderer.on('darkMode', function(event, val) {
         vm.darkMode = val
       })
+      ipcRenderer.on('warning', function(event, val) {
+        vm.warning = val
+      })
 
       ipcRenderer.on('config', function(event, cfg) {
         vm.config = cfg
@@ -238,6 +242,17 @@ import { Notification } from 'element-ui'
       },
       factoryReset: function() {
         this.config = require('../../main/defaultConfig.json')
+      }
+    },
+    computed: {
+      warningColour: function() {
+        if (this.warning == 'close') {
+          return '#E28806'   
+        } else if (this.warning == 'closer') {
+          return '#ff3333'
+        } else {
+          return '#6ab42f'
+        }
       }
     }
   }
@@ -269,6 +284,9 @@ import { Notification } from 'element-ui'
   color: #aaa;
 }
 .darkMode .el-divider {
+  background: #555;
+}
+.darkMode .el-progress-bar__outer {
   background: #555;
 }
 .darkMode .el-divider__text {

@@ -163,8 +163,8 @@ ipcMain.on('showMode', (event, cfg) => {
   }
 
   showMode = true
-
   store.set('VTKounterConfig', config)
+  clearTimer()
 })
 
 function obsConnect() {
@@ -212,12 +212,10 @@ oscServer.on('message', function (msg) {
             }
         }
     }  else {
-        updateTimer(config.noVTText)
-        controlWindow.webContents.send('percentage', 0)
+      clearTimer()
     }
     if (matchingCues.length == 0) {
-        updateTimer(config.noVTText)
-        controlWindow.webContents.send('percentage', 0)
+      clearTimer()
     }
     if (matchingCues.length > 1) {
       log.warn('Multiple matching QLab Cues are running')
@@ -225,7 +223,7 @@ oscServer.on('message', function (msg) {
   }
   if (cmd == 'currentDuration' && matchingCues[0] == cue) {
     if (currentDuration !== data.data) {
-        log.info('--==--  VT Started with Duration ' + data.data + '  --==--')
+        log.info('--==--  QLab VT Started with Duration ' + data.data + '  --==--')
     }
     currentDuration = data.data
   }
@@ -233,33 +231,55 @@ oscServer.on('message', function (msg) {
     var remaining = Math.round(currentDuration - data.data)
     if (remaining <0) { remaining = 0 }
 
-    var QLabPrefix = ''
-    if (matchingCues.length > 1) QLabPrefix = '1st: '
-    updateTimer(QLabPrefix + moment().startOf('day').seconds(remaining).format(config.timerFormat))
-
-    controlWindow.webContents.send('percentage', 100-Math.round(remaining/currentDuration*1000)/10)
+    setTimerInSeconds(remaining)
+    setTimerProgress(remaining/currentDuration)
   }
 })
 
+let mittiTimeElapsed = 0
 mittiOscServer.on('message', function(msg) {
   controlWindow.webContents.send('vtStatus', true)
   if (msg[0] == '/mitti/cueTimeLeft' && config.appChoice == 'Mitti') {
-    let rem = msg[1];
-    rem = rem.split(':')
+    let rem = msg[1].split(':')
     let seconds = parseInt(rem[0]*60*-60) + parseInt((rem[1]*60)) + parseInt(rem[2])
     if (seconds < 1) {
-      updateTimer(config.noVTText)
+      clearTimer()
     } else {
-      updateTimer(moment().startOf('day').seconds(seconds).format(config.timerFormat))
+      setTimerInSeconds(seconds)
+      setTimerProgress(mittiTimeElapsed/(mittiTimeElapsed+seconds))
     }
   }
-  
+  if (msg[0] == '/mitti/cueTimeElapsed' && config.appChoice == 'Mitti') {
+    let rem = msg[1].split(':')
+    mittiTimeElapsed = parseInt(rem[0]*60*-60) + parseInt((rem[1]*60)) + parseInt(rem[2])
+  }
 })
+
+function setTimerInSeconds(seconds) {
+  updateTimer(moment().startOf('day').seconds(seconds).format(config.timerFormat))
+
+  if (seconds <= 30 && seconds > 10) {
+    controlWindow.webContents.send('warning', 'close')
+  } else if (seconds <= 10) {
+    controlWindow.webContents.send('warning', 'closer')
+  } else {
+    controlWindow.webContents.send('warning', false)
+  }
+}
+
+function setTimerProgress(fraction) {
+  controlWindow.webContents.send('percentage', 100-(fraction*100))
+}
+
+function clearTimer() {
+  updateTimer(config.noVTText)
+  controlWindow.webContents.send('warning', false)
+  controlWindow.webContents.send('percentage', 0)
+}
 
 function updateTimer(time = '-') {
   if (showMode) {
     if (time != lastSet) {
-
       controlWindow.webContents.send('timer', time)
 
       if (ConnectedToOBS) {
@@ -274,13 +294,7 @@ function updateTimer(time = '-') {
             console.log(err);
         })
       }
-
       lastSet = time
-      if (time == 'No VT') {
-        log.info('--==##==--  VT Finished  --==##==--')
-      } else {
-        log.info('Time Remaining:' + ' ' + time)
-      }
     }
   }
 }
