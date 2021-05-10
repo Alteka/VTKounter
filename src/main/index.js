@@ -299,47 +299,43 @@ function updateTimer(time = '-') {
   }
 }
 
-// setTimeout(function() {
-//   let current = require('./../../package.json').version
-// Make a request for a user with a given ID
-// axios.get('https://api.github.com/repos/alteka/vtkounter/releases/latest')
-//   .then(function (response) {
-//     let status = compareVersions(response.data.tag_name, current, '>')
-//     if (status == 1) { 
 
-//       let link = ''
-//       for (const asset in response.data.assets) {
-//         if (process.platform == 'darwin' && response.data.assets[asset].name.includes('.pkg')) {
-//           link = response.data.assets[asset].browser_download_url
-//         }
-//         if (process.platform != 'darwin' && response.data.assets[asset].name.includes('.exe')) {
-//           link = response.data.assets[asset].browser_download_url
-//         }
-//       }
-//       dialog.showMessageBox(controlWindow, {
-//         type: 'question',
-//         title: 'An Update Is Available',
-//         message: 'Would you like to download version: ' + response.data.tag_name,
-//         buttons: ['Cancel', 'Yes']
-//       }).then(function (response) {
-//         if (response.response == 1) {
-//           shell.openExternal(link)
-//         }
-//       });
-//     } else if (status == 0) {
-//       // running current/latest version.
-//       log.info('Running latest version')
-//     } else if (status == -1) {
-//       log.info('Running version newer than release')
-//     }
-//   })
-//   .catch(function (error) {
-//     console.log(error);
-//   })
-// }, 3000)
 
-function pad(num, size) {
-  var s = num+"";
-  while (s.length < size) s = "0" + s;
-  return s;
-}
+// AUTO UPDATE
+setTimeout(function() {
+  let current = require('./../../package.json').version
+axios.get('https://api.github.com/repos/alteka/vtkounter/releases/latest')
+  .then(function (response) {
+    let status = compareVersions(response.data.tag_name, current, '>')
+    if (status == 1) { 
+
+      let link = ''
+      for (const asset in response.data.assets) {
+        if (process.platform == 'darwin' && response.data.assets[asset].name.includes('.pkg')) {
+          link = response.data.assets[asset].browser_download_url
+        }
+        if (process.platform != 'darwin' && response.data.assets[asset].name.includes('.exe')) {
+          link = response.data.assets[asset].browser_download_url
+        }
+      }
+      dialog.showMessageBox(controlWindow, {
+        type: 'question',
+        title: 'An Update Is Available',
+        message: 'Would you like to download version: ' + response.data.tag_name,
+        buttons: ['Cancel', 'Yes']
+      }).then(function (response) {
+        if (response.response == 1) {
+          shell.openExternal(link)
+        }
+      });
+    } else if (status == 0) {
+      // running current/latest version.
+      log.info('Running latest version')
+    } else if (status == -1) {
+      log.info('Running version newer than release')
+    }
+  })
+  .catch(function (error) {
+    console.log(error);
+  })
+}, 3000)
