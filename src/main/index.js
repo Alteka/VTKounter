@@ -13,11 +13,16 @@ var config = {}
 
 const { Client, Server } = require('node-osc');
 var qlab = null;
+var mitti = null;
 const OBSWebSocket = require('obs-websocket-js');
 const obs = new OBSWebSocket();
 
 var oscServer = new Server(53001, '0.0.0.0', () => {
   console.log('OSC Server is listening');
+})
+
+var mittiOscServer = new Server(5151, '0.0.0.0', () => {
+  console.log('Mitti OSC Server is listening');
 })
 
 if (process.env.NODE_ENV !== 'development') {
@@ -109,10 +114,14 @@ var showMode = false
 
 
 setInterval(function() {
-  if (showMode) {
+  if (showMode && config.appChoice == 'QLab') {
     qlab.send('/cue/active/currentDuration', 200, () => { })
     qlab.send('/cue/active/actionElapsed', 200, () => { })
     qlab.send('/runningCues', 200, () => { })
+  }
+
+  if (showMode && config.appChoice == 'Mitti') {
+    mitti.send('/mitti/cueTimeLeft', 200, () => { })
   }
 
   if (!ConnectedToOBS && showMode && config.obs.enabled) {
@@ -124,8 +133,14 @@ ipcMain.on('configMode', (event) => {
   // stop all services and disconnect
   obs.disconnect()
   showMode = false
-  qlab.close()
-  qlab = null
+  if (config.appChoice == 'QLab') {
+    qlab.close()
+    qlab = null
+  }
+  if (config.appChoice == 'Mitti') {
+    mitti.close()
+    mitti = null
+  }
   controlWindow.webContents.send('vtStatus', false)
   controlWindow.webContents.send('obsStatus', false)
 })
@@ -133,10 +148,19 @@ ipcMain.on('configMode', (event) => {
 ipcMain.on('showMode', (event, cfg) => {
   // start connections based on config
   config = cfg;
-  qlab = new Client(config.qlab.ip, config.qlab.port)
+  if (config.appChoice == 'QLab') {
+    qlab = new Client(config.qlab.ip, config.qlab.port)
+  }
+
+  if (config.appChoice == 'Mitti') {
+    mitti = new Client(config.mitti.ip, config.mitti.port)
+    mitti.send('/mitti/resendOSCFeedback', 200, () => { })
+  }
+
   if (config.obs.enabled) {
     obsConnect()
   }
+
   showMode = true
 
   store.set('VTKounterConfig', config)
@@ -187,10 +211,10 @@ oscServer.on('message', function (msg) {
             }
         }
     }  else {
-        updateTimer('No VT')
+        updateTimer(config.noVTText)
     }
     if (matchingCues.length == 0) {
-        updateTimer('No VT')
+        updateTimer(config.noVTText)
     }
     if (matchingCues.length > 1) {
       log.warn('Multiple matching QLab Cues are running')
@@ -210,6 +234,21 @@ oscServer.on('message', function (msg) {
     if (matchingCues.length > 1) QLabPrefix = '1st: '
     updateTimer(QLabPrefix + moment().startOf('day').seconds(remaining).format(config.timerFormat))
   }
+})
+
+mittiOscServer.on('message', function(msg) {
+  controlWindow.webContents.send('vtStatus', true)
+  if (msg[0] == '/mitti/cueTimeLeft' && config.appChoice == 'Mitti') {
+    let rem = msg[1];
+    rem = rem.split(':')
+    let seconds = parseInt(rem[0]*60*-60) + parseInt((rem[1]*60)) + parseInt(rem[2])
+    if (seconds < 1) {
+      updateTimer(config.noVTText)
+    } else {
+      updateTimer(moment().startOf('day').seconds(seconds).format(config.timerFormat))
+    }
+  }
+  
 })
 
 function updateTimer(time = '-') {

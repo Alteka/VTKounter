@@ -1,6 +1,7 @@
 {
 "timerFormat": "H:mm:ss",
 "appChoice": "QLab",
+"noVTText": "No VT",
 "qlab": {
     "ip": "127.0.0.1",
     "port": "53000",

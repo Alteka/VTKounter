@@ -31,7 +31,7 @@
     <el-divider content-position="center">Core Settings</el-divider>
     <el-row style="padding-left: 10px; padding-right: 10px;">
       <el-col :span="18">
-        <el-form-item label="Timer Format">
+        <el-form-item label="Timer Format" label-width="125px">
           <el-input v-model="config.timerFormat"></el-input>
         </el-form-item>
       </el-col>
@@ -40,7 +40,12 @@
       </el-col>
     </el-row>
     <el-row style="padding-left: 10px; padding-right: 10px;">
-        <el-form-item label="App Choice">
+        <el-form-item label="Text for no VT" label-width="125px">
+          <el-input v-model="config.noVTText"></el-input>
+        </el-form-item>
+    </el-row>
+    <el-row style="padding-left: 10px; padding-right: 10px;">
+        <el-form-item label="App Choice" label-width="125px">
           <el-radio-group v-model="config.appChoice" size="small">
             <el-radio-button label="QLab"></el-radio-button>
             <el-radio-button label="Mitti"></el-radio-button>
@@ -90,6 +95,10 @@
           <el-input v-model="config.mitti.port"></el-input>
         </el-form-item>
       </el-col>
+    </el-row>
+
+    <el-row v-if="config.appChoice=='Mitti'" style="padding-left: 10px; padding-right: 10px;">
+      Feedback port must be set to 5151
     </el-row>
 
     <el-divider content-position="center">Configure Output (Just OBS)</el-divider>
