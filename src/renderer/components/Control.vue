@@ -2,29 +2,29 @@
   <div id="wrapper" style="position: relative; padding-bottom: 5px" :class="{ darkMode : darkMode }">
 
     <el-row style="padding-top: 10px;">
-      <el-col :span="16" style="font-size: 36px; padding-left: 10px;">
+      <el-col :span="17" style="font-size: 36px; padding-left: 10px;">
         <img src="~@/assets/bug.png" height="26" @click="openLogs()" /> VT Kounter
       </el-col>
-      <el-col :span="8">
-        <el-switch style="display: block" v-model="configMode" active-color="#6ab42f" inactive-color="#6ab42f" active-text="Setup" inactive-text="Show Mode"></el-switch>
+      <el-col :span="7">
+        <el-switch style="display: block" v-model="showMode" active-color="#6ab42f" active-text="Show" inactive-text="Setup"></el-switch>
       </el-col>
     </el-row>
-    <div style="position: absolute; top: 40px; right: 10px; font-size: 80%;" v-if="!configMode">Size&nbsp;
+    <div style="position: absolute; top: 40px; right: 10px; font-size: 80%;" v-if="showMode">Size&nbsp;
       <el-button-group>
-        <el-button round type="success" size="mini" @click="size -= 25">-</el-button>
+        <el-button round type="success" size="mini" @click="size-=25">-</el-button>
         <el-button round type="success" size="mini" @click="size+=25">+</el-button>
       </el-button-group>
     </div>
-    <div style="font-size: 70%; position: absolute; top: 50px; right: 18px;" v-if="configMode">v{{ version }}</div>
+    <div style="font-size: 70%; position: absolute; top: 50px; right: 18px;" v-if="!showMode">v{{ version }}</div>
 
-    <el-divider content-position="center" v-if="!configMode">Time Remaining</el-divider>
-    <el-row v-if="!configMode" style="font-size: 400%; text-align: center;" class="timer" :style="{ color: warningColour, 'font-size': size + '%'}">
+    <el-divider content-position="center" v-if="showMode">Time Remaining</el-divider>
+    <el-row v-if="showMode" style="font-size: 400%; text-align: center;" class="timer" :style="{ color: warningColour, 'font-size': size + '%'}">
       {{timer}}
     </el-row>
-    <el-row v-if="!configMode && showPercentage" style="padding: 10px; text-align: center;">
+    <el-row v-if="showMode && showPercentage" style="padding: 10px; text-align: center;">
       <el-progress :percentage="percentage" :color="warningColour" :show-text="false"></el-progress>
     </el-row>
-    <el-row v-if="!configMode" style="padding: 10px; text-align: center;">
+    <el-row v-if="showMode" style="padding: 10px; text-align: center;">
       <el-col :span="6" v-if="!config.obs.enabled">&nbsp;</el-col>
       <el-col :span="12">
         <span v-if="vtStatus">{{config.appChoice}} <i class="fas fa-link green"></i> Connected</span>
@@ -36,7 +36,7 @@
       </el-col>
     </el-row>
 
-    <el-form v-if="configMode" label-width="100px" size="small">
+    <el-form v-if="!showMode" label-width="100px" size="small">
     <el-tabs v-model="tab" style="padding-left: 10px; padding-right: 10px;">
 
       <el-tab-pane label="Core Settings" name="core">
@@ -65,7 +65,7 @@
             </el-form-item>
           </el-col>
           <el-col :span="12">
-            <el-form-item label="Show Percentage" label-width="125px">
+            <el-form-item label="Progress Bar" label-width="125px">
               <el-switch v-model="showPercentage"></el-switch>            
             </el-form-item>
           </el-col>
@@ -164,7 +164,7 @@ import { Notification } from 'element-ui'
     data: function () {
       return {
         tab: 'core',
-        configMode: true,
+        showMode: false,
         config: require('../../main/defaultConfig.json'),
         qlabFilters: ['red', 'yellow', 'green', 'blue', 'purple'],
         qlabCueTypes: ['Video', 'Audio', 'Text', 'Camera', 'Mic', 'Group'],
@@ -216,10 +216,10 @@ import { Notification } from 'element-ui'
       configMode: function(newVal) {
         if (newVal) {
           // going into config mode
-          ipcRenderer.send('configMode')
+          ipcRenderer.send('showMode', this.config)
         } else {
           // going into show mode
-          ipcRenderer.send('showMode', this.config)
+          ipcRenderer.send('configMode')
         }
       }
     },

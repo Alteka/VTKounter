@@ -246,7 +246,7 @@ mittiOscServer.on('message', function(msg) {
       clearTimer()
     } else {
       setTimerInSeconds(seconds)
-      setTimerProgress(mittiTimeElapsed/(mittiTimeElapsed+seconds))
+      setTimerProgress(seconds/(mittiTimeElapsed+seconds))
     }
   }
   if (msg[0] == '/mitti/cueTimeElapsed' && config.appChoice == 'Mitti') {
