@@ -2,6 +2,8 @@
 "timerFormat": "H:mm:ss",
 "appChoice": "QLab",
 "noVTText": "No VT",
+"showPercentage": true,
+"showCueName": true,
 "qlab": {
     "ip": "127.0.0.1",
     "filterColour": [],

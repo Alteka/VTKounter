@@ -214,6 +214,9 @@ oscServer.on('message', function (msg) {
     }  else {
       clearTimer()
     }
+    if (matchingCues.length == 1) {
+      updateCueName(data.data[1].listName)
+    }
     if (matchingCues.length == 0) {
       clearTimer()
     }
@@ -248,10 +251,11 @@ mittiOscServer.on('message', function(msg) {
       setTimerInSeconds(seconds)
       setTimerProgress(seconds/(mittiTimeElapsed+seconds))
     }
-  }
-  if (msg[0] == '/mitti/cueTimeElapsed' && config.appChoice == 'Mitti') {
+  } else if (msg[0] == '/mitti/cueTimeElapsed' && config.appChoice == 'Mitti') {
     let rem = msg[1].split(':')
     mittiTimeElapsed = parseInt(rem[0]*60*-60) + parseInt((rem[1]*60)) + parseInt(rem[2])
+  } else if (msg[0] == '/mitti/currentCueName' && config.appChoice == 'Mitti') {
+    updateCueName(msg[1])
   }
 })
 
@@ -275,6 +279,8 @@ function clearTimer() {
   updateTimer(config.noVTText)
   controlWindow.webContents.send('warning', false)
   controlWindow.webContents.send('percentage', 0)
+  controlWindow.webContents.send('cueName', '')
+  cueName = ''
 }
 
 let obsPlatformIsMac = false;
@@ -307,7 +313,14 @@ function updateTimer(time = '-') {
   }
 }
 
-
+let cueName = ''
+function updateCueName(name) {
+  if (name != cueName) {
+    controlWindow.webContents.send('cueName', name)
+    log.info('Cue Name: ', name)
+    cueName = name
+  }
+}
 
 // AUTO UPDATE
 setTimeout(function() {

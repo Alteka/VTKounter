@@ -21,8 +21,11 @@
     <el-row v-if="showMode" style="font-size: 400%; text-align: center;" class="timer" :style="{ color: warningColour, 'font-size': size + '%'}">
       {{timer}}
     </el-row>
-    <el-row v-if="showMode && showPercentage" style="padding: 10px; text-align: center;">
+    <el-row v-if="showMode && config.showPercentage" style="padding: 10px; text-align: center;">
       <el-progress :percentage="percentage" :color="warningColour" :show-text="false"></el-progress>
+    </el-row>
+    <el-row v-if="showMode && config.showCueName" style="padding: 10px; text-align: center;">
+      {{ cueName }}
     </el-row>
     <el-row v-if="showMode" style="padding: 10px; text-align: center;">
       <el-col :span="6" v-if="!config.obs.enabled">&nbsp;</el-col>
@@ -57,18 +60,23 @@
         </el-row>
         <el-row>
           <el-col :span="12">
+            <el-form-item label="Show Progress" label-width="125px">
+              <el-switch v-model="config.showPercentage"></el-switch>            
+            </el-form-item>
+          </el-col>
+          <el-col :span="12">
+            <el-form-item label="Show VT Name" label-width="125px">
+              <el-switch v-model="config.showCueName"></el-switch>            
+            </el-form-item>
+          </el-col>
+        </el-row>
+        <el-row>
             <el-form-item label="App Choice" label-width="125px">
               <el-radio-group v-model="config.appChoice" size="small">
                 <el-radio-button label="QLab"></el-radio-button>
                 <el-radio-button label="Mitti"></el-radio-button>
               </el-radio-group>
-            </el-form-item>
-          </el-col>
-          <el-col :span="12">
-            <el-form-item label="Progress Bar" label-width="125px">
-              <el-switch v-model="showPercentage"></el-switch>            
-            </el-form-item>
-          </el-col>
+            </el-form-item>          
         </el-row>
         </el-form>
       </el-tab-pane>
@@ -175,7 +183,7 @@ import { Notification } from 'element-ui'
         obsStatus: false,
         obsMessage: '',
         percentage: 0,
-        showPercentage: true,
+        cueName: '',
         timer: 'No VT',
         warning: false,
         darkMode: false,
@@ -237,6 +245,9 @@ import { Notification } from 'element-ui'
       })
       ipcRenderer.on('warning', function(event, val) {
         vm.warning = val
+      })
+      ipcRenderer.on('cueName', function(event, val) {
+        vm.cueName = val
       })
 
       ipcRenderer.on('config', function(event, cfg) {
