@@ -153,7 +153,7 @@
           </el-form-item>
         </el-row>
         <el-row style="text-align: center;" v-if="config.obs.enabled">
-          OBS Needs to have the WebSocket Server enabled.<br />The socket server must have a password set. <br />
+          <p>OBS Needs to have the WebSocket Server enabled.<br />The socket server must have a password set. </p>
         </el-row>
         </el-form>
       </el-tab-pane>
