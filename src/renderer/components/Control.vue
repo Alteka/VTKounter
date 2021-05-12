@@ -259,7 +259,7 @@ import { Notification } from 'element-ui'
 }
 @font-face {
   font-family: SansationMono;
-  src: url("~@/assets/SansationMonoNumbers.ttf");
+  src: url("~@/assets/SansationMonoNumbers2.ttf");
 }
 .green {
   color: #6ab42f;
