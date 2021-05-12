@@ -18,7 +18,7 @@
     <div style="font-size: 70%; position: absolute; top: 50px; right: 18px;" v-if="!showMode">v{{ version }}</div>
 
     <el-divider content-position="center" v-if="showMode">Time Remaining</el-divider>
-    <el-row v-if="showMode" style="font-family: SansationMono font-size: 400%; text-align: center;" class="timer" :style="{ color: warningColour, 'font-size': size + '%'}">
+    <el-row v-if="showMode" style="font-family: SansationMono; font-size: 400%; text-align: center;" class="timer" :style="{ color: warningColour, 'font-size': size + '%'}">
       {{timer}}
     </el-row>
     <el-row v-if="showMode && showPercentage" style="padding: 10px; text-align: center;">
@@ -213,7 +213,7 @@ import { Notification } from 'element-ui'
       ipcRenderer.send('getConfig')
     },
     watch: {
-      configMode: function(newVal) {
+      showMode: function(newVal) {
         if (newVal) {
           // going into config mode
           ipcRenderer.send('showMode', this.config)
