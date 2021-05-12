@@ -277,6 +277,8 @@ function clearTimer() {
   controlWindow.webContents.send('percentage', 0)
 }
 
+let obsPlatformIsMac = false;
+
 function updateTimer(time = '-') {
   if (showMode) {
     if (time != lastSet) {
@@ -284,14 +286,20 @@ function updateTimer(time = '-') {
 
       if (ConnectedToOBS) {
         var type = 'SetTextGDIPlusProperties'
-        if (config.obs.platformIsMac) {
+        if (obsPlatformIsMac) {
           type = 'SetTextFreetype2Properties'
         }
         obs.send(type, {
             'source': config.obs.source,
             'text': time
         }).catch(err => { // Promise convention dicates you have a catch on every chain.
-            console.log(err);
+            if (err.error == 'not a text gdi plus source') {
+              obsPlatformIsMac = true;
+              log.info('OBS is running on a mac, setting source type to Freetype Text')
+            } else {
+              obsPlatformIsMac = false;
+              console.log(err);
+            }
         })
       }
       lastSet = time

@@ -15,7 +15,6 @@
     "port": "4444",
     "password": "",
     "source": "VTKounter",
-    "platformIsMac": false,
     "enabled": false
 }
 }

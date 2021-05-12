@@ -136,16 +136,9 @@
           </el-col>
         </el-row>
         <el-row v-if="config.obs.enabled">
-          <el-col :span="12">
             <el-form-item label="Password" prop="password">
               <el-input v-model="config.obs.password"></el-input>
             </el-form-item>
-          </el-col>
-          <el-col :span="12">
-            <el-form-item label="OBS is on a Mac" label-width="140px">
-              <el-switch v-model="config.obs.platformIsMac"></el-switch>
-            </el-form-item>
-          </el-col>
         </el-row>
         <el-row v-if="config.obs.enabled">
           <el-form-item label="Name of text source to update" label-width="240px" prop="name">
