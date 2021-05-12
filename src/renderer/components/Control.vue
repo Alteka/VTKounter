@@ -35,11 +35,11 @@
         <span v-if="!obsStatus">OBS <i class="fas fa-link"></i> Not Connected: {{obsMessage}}</span>
       </el-col>
     </el-row>
-
-    <el-form v-if="!showMode" label-width="100px" size="small">
-    <el-tabs v-model="tab" style="padding-left: 10px; padding-right: 10px;">
+    
+    <el-tabs v-model="tab" style="padding-left: 10px; padding-right: 10px;" v-if="!showMode">
 
       <el-tab-pane label="Core Settings" name="core">
+        <el-form label-width="100px" size="small">
          <el-row >
           <el-col :span="18">
             <el-form-item label="Timer Format" label-width="125px">
@@ -70,9 +70,11 @@
             </el-form-item>
           </el-col>
         </el-row>
+        </el-form>
       </el-tab-pane>
 
       <el-tab-pane label="QLab" name="qlab" v-if="config.appChoice=='QLab'">
+        <el-form label-width="100px" size="small">
         <el-row>
           <el-col>
             <el-form-item label="IP Address">
@@ -94,18 +96,26 @@
             </el-checkbox-group>
           </el-form-item>
         </el-row>
+        </el-form>
       </el-tab-pane>
+
       <el-tab-pane label="Mitti" name="mitti" v-if="config.appChoice=='Mitti'">
+        <el-form label-width="100px" size="small">
         <el-row>
           <el-form-item label="IP Address">
             <el-input v-model="config.mitti.ip"></el-input>
           </el-form-item>
         </el-row>
         <el-row style="text-align: center;">
-          Feedback port must be set to 5151
+          Feedback port must be set to 5151<br />
+          <p style="font-size: 80%">In Mitti preferences, select 'OSC/UDP Controls' in the left side-bar.<br />
+          Set 'Feedback' to Custom. Set the port to 5151.</p>
         </el-row>
+        </el-form>
       </el-tab-pane>
+
       <el-tab-pane label="OBS" name="fourth">
+        <el-form label-width="100px" size="small" :rules="obsValidationRules" ref="obsForm" :model="config.obs">
         <el-row>
           <el-col :span="24">
             <el-form-item label="Enable OBS Output" label-width="160px">
@@ -115,19 +125,19 @@
         </el-row>
         <el-row v-if="config.obs.enabled">
           <el-col :span="12">
-            <el-form-item label="IP Address">
+            <el-form-item label="IP Address" prop="ip">
               <el-input v-model="config.obs.ip"></el-input>
             </el-form-item>
           </el-col>
           <el-col :span="12">
-            <el-form-item label="Port">
+            <el-form-item label="Port" prop="port">
               <el-input v-model="config.obs.port"></el-input>
             </el-form-item>
           </el-col>
         </el-row>
         <el-row v-if="config.obs.enabled">
           <el-col :span="12">
-            <el-form-item label="Password">
+            <el-form-item label="Password" prop="password">
               <el-input v-model="config.obs.password"></el-input>
             </el-form-item>
           </el-col>
@@ -138,16 +148,16 @@
           </el-col>
         </el-row>
         <el-row v-if="config.obs.enabled">
-          <el-form-item label="Name of text source to update" label-width="240px">
+          <el-form-item label="Name of text source to update" label-width="240px" prop="name">
             <el-input v-model="config.obs.source"></el-input>
           </el-form-item>
         </el-row>
         <el-row style="text-align: center;" v-if="config.obs.enabled">
-          OBS Needs to have the WebSocket Server enabled.<br />The socket server must have a password set. 
+          OBS Needs to have the WebSocket Server enabled.<br />The socket server must have a password set. <br />
         </el-row>
+        </el-form>
       </el-tab-pane>
     </el-tabs>
-    </el-form>
 
     <resize-observer @notify="handleResize" />
   </div>
@@ -177,7 +187,21 @@ import { Notification } from 'element-ui'
         warning: false,
         darkMode: false,
         size: 400,
-        version: require('./../../../package.json').version
+        version: require('./../../../package.json').version,
+        obsValidationRules: {
+          password: [
+            { required: true, message: 'This is required', trigger: 'blur' }
+          ],
+          ip: [
+            { required: true, message: 'This is required', trigger: 'blur' }
+          ],
+          port: [
+            { required: true, message: 'This is required', trigger: 'blur' }
+          ],
+          name: [
+            { required: true, message: 'This is required', trigger: 'blur' }
+          ]
+        }
       }
     },
     mounted: function(){
