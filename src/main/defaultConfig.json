@@ -16,6 +16,6 @@
     "password": "",
     "source": "VTKounter",
     "platformIsMac": false,
-    "enabled": true
+    "enabled": false
 }
 }

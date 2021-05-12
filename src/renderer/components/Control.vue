@@ -39,10 +39,10 @@
     <el-tabs v-model="tab" style="padding-left: 10px; padding-right: 10px;" v-if="!showMode">
 
       <el-tab-pane label="Core Settings" name="core">
-        <el-form label-width="100px" size="small">
+        <el-form label-width="100px" size="small" :rules="coreValidationRules" ref="coreForm" :model="config">
          <el-row >
           <el-col :span="18">
-            <el-form-item label="Timer Format" label-width="125px">
+            <el-form-item label="Timer Format" label-width="125px" prop="timerFormat">
               <el-input v-model="config.timerFormat"></el-input>
             </el-form-item>
           </el-col>
@@ -74,10 +74,10 @@
       </el-tab-pane>
 
       <el-tab-pane label="QLab" name="qlab" v-if="config.appChoice=='QLab'">
-        <el-form label-width="100px" size="small">
+        <el-form label-width="100px" size="small" :rules="qlabValidationRules" ref="qlabForm" :model="config.qlab">
         <el-row>
           <el-col>
-            <el-form-item label="IP Address">
+            <el-form-item label="IP Address" prop="ip">
               <el-input v-model="config.qlab.ip"></el-input>
             </el-form-item>
           </el-col>
@@ -100,9 +100,9 @@
       </el-tab-pane>
 
       <el-tab-pane label="Mitti" name="mitti" v-if="config.appChoice=='Mitti'">
-        <el-form label-width="100px" size="small">
+        <el-form label-width="100px" size="small" :rules="mittiValidationRules" ref="mittiForm" :model="config.mitti">
         <el-row>
-          <el-form-item label="IP Address">
+          <el-form-item label="IP Address" prop="ip">
             <el-input v-model="config.mitti.ip"></el-input>
           </el-form-item>
         </el-row>
@@ -188,18 +188,33 @@ import { Notification } from 'element-ui'
         darkMode: false,
         size: 400,
         version: require('./../../../package.json').version,
+        coreValidationRules: {
+          timerFormat: [
+            { required: true, message: 'The app is almost pointless if this is empty'}
+          ]
+        },
         obsValidationRules: {
           password: [
-            { required: true, message: 'This is required', trigger: 'blur' }
+            { required: true, message: 'A password is required', trigger: 'blur' }
           ],
           ip: [
-            { required: true, message: 'This is required', trigger: 'blur' }
+            { required: true, message: 'The IP Address is required', trigger: 'blur' }
           ],
           port: [
-            { required: true, message: 'This is required', trigger: 'blur' }
+            { required: true, message: 'The port is required', trigger: 'blur' }
           ],
           name: [
-            { required: true, message: 'This is required', trigger: 'blur' }
+            { required: true, message: 'This source name is required', trigger: 'blur' }
+          ]
+        },
+        mittiValidationRules: {
+          ip: [
+            { required: true, message: 'The IP Address is required', trigger: 'blur' }
+          ]
+        },
+        qlabValidationRules: {
+          ip: [
+            { required: true, message: 'The IP Address is required', trigger: 'blur' }
           ]
         }
       }
@@ -237,7 +252,7 @@ import { Notification } from 'element-ui'
       ipcRenderer.send('getConfig')
     },
     watch: {
-      configMode: function(newVal) {
+      showMode: function(newVal) {
         if (newVal) {
           // going into config mode
           ipcRenderer.send('showMode', this.config)
