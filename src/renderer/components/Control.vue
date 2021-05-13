@@ -31,11 +31,11 @@
       <el-col :span="6" v-if="!config.obs.enabled">&nbsp;</el-col>
       <el-col :span="12">
         <span v-if="vtStatus">{{config.appChoice}} <i class="fas fa-link green"></i> Connected</span>
-        <span v-if="!vtStatus">{{config.appChoice}} <i class="fas fa-link"></i> Not Connected</span>
+        <span v-if="!vtStatus">{{config.appChoice}} <i class="fas fa-link red"></i> Not Connected</span>
       </el-col>
       <el-col :span="12" v-if="config.obs.enabled">
         <span v-if="obsStatus">OBS <i class="fas fa-link green"></i> Connected</span>
-        <span v-if="!obsStatus">OBS <i class="fas fa-link"></i> Not Connected: {{obsMessage}}</span>
+        <span v-if="!obsStatus">OBS <i class="fas fa-link red"></i> Not Connected: {{obsMessage}}</span>
       </el-col>
     </el-row>
     
@@ -303,6 +303,9 @@ import { Notification } from 'element-ui'
 .green {
   color: #6ab42f;
   margin-right: 5px;
+}
+.red {
+  color: #ff3333;
 }
 .timer {
   font-weight: bold;
