@@ -1,17 +1,17 @@
 # Alteka VT Kounter
-
-A simple cross-platform utility for Video Engineers, to nicely show you the Time Remaining of your current VT playout. It can then route that information to a text source in OBS.
-
 [![License: GPL v3](https://img.shields.io/badge/License-GPLv3-blue.svg)](https://www.gnu.org/licenses/gpl-3.0)
 [![GitHub release](https://img.shields.io/github/release/Alteka/VTKounter.svg)](https://GitHub.com/Alteka/VTKounter/releases/)
 [![GitHub issues](https://img.shields.io/github/issues/Alteka/VTKounter.svg)](https://GitHub.com/Alteka/VTKounter/issues/)
 
 ## About
-At the moment we're aiming to support QLab and Mitti, but we could add more support in the future. 
+VT Kounter is designed to help video operators see a nice, large, clear countdown timer for the current video playout. It can also send that timer information to OBS - this is useful for remote productions where you might use OBS to create a 'presenter return' style layout.
 
+We currently support QLab and Mitti, as these are our preferred options, but we're looking to add more. If you have specific requests do have a look at the issues section on GitHub.
 
-#### Design
+## Download
+Get the latest release here: [Latest Release](https://github.com/Alteka/VTKounter/releases/)
 
+### Design
 The app is based around Electron to create and manage the windows. The content is heavily Vue.js driven.
 
 #### Build Setup
