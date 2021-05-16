@@ -103,6 +103,10 @@ ipcMain.on('getConfig', (event) => {
   controlWindow.webContents.send('darkMode', nativeTheme.shouldUseDarkColors)
 })
 
+ipcMain.on('factoryReset', () => {
+  controlWindow.webContents.send('config', getDefaultConfig())
+})
+
 
 //========================//
 //       VT Kounter       //

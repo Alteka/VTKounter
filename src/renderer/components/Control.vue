@@ -18,7 +18,7 @@
     <div style="font-size: 70%; position: absolute; top: 50px; right: 18px;" v-if="!showMode">v{{ version }}</div>
 
     <el-divider content-position="center" v-if="showMode">Time Remaining</el-divider>
-    <el-row v-if="showMode" style="font-family: SansationMono; font-size: 400%; text-align: center;" class="timer" :style="{ color: warningColour, 'font-size': size + '%'}">
+    <el-row v-if="showMode" style="font-family: SansationMono; font-size: 400%; text-align: center;" :style="{ color: warningColour, 'font-size': size + '%'}">
       {{timer}}
     </el-row>
     <el-row v-if="showMode && config.showPercentage" style="padding: 10px; text-align: center;">
@@ -40,123 +40,17 @@
     </el-row>
     
     <el-tabs v-model="tab" style="padding-left: 10px; padding-right: 10px;" v-if="!showMode">
-
       <el-tab-pane label="Core Settings" name="core">
-        <el-form label-width="100px" size="small" :rules="coreValidationRules" ref="coreForm" :model="config">
-         <el-row >
-          <el-col :span="18">
-            <el-form-item label="Timer Format" label-width="125px" prop="timerFormat">
-              <el-input v-model="config.timerFormat"></el-input>
-            </el-form-item>
-          </el-col>
-          <el-col :span="6" style="text-align: right;">
-            <el-button round size="small" @click="factoryReset" type="info"><i class="fas fa-undo green"></i> Full Reset</el-button>
-          </el-col>
-        </el-row>
-        <el-row>
-            <el-form-item label="Text for no VT" label-width="125px">
-              <el-input v-model="config.noVTText"></el-input>
-            </el-form-item>
-        </el-row>
-        <el-row>
-          <el-col :span="12">
-            <el-form-item label="Show Progress" label-width="125px">
-              <el-switch v-model="config.showPercentage"></el-switch>            
-            </el-form-item>
-          </el-col>
-          <el-col :span="12">
-            <el-form-item label="Show VT Name" label-width="125px">
-              <el-switch v-model="config.showCueName"></el-switch>            
-            </el-form-item>
-          </el-col>
-        </el-row>
-        <el-row>
-            <el-form-item label="App Choice" label-width="125px">
-              <el-radio-group v-model="config.appChoice" size="small">
-                <el-radio-button label="QLab"></el-radio-button>
-                <el-radio-button label="Mitti"></el-radio-button>
-              </el-radio-group>
-            </el-form-item>          
-        </el-row>
-        </el-form>
+        <core-controls :config="config"></core-controls>
       </el-tab-pane>
-
       <el-tab-pane label="QLab" name="qlab" v-if="config.appChoice=='QLab'">
-        <el-form label-width="100px" size="small" :rules="qlabValidationRules" ref="qlabForm" :model="config.qlab">
-        <el-row>
-          <el-col>
-            <el-form-item label="IP Address" prop="ip">
-              <el-input v-model="config.qlab.ip"></el-input>
-            </el-form-item>
-          </el-col>
-        </el-row>
-        <el-row>
-          <el-form-item label="Filter by Colour" label-width="125px">
-            <el-checkbox-group v-model="config.qlab.filterColour" size="small">
-              <el-checkbox-button v-for="filter in qlabFilters" :label="filter" :key="filter">{{filter}}</el-checkbox-button>
-            </el-checkbox-group>
-          </el-form-item>
-        </el-row>
-        <el-row>
-          <el-form-item label="Filter by Type" label-width="125px">
-            <el-checkbox-group v-model="config.qlab.filterCueType" size="small">
-              <el-checkbox-button v-for="filter in qlabCueTypes" :label="filter" :key="filter">{{filter}}</el-checkbox-button>
-            </el-checkbox-group>
-          </el-form-item>
-        </el-row>
-        </el-form>
+        <qlab-controls :qlab="config.qlab"></qlab-controls>
       </el-tab-pane>
-
       <el-tab-pane label="Mitti" name="mitti" v-if="config.appChoice=='Mitti'">
-        <el-form label-width="100px" size="small" :rules="mittiValidationRules" ref="mittiForm" :model="config.mitti">
-        <el-row>
-          <el-form-item label="IP Address" prop="ip">
-            <el-input v-model="config.mitti.ip"></el-input>
-          </el-form-item>
-        </el-row>
-        <el-row style="text-align: center;">
-          Feedback port must be set to 5151<br />
-          <p style="font-size: 80%">In Mitti preferences, select 'OSC/UDP Controls' in the left side-bar.<br />
-          Set 'Feedback' to Custom. Set the port to 5151.</p>
-        </el-row>
-        </el-form>
+        <mitti-controls :mitti="config.mitti"></mitti-controls>
       </el-tab-pane>
-
-      <el-tab-pane label="OBS" name="fourth">
-        <el-form label-width="100px" size="small" :rules="obsValidationRules" ref="obsForm" :model="config.obs">
-        <el-row>
-          <el-col :span="24">
-            <el-form-item label="Enable OBS Output" label-width="160px">
-              <el-switch v-model="config.obs.enabled"></el-switch>
-            </el-form-item>
-          </el-col>
-        </el-row>
-        <el-row v-if="config.obs.enabled">
-          <el-col :span="12">
-            <el-form-item label="IP Address" prop="ip">
-              <el-input v-model="config.obs.ip"></el-input>
-            </el-form-item>
-          </el-col>
-          <el-col :span="12">
-            <el-form-item label="Port" prop="port">
-              <el-input v-model="config.obs.port"></el-input>
-            </el-form-item>
-          </el-col>
-        </el-row>
-        <el-row v-if="config.obs.enabled">
-            <el-form-item label="Password" prop="password">
-              <el-input v-model="config.obs.password"></el-input>
-            </el-form-item>
-        </el-row>
-        <el-row v-if="config.obs.enabled">
-          <el-form-item label="Name of text source to update" label-width="240px" prop="name">
-            <el-input v-model="config.obs.source"></el-input>
-          </el-form-item>
-        </el-row>
-        <el-row style="text-align: center;" v-if="config.obs.enabled">
-          <p>OBS Needs to have the WebSocket Server enabled.<br />The socket server must have a password set. </p>
-        </el-row>
-        </el-form>
+      <el-tab-pane label="OBS" name="obs">
+        <obs-controls :obs="config.obs"></obs-controls>
       </el-tab-pane>
     </el-tabs>
 
@@ -166,19 +60,19 @@
 
 <script>
 const { ipcRenderer } = require('electron')
-import Device from './Control/Device.vue'
-import { Notification } from 'element-ui'
+import MittiControls from './Control/MittiControls'
+import ObsControls from './Control/ObsControls'
+import QlabControls from './Control/QlabControls'
+import CoreControls from './Control/CoreControls'
 
   export default {
     name: 'control',
-    components: { Device },
+    components: { ObsControls, MittiControls, QlabControls, CoreControls },
     data: function () {
       return {
         tab: 'core',
         showMode: false,
         config: require('../../main/defaultConfig.json'),
-        qlabFilters: ['red', 'yellow', 'green', 'blue', 'purple'],
-        qlabCueTypes: ['Video', 'Audio', 'Text', 'Camera', 'Mic', 'Group'],
         vtStatus: false,
         obsStatus: false,
         obsMessage: '',
@@ -188,36 +82,7 @@ import { Notification } from 'element-ui'
         warning: false,
         darkMode: false,
         size: 400,
-        version: require('./../../../package.json').version,
-        coreValidationRules: {
-          timerFormat: [
-            { required: true, message: 'The app is almost pointless if this is empty'}
-          ]
-        },
-        obsValidationRules: {
-          password: [
-            { required: true, message: 'A password is required', trigger: 'blur' }
-          ],
-          ip: [
-            { required: true, message: 'The IP Address is required', trigger: 'blur' }
-          ],
-          port: [
-            { required: true, message: 'The port is required', trigger: 'blur' }
-          ],
-          name: [
-            { required: true, message: 'This source name is required', trigger: 'blur' }
-          ]
-        },
-        mittiValidationRules: {
-          ip: [
-            { required: true, message: 'The IP Address is required', trigger: 'blur' }
-          ]
-        },
-        qlabValidationRules: {
-          ip: [
-            { required: true, message: 'The IP Address is required', trigger: 'blur' }
-          ]
-        }
+        version: require('./../../../package.json').version
       }
     },
     mounted: function(){
@@ -272,9 +137,6 @@ import { Notification } from 'element-ui'
       },
       openLogs: function() {
         ipcRenderer.send('openLogs')
-      },
-      factoryReset: function() {
-        this.config = require('../../main/defaultConfig.json')
       }
     },
     computed: {
@@ -311,14 +173,7 @@ import { Notification } from 'element-ui'
 .red {
   color: #ff3333;
 }
-.timer {
-  font-weight: bold;
-  color: black;
-}
 
-.darkMode .timer {
-  color: white;
-}
 .darkMode {
   background: #222;
   color: #aaa;
@@ -334,9 +189,6 @@ import { Notification } from 'element-ui'
   color: #aaa;
 }
 .darkMode label {
-  color: #bbb;
-}
-.darkMode .el-progress__text {
   color: #bbb;
 }
 .darkMode .el-tabs__item {
@@ -358,9 +210,6 @@ import { Notification } from 'element-ui'
   border-right: 1px solid #111;
   border-left: 1px solid #111;
 }
-.darkMode .el-color-picker__trigger {
-  border: 1px solid #666;
-}
 .darkMode .el-radio-button__inner {
   background: #3d3d3d;
   color: #ddd;
@@ -378,19 +227,6 @@ import { Notification } from 'element-ui'
   background: #3d3d3d;
   color: #ddd;
   border: 1px solid #666;
-}
-.darkMode .el-input-number__increase {
-  background: #292929;
-  color: #ddd;
-}
-.darkMode .el-input-number__decrease {
-  background: #292929;
-  color: #ddd;
-}
-.darkMode .el-drawer {
-  background: #292929;
-  border-top: 3px solid #6ab42f;
-  color: #ddd;
 }
 .darkMode .el-checkbox-button__inner {
   background: none;
