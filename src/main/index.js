@@ -132,6 +132,7 @@ setInterval(function() {
 
 ipcMain.on('configMode', (event) => {
   // stop all services and disconnect
+  log.info('Going into config mode')
   obs.disconnect()
   showMode = false
   if (config.appChoice == 'QLab') {
@@ -148,6 +149,7 @@ ipcMain.on('configMode', (event) => {
 
 ipcMain.on('showMode', (event, cfg) => {
   // start connections based on config
+  log.info('Going into show mode with config: ', cfg)
   config = cfg;
   if (config.appChoice == 'QLab') {
     qlab = new Client(config.qlab.ip, 53000)

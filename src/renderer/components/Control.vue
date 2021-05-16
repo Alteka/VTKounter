@@ -18,7 +18,7 @@
     <div style="font-size: 70%; position: absolute; top: 50px; right: 18px;" v-if="!showMode">v{{ version }}</div>
 
     <el-divider content-position="center" v-if="showMode">Time Remaining</el-divider>
-    <el-row v-if="showMode" style="font-size: 400%; text-align: center;" class="timer" :style="{ color: warningColour, 'font-size': size + '%'}">
+    <el-row v-if="showMode" style="font-family: SansationMono; font-size: 400%; text-align: center;" class="timer" :style="{ color: warningColour, 'font-size': size + '%'}">
       {{timer}}
     </el-row>
     <el-row v-if="showMode && config.showPercentage" style="padding: 10px; text-align: center;">
@@ -299,6 +299,10 @@ import { Notification } from 'element-ui'
 @font-face {
   font-family: Sansation;
   src: url("~@/assets/Sansation-Regular.ttf");
+}
+@font-face {
+  font-family: SansationMono;
+  src: url("~@/assets/SansationMonoNumbers2.ttf");
 }
 .green {
   color: #6ab42f;
