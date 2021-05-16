@@ -19,11 +19,11 @@ const OBSWebSocket = require('obs-websocket-js');
 const obs = new OBSWebSocket();
 
 var oscServer = new Server(53001, '0.0.0.0', () => {
-  console.log('OSC Server is listening');
+  log.info('QLab OSC Server is listening on port 53001');
 })
 
-var mittiOscServer = new Server(5151, '0.0.0.0', () => {
-  console.log('Mitti OSC Server is listening');
+var mittiOscServer = new Server(1234, '0.0.0.0', () => {
+  log.info('Mitti OSC Server is listening on port 1234');
 })
 
 if (process.env.NODE_ENV !== 'development') {
@@ -331,7 +331,7 @@ function updateTimer(time = '-') {
               log.info('OBS is running on a mac, setting source type to Freetype Text')
             } else {
               obsPlatformIsMac = false;
-              console.log(err);
+              log.error(err);
             }
         })
       }
@@ -378,13 +378,13 @@ axios.get('https://api.github.com/repos/alteka/vtkounter/releases/latest')
       });
     } else if (status == 0) {
       // running current/latest version.
-      log.info('Running latest version')
+      log.info('Auto Update check -- Running latest version: ' + current)
     } else if (status == -1) {
-      log.info('Running version newer than release')
+      log.info('Auto Update check -- Running version newer (' + current + ') than release: ' + response.data.tag_name)
     }
   })
   .catch(function (error) {
-    console.log(error);
+    log.error(error);
   })
 }, 3000)
 

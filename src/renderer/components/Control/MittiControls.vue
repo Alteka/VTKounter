@@ -6,9 +6,9 @@
       </el-form-item>
     </el-row>
     <el-row style="text-align: center;">
-      Feedback port must be set to 5151<br />
+      Feedback port must be set to 1234<br />
       <p style="font-size: 80%">In Mitti preferences, select 'OSC/UDP Controls' in the left side-bar.<br />
-      Set 'Feedback' to Custom. Set the port to 5151.</p>
+      Set 'Feedback' to Custom. Set the port to 1234.</p>
     </el-row>
   </el-form>
 </template>
