@@ -52,6 +52,7 @@
     "image-size": "^0.9.3",
     "moment": "^2.29.1",
     "node-osc": "^5.2.3",
+    "nucleus-nodejs": "^3.0.8",
     "obs-websocket-js": "^4.0.2",
     "say": "^0.16.0",
     "vue": "^2.6.12",

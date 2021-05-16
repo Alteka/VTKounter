@@ -7,6 +7,7 @@ const { exec } = require('child_process')
 const axios = require('axios')
 var compareVersions = require('compare-versions')
 const Store = require('electron-store')
+const Nucleus = require('nucleus-nodejs')
 
 const store = new Store()
 var config = {}
@@ -72,6 +73,17 @@ app.on('ready', function() {
   createWindow()
 
   config = store.get('VTKounterConfig', getDefaultConfig())
+
+  if (!store.has('VTKounterInstallID')) {
+    let newId = UUID()
+    log.info('First Runtime and created Install ID: ' + newId)
+    store.set('VTKounterInstallID', newId)
+  }
+  Nucleus.setUserId(store.get('VTKounterInstallID'))
+  log.info('Install ID: ' + store.get('VTKounterInstallID'))
+  Nucleus.init('60a11e942bb3f447cc2a48a0', { disableInDev: false })
+  Nucleus.appStarted()
+
 })
 
 app.on('activate', () => {
@@ -96,6 +108,7 @@ ipcMain.on('controlResize', (event, w, h) => {
 ipcMain.on('openLogs', (event, w, h) => {
   const path = log.transports.file.findLogPath()
   shell.showItemInFolder(path)
+  Nucleus.track('Open Logs')
 })
 
 ipcMain.on('getConfig', (event) => {
@@ -105,6 +118,7 @@ ipcMain.on('getConfig', (event) => {
 
 ipcMain.on('factoryReset', () => {
   controlWindow.webContents.send('config', getDefaultConfig())
+  Nucleus.track('Factory Reset')
 })
 
 
@@ -171,6 +185,13 @@ ipcMain.on('showMode', (event, cfg) => {
   showMode = true
   store.set('VTKounterConfig', config)
   clearTimer()
+
+  Nucleus.track('Show Mode', {
+    app: config.appChoice,
+    showPercentage: config.showPercentage,
+    showCueName: config.showCueName,
+    obs: config.obs.enabled
+  })
 })
 
 function obsConnect() {
@@ -366,3 +387,10 @@ axios.get('https://api.github.com/repos/alteka/vtkounter/releases/latest')
     console.log(error);
   })
 }, 3000)
+
+function UUID() {
+  return 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, function(c) {
+    var r = Math.random() * 16 | 0, v = c == 'x' ? r : (r & 0x3 | 0x8);
+    return v.toString(16);
+  })
+}
