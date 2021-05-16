@@ -9,7 +9,7 @@ VT Kounter is designed to help video operators see a nice, large, clear countdow
 We currently support QLab and Mitti, as these are our preferred options, but we're looking to add more. If you have specific requests do have a look at the issues section on GitHub.
 
 ## Download
-Get the latest release here: [Latest Release](https://github.com/Alteka/VTKounter/releases/)
+Get the latest release here: [Latest Release](https://github.com/Alteka/VTKounter/releases/latest)
 
 ### Design
 The app is based around Electron to create and manage the windows. The content is heavily Vue.js driven.
