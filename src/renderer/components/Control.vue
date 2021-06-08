@@ -43,12 +43,11 @@
       <el-tab-pane label="Core Settings" name="core">
         <core-controls :config="config"></core-controls>
       </el-tab-pane>
-      <el-tab-pane label="QLab" name="qlab" v-if="config.appChoice=='QLab'">
-        <qlab-controls :qlab="config.qlab"></qlab-controls>
+
+      <el-tab-pane v-for="(app, name) in config.apps" :label="app.name" :key="app.name" v-if="config.appChoice==app.name">
+        <app-controls :app="app"></app-controls>
       </el-tab-pane>
-      <el-tab-pane label="Mitti" name="mitti" v-if="config.appChoice=='Mitti'">
-        <mitti-controls :mitti="config.mitti"></mitti-controls>
-      </el-tab-pane>
+
       <el-tab-pane label="OBS" name="obs">
         <obs-controls :obs="config.obs"></obs-controls>
       </el-tab-pane>
@@ -60,14 +59,13 @@
 
 <script>
 const { ipcRenderer } = require('electron')
-import MittiControls from './Control/MittiControls'
 import ObsControls from './Control/ObsControls'
-import QlabControls from './Control/QlabControls'
+import AppControls from './Control/AppControls'
 import CoreControls from './Control/CoreControls'
 
   export default {
     name: 'control',
-    components: { ObsControls, MittiControls, QlabControls, CoreControls },
+    components: { ObsControls, AppControls, CoreControls },
     data: function () {
       return {
         tab: 'core',

@@ -28,6 +28,7 @@ var mittiOscServer = new Server(1234, '0.0.0.0', () => {
 
 if (process.env.NODE_ENV !== 'development') {
   global.__static = require('path').join(__dirname, '/static').replace(/\\/g, '\\\\')
+  store.clear()
   log.info('Running in production mode')
 }
 
@@ -170,11 +171,11 @@ ipcMain.on('showMode', (event, cfg) => {
   log.info('Going into show mode with config: ', cfg)
   config = cfg;
   if (config.appChoice == 'QLab') {
-    qlab = new Client(config.qlab.ip, 53000)
+    qlab = new Client(config.apps.qlab.ip, 53000)
   }
 
   if (config.appChoice == 'Mitti') {
-    mitti = new Client(config.mitti.ip, 51000)
+    mitti = new Client(config.apps.mitti.ip, 51000)
     mitti.send('/mitti/resendOSCFeedback', 200, () => { })
   }
 
@@ -232,8 +233,8 @@ oscServer.on('message', function (msg) {
     matchingCues = [];
     if (data.data.length > 1) {
         for (var i = 1; i < data.data.length; i++) {
-            if (config.qlab.filterColour.includes(data.data[i].colorName) || config.qlab.filterColour.length == 0) {
-              if (config.qlab.filterCueType.includes(data.data[i].type) || config.qlab.filterCueType.length == 0) {
+            if (config.apps.qlab.filterColour.includes(data.data[i].colorName) || config.apps.qlab.filterColour.length == 0) {
+              if (config.apps.qlab.filterCueType.includes(data.data[i].type) || config.apps.qlab.filterCueType.length == 0) {
                 matchingCues.push(data.data[i].uniqueID)
               }                
             }

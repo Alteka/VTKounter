@@ -1,22 +1,26 @@
 {
-"timerFormat": "H:mm:ss",
-"appChoice": "QLab",
-"noVTText": "No VT",
-"showPercentage": true,
-"showCueName": true,
-"qlab": {
-    "ip": "127.0.0.1",
-    "filterColour": [],
-    "filterCueType": []
-},
-"mitti": {
-    "ip": "127.0.0.1"
-},
-"obs": {
-    "ip": "127.0.0.1",
-    "port": "4444",
-    "password": "",
-    "source": "VTKounter",
-    "enabled": false
-}
+    "timerFormat": "H:mm:ss",
+    "appChoice": "QLab",
+    "noVTText": "No VT",
+    "showPercentage": true,
+    "showCueName": true,
+    "apps": {
+        "qlab": {
+            "name": "QLab",
+            "ip": "127.0.0.1",
+            "filterColour": [],
+            "filterCueType": []
+        },
+        "mitti": {
+            "name": "Mitti",
+            "ip": "127.0.0.1"
+        }
+    },
+    "obs": {
+        "ip": "127.0.0.1",
+        "port": "4444",
+        "password": "",
+        "source": "VTKounter",
+        "enabled": false
+    }
 }
