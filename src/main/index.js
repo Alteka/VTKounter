@@ -8,6 +8,7 @@ const axios = require('axios')
 var compareVersions = require('compare-versions')
 const Store = require('electron-store')
 const Nucleus = require('nucleus-nodejs')
+var nodeStatic = require('node-static')
 
 const store = new Store()
 var config = {}
@@ -316,6 +317,7 @@ function updateTimer(time = '-') {
   if (showMode) {
     if (time != lastSet) {
       controlWindow.webContents.send('timer', time)
+      io.emit('timer', time)
 
       if (ConnectedToOBS) {
         var type = 'SetTextGDIPlusProperties'
@@ -348,6 +350,35 @@ function updateCueName(name) {
     cueName = name
   }
 }
+
+
+
+
+// Web Server Stuff and things
+  var timerServer = new nodeStatic.Server('./static')
+  const httpServer = require('http').createServer(function (request, response) {
+      request.addListener('end', function () {
+          timerServer.serve(request, response, function (err, result) {
+            if (err) { // There was an error serving the file
+                log.error("Error serving " + request.url + " - " + err.message);
+ 
+                // Respond to the client
+                response.writeHead(err.status, err.headers);
+                response.end();
+            }
+          })
+      }).resume()
+  })
+  const io = require("socket.io")(httpServer, {})
+
+  io.on("connection", socket => { 
+    console.log('Socket IO Connection!')
+   })
+  
+  httpServer.listen(56868)
+
+
+
 
 // AUTO UPDATE
 setTimeout(function() {
