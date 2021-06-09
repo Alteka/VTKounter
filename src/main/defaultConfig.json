@@ -14,6 +14,11 @@
         "mitti": {
             "name": "Mitti",
             "ip": "127.0.0.1"
+        },
+        "vmix": {
+            "name": "vMix",
+            "ip": "127.0.0.1",
+            "input": ""
         }
     },
     "obs": {

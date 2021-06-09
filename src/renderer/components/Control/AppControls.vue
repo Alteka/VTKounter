@@ -7,6 +7,8 @@
         </el-form-item>
       </el-col>
     </el-row>
+
+    <!-- QLab Start -->
     <el-row v-if="app.name=='QLab'">
       <el-form-item label="Filter by Colour" label-width="125px">
         <el-checkbox-group v-model="app.filterColour" size="small">
@@ -21,6 +23,27 @@
         </el-checkbox-group>
       </el-form-item>
     </el-row>
+    <!-- QLab End -->
+
+    <!-- Mitti Start -->
+    <el-row style="text-align: center;" v-if="app.name=='Mitti'">
+      Feedback port must be set to 1234<br />
+      <p style="font-size: 80%">In Mitti preferences, select 'OSC/UDP Controls' in the left side-bar.<br />
+      Set 'Feedback' to Custom. Set the port to 1234.</p>
+    </el-row>
+    <!-- QLab End -->
+    
+    <!-- vMix Start -->
+    <el-row v-if="app.name=='vMix'">
+      <el-col>
+        <el-form-item label="Input #">
+          <el-input v-model="app.input"></el-input>
+           <i>Leave blank to use the active input</i>
+        </el-form-item>
+      </el-col>
+    </el-row>
+    <!-- vMix End -->
+    
   </el-form>
 </template>
 

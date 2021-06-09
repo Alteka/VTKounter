@@ -1,5 +1,6 @@
 import { app, BrowserWindow, ipcMain, webContents, nativeTheme, dialog, screen, TouchBar, Menu, MenuItem, shell } from 'electron'
 import { create } from 'domain'
+import { parseString } from 'xml2js'
 const menu = require('./menu.js').menu
 const log = require('electron-log')
 const moment = require('moment')
@@ -18,7 +19,7 @@ var mitti = null;
 const OBSWebSocket = require('obs-websocket-js');
 const obs = new OBSWebSocket();
 
-var oscServer = new Server(53001, '0.0.0.0', () => {
+var qlabOscServer = new Server(53001, '0.0.0.0', () => {
   log.info('QLab OSC Server is listening on port 53001');
 })
 
@@ -132,7 +133,83 @@ var lastSet = ""
 var ConnectedToOBS = false
 var showMode = false
 
+// vMix Response
+const vmixSend = () => {
+  axios.get('http://' + config.apps.vmix.ip + ':8088/api')
+  .then(vmixResponse)
+  .then(appSuccess,appError)
+}
 
+const vmixResponse = response => {
+  return new Promise((resolve,reject) => {
+
+    // check the reponse status
+    if(response.status < 200 || response.status >= 300)
+      reject(new Error(`HTTP status ${response.status}`))
+
+    // parse the returned XML
+    parseString(response.data, function (err, xml) {
+      
+      // stop if invalid XML
+      if(err)
+        reject(new Error(`API XML parse error: ${err}`))
+  
+      // set the input number to either the active input or the number selected
+      try {
+        var inputNumber = parseInt(config.apps.vmix.input ? config.apps.vmix.input : xml.vmix.active)
+      }
+      catch (err) {
+        reject(new Error(`Could not parse the input number: ${err}`))
+      }
+      
+      // loop through inputs in vMix
+      xml.vmix.inputs[0].input.forEach(input => {
+
+        input = input.$
+
+        // found the selected input 
+        if(input.number == inputNumber) {
+
+          // selected input has a run time (VT / audio / etc.)
+          if(input.duration > 0) {
+            resolve({
+              cueName: input.title,
+              secondsRemaining: Math.round(input.duration/1000) - Math.round(input.position/1000),
+              secondsTotal: Math.round(input.duration/1000),
+              clear: false
+            })
+          }
+        }
+      })
+
+      // if the input was found then no VT playing
+      resolve({clear: true})
+    })
+  })
+}
+
+const appSuccess = ({cueName, secondsRemaining, secondsTotal, clear}) => {
+  controlWindow.webContents.send('vtStatus', true)
+
+  if(clear) {
+    clearTimer()
+    return
+  }
+
+  log.info(cueName, secondsRemaining, secondsTotal, clear)
+
+  updateCueName(cueName)
+  setTimerInSeconds(secondsRemaining)
+  setTimerProgress(secondsRemaining / secondsTotal)
+}
+
+const appError = (err) => {
+  clearTimer()
+  controlWindow.webContents.send('vtStatus', false)
+  log.warn(`${config.appChoice}: ${err.message ? err.message : 'undefined'}`)
+}
+
+// Send Requests
 setInterval(function() {
   if (showMode && config.appChoice == 'QLab') {
     qlab.send('/cue/active/currentDuration', 200, () => { })
@@ -142,6 +219,10 @@ setInterval(function() {
 
   if (showMode && config.appChoice == 'Mitti') {
     mitti.send('/mitti/cueTimeLeft', 200, () => { })
+  }
+
+  if (showMode && config.appChoice == 'vMix') {
+    vmixSend()
   }
 
   if (!ConnectedToOBS && showMode && config.obs.enabled) {
@@ -195,6 +276,8 @@ ipcMain.on('showMode', (event, cfg) => {
   })
 })
 
+
+// OBS connection
 function obsConnect() {
   if (config.obs.password != '') {
     log.info('Attempting to connect to OBS ' + ' - ', config.obs.ip + ':'+ config.obs.port, config.obs.password)
@@ -223,7 +306,8 @@ obs.on('ConnectionClosed', function(data) {
   controlWindow.webContents.send('obsStatus', false)
 })
 
-oscServer.on('message', function (msg) {
+// QLab repsonse
+qlabOscServer.on('message', function (msg) {
   var cmd = msg[0].split('/')[4]
   var data = JSON.parse(msg[1])
   var cue = msg[0].split('/')[3]
@@ -267,6 +351,7 @@ oscServer.on('message', function (msg) {
   }
 })
 
+// Mitti Response
 let mittiTimeElapsed = 0
 mittiOscServer.on('message', function(msg) {
   controlWindow.webContents.send('vtStatus', true)
@@ -287,6 +372,7 @@ mittiOscServer.on('message', function(msg) {
   }
 })
 
+// Updating Timer
 function setTimerInSeconds(seconds) {
   updateTimer(moment().startOf('day').seconds(seconds).format(config.timerFormat))
 
