@@ -30,7 +30,9 @@
     <el-row>
         <el-form-item label="App Choice" label-width="125px">
           <el-radio-group v-model="config.appChoice" size="small">
-            <el-radio-button v-for="(app, name) in config.apps" :label="app.name" :key="name"></el-radio-button>
+            <el-radio-button v-for="(app, name) in config.apps" :label="name" :key="name">
+              {{ app.name }}
+            </el-radio-button>
           </el-radio-group>
         </el-form-item>          
     </el-row>

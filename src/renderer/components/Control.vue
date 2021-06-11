@@ -30,8 +30,8 @@
     <el-row v-if="showMode" style="padding: 10px; text-align: center;">
       <el-col :span="6" v-if="!config.obs.enabled">&nbsp;</el-col>
       <el-col :span="12">
-        <span v-if="vtStatus">{{config.appChoice}} <i class="fas fa-link green"></i> Connected</span>
-        <span v-if="!vtStatus">{{config.appChoice}} <i class="fas fa-link red"></i> Not Connected</span>
+        <span v-if="vtStatus">{{config.apps[config.appChoice].name}} <i class="fas fa-link green"></i> Connected</span>
+        <span v-if="!vtStatus">{{config.apps[config.appChoice].name}} <i class="fas fa-link red"></i> Not Connected</span>
       </el-col>
       <el-col :span="12" v-if="config.obs.enabled">
         <span v-if="obsStatus">OBS <i class="fas fa-link green"></i> Connected</span>
@@ -44,7 +44,7 @@
         <core-controls :config="config"></core-controls>
       </el-tab-pane>
 
-      <el-tab-pane v-for="(app, name) in config.apps" :label="app.name" :key="app.name" v-if="config.appChoice==app.name">
+      <el-tab-pane v-for="(app, name) in config.apps" :label="app.name" :key="name" v-if="config.appChoice==name">
         <app-controls :app="app"></app-controls>
       </el-tab-pane>
 

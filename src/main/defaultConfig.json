@@ -1,6 +1,6 @@
 {
     "timerFormat": "H:mm:ss",
-    "appChoice": "QLab",
+    "appChoice": "qlab",
     "noVTText": "No VT",
     "showPercentage": true,
     "showCueName": true,

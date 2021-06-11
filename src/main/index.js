@@ -1,6 +1,5 @@
 import { app, BrowserWindow, ipcMain, webContents, nativeTheme, dialog, screen, TouchBar, Menu, MenuItem, shell } from 'electron'
 import { create } from 'domain'
-import { parseString } from 'xml2js'
 const menu = require('./menu.js').menu
 const log = require('electron-log')
 const moment = require('moment')
@@ -11,21 +10,26 @@ const Store = require('electron-store')
 const Nucleus = require('nucleus-nodejs')
 
 const store = new Store()
-var config = {}
+var config = store.get('VTKounterConfig', getDefaultConfig())
 
-const { Client, Server } = require('node-osc');
-var qlab = null;
-var mitti = null;
+const callback = {
+  onReceiveSuccess: appSuccess,
+  onReceiveError: appError,
+}
+
+// TODO: automate this (based on apps in config?)
+import vtAppQlab from './vtApp/vtAppQlab'
+import vtAppMitti from './vtApp/vtAppMitti'
+import vtAppVmix from './vtApp/vtAppVmix'
+
+var apps = {
+  qlab: new vtAppQlab(config.apps.qlab, callback),
+  mitti: new vtAppMitti(config.apps.mitti, callback),
+  vmix: new vtAppVmix(config.apps.vmix, callback),
+}
+
 const OBSWebSocket = require('obs-websocket-js');
 const obs = new OBSWebSocket();
-
-var qlabOscServer = new Server(53001, '0.0.0.0', () => {
-  log.info('QLab OSC Server is listening on port 53001');
-})
-
-var mittiOscServer = new Server(1234, '0.0.0.0', () => {
-  log.info('Mitti OSC Server is listening on port 1234');
-})
 
 if (process.env.NODE_ENV !== 'development') {
   global.__static = require('path').join(__dirname, '/static').replace(/\\/g, '\\\\')
@@ -73,8 +77,6 @@ function createWindow () {
 app.on('ready', function() {
   log.info('Launching VT Kounter')
   createWindow()
-
-  config = store.get('VTKounterConfig', getDefaultConfig())
 
   if (!store.has('VTKounterInstallID')) {
     let newId = UUID()
@@ -133,96 +135,11 @@ var lastSet = ""
 var ConnectedToOBS = false
 var showMode = false
 
-// vMix Response
-const vmixSend = () => {
-  axios.get('http://' + config.apps.vmix.ip + ':8088/api')
-  .then(vmixResponse)
-  .then(appSuccess,appError)
-}
-
-const vmixResponse = response => {
-  return new Promise((resolve,reject) => {
-
-    // check the reponse status
-    if(response.status < 200 || response.status >= 300)
-      reject(new Error(`HTTP status ${response.status}`))
-
-    // parse the returned XML
-    parseString(response.data, function (err, xml) {
-      
-      // stop if invalid XML
-      if(err)
-        reject(new Error(`API XML parse error: ${err}`))
-  
-      // set the input number to either the active input or the number selected
-      try {
-        var inputNumber = parseInt(config.apps.vmix.input ? config.apps.vmix.input : xml.vmix.active)
-      }
-      catch (err) {
-        reject(new Error(`Could not parse the input number: ${err}`))
-      }
-      
-      // loop through inputs in vMix
-      xml.vmix.inputs[0].input.forEach(input => {
-
-        input = input.$
-
-        // found the selected input 
-        if(input.number == inputNumber) {
-
-          // selected input has a run time (VT / audio / etc.)
-          if(input.duration > 0) {
-            resolve({
-              cueName: input.title,
-              secondsRemaining: Math.round(input.duration/1000) - Math.round(input.position/1000),
-              secondsTotal: Math.round(input.duration/1000),
-              clear: false
-            })
-          }
-        }
-      })
-
-      // if the input was found then no VT playing
-      resolve({clear: true})
-    })
-  })
-}
-
-const appSuccess = ({cueName, secondsRemaining, secondsTotal, clear}) => {
-  controlWindow.webContents.send('vtStatus', true)
-
-  if(clear) {
-    clearTimer()
-    return
-  }
-
-  log.info(cueName, secondsRemaining, secondsTotal, clear)
-
-  updateCueName(cueName)
-  setTimerInSeconds(secondsRemaining)
-  setTimerProgress(secondsRemaining / secondsTotal)
-}
-
-const appError = (err) => {
-  clearTimer()
-  controlWindow.webContents.send('vtStatus', false)
-  log.warn(`${config.appChoice}: ${err.message ? err.message : 'undefined'}`)
-}
-
 // Send Requests
 setInterval(function() {
-  if (showMode && config.appChoice == 'QLab') {
-    qlab.send('/cue/active/currentDuration', 200, () => { })
-    qlab.send('/cue/active/actionElapsed', 200, () => { })
-    qlab.send('/runningCues', 200, () => { })
-  }
-
-  if (showMode && config.appChoice == 'Mitti') {
-    mitti.send('/mitti/cueTimeLeft', 200, () => { })
-  }
-
-  if (showMode && config.appChoice == 'vMix') {
-    vmixSend()
+  if (showMode) {
+    apps[config.appChoice].config = config.apps[config.appChoice]
+    apps[config.appChoice].send()
   }
 
   if (!ConnectedToOBS && showMode && config.obs.enabled) {
@@ -230,19 +147,51 @@ setInterval(function() {
   }
 }, 1000)
 
+/**
+ * Callback from successful response from selected app
+ */
+function appSuccess () {
+  //log.info(apps[config.appChoice].timer)
+
+  // show successful connection to the app
+  controlWindow.webContents.send('vtStatus', true)
+
+  if(apps[config.appChoice].timer.noVT) {
+    // clear the timer when no VT is playing and stop
+    clearTimer()
+    return
+  }
+
+  // update the GUI
+  updateCueName(apps[config.appChoice].timer.cueName)
+  setTimerInSeconds(apps[config.appChoice].timer.seconds.remaining)
+  setTimerProgress(apps[config.appChoice].timer.progress)
+}
+
+/**
+ * Callback from unsuccessful response from selected app
+ * @param {Error} error - Reported error from the app
+ */
+function appError (error) {
+  // show unsuccessful connection to the app
+  controlWindow.webContents.send('vtStatus', false)
+
+  // clear the current running VT from the timer
+  clearTimer()
+
+  // log the error
+  log.warn(`${config.appChoice}: ${error.message ? error.message : 'undefined'}`)
+}
+
 ipcMain.on('configMode', (event) => {
   // stop all services and disconnect
   log.info('Going into config mode')
   obs.disconnect()
   showMode = false
-  if (config.appChoice == 'QLab') {
-    qlab.close()
-    qlab = null
-  }
-  if (config.appChoice == 'Mitti') {
-    mitti.close()
-    mitti = null
-  }
+
+  // inform current app
+  apps[config.appChoice].onShowModeStop()
+
   controlWindow.webContents.send('vtStatus', false)
   controlWindow.webContents.send('obsStatus', false)
 })
@@ -250,15 +199,11 @@ ipcMain.on('configMode', (event) => {
 ipcMain.on('showMode', (event, cfg) => {
   // start connections based on config
   log.info('Going into show mode with config: ', cfg)
-  config = cfg;
-  if (config.appChoice == 'QLab') {
-    qlab = new Client(config.apps.qlab.ip, 53000)
-  }
 
-  if (config.appChoice == 'Mitti') {
-    mitti = new Client(config.apps.mitti.ip, 51000)
-    mitti.send('/mitti/resendOSCFeedback', 200, () => { })
-  }
+  // inform current app
+  apps[config.appChoice].onShowModeStart()
+
+  config = cfg;
 
   if (config.obs.enabled) {
     obsConnect()
@@ -306,72 +251,6 @@ obs.on('ConnectionClosed', function(data) {
   controlWindow.webContents.send('obsStatus', false)
 })
 
-// QLab repsonse
-qlabOscServer.on('message', function (msg) {
-  var cmd = msg[0].split('/')[4]
-  var data = JSON.parse(msg[1])
-  var cue = msg[0].split('/')[3]
-
-  if (cmd == 'runningCues') {
-    controlWindow.webContents.send('vtStatus', true)
-    matchingCues = [];
-    if (data.data.length > 1) {
-        for (var i = 1; i < data.data.length; i++) {
-            if (config.apps.qlab.filterColour.includes(data.data[i].colorName) || config.apps.qlab.filterColour.length == 0) {
-              if (config.apps.qlab.filterCueType.includes(data.data[i].type) || config.apps.qlab.filterCueType.length == 0) {
-                matchingCues.push(data.data[i].uniqueID)
-              }                
-            }
-        }
-    }  else {
-      clearTimer()
-    }
-    if (matchingCues.length == 1) {
-      updateCueName(data.data[1].listName)
-    }
-    if (matchingCues.length == 0) {
-      clearTimer()
-    }
-    if (matchingCues.length > 1) {
-      log.warn('Multiple matching QLab Cues are running')
-    }
-  }
-  if (cmd == 'currentDuration' && matchingCues[0] == cue) {
-    if (currentDuration !== data.data) {
-        log.info('--==--  QLab VT Started with Duration ' + data.data + '  --==--')
-    }
-    currentDuration = data.data
-  }
-  if (cmd == 'actionElapsed' && matchingCues[0] == cue) {
-    var remaining = Math.round(currentDuration - data.data)
-    if (remaining <0) { remaining = 0 }
-
-    setTimerInSeconds(remaining)
-    setTimerProgress(remaining/currentDuration)
-  }
-})
-
-// Mitti Response
-let mittiTimeElapsed = 0
-mittiOscServer.on('message', function(msg) {
-  controlWindow.webContents.send('vtStatus', true)
-  if (msg[0] == '/mitti/cueTimeLeft' && config.appChoice == 'Mitti') {
-    let rem = msg[1].split(':')
-    let seconds = parseInt(rem[0]*60*-60) + parseInt((rem[1]*60)) + parseInt(rem[2])
-    if (seconds < 1) {
-      clearTimer()
-    } else {
-      setTimerInSeconds(seconds)
-      setTimerProgress(seconds/(mittiTimeElapsed+seconds))
-    }
-  } else if (msg[0] == '/mitti/cueTimeElapsed' && config.appChoice == 'Mitti') {
-    let rem = msg[1].split(':')
-    mittiTimeElapsed = parseInt(rem[0]*60*-60) + parseInt((rem[1]*60)) + parseInt(rem[2])
-  } else if (msg[0] == '/mitti/currentCueName' && config.appChoice == 'Mitti') {
-    updateCueName(msg[1])
-  }
-})
-
 // Updating Timer
 function setTimerInSeconds(seconds) {
   updateTimer(moment().startOf('day').seconds(seconds).format(config.timerFormat))
@@ -386,7 +265,7 @@ function setTimerInSeconds(seconds) {
 }
 
 function setTimerProgress(fraction) {
-  controlWindow.webContents.send('percentage', 100-(fraction*100))
+  controlWindow.webContents.send('percentage', fraction*100)
 }
 
 function clearTimer() {
@@ -431,7 +310,6 @@ let cueName = ''
 function updateCueName(name) {
   if (name != cueName) {
     controlWindow.webContents.send('cueName', name)
-    log.info('Cue Name: ', name)
     cueName = name
   }
 }
