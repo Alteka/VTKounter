@@ -49,6 +49,21 @@ export default class vtApp {
   onShowModeStop() {
     return
   }
+
+  /**
+   * Convert timestamp string to time integer (in ms)
+   * @param {string} timestamp - string of format "hh:mm:ss:ff"
+   * @param {*} frameRate - frame rate to interpret the frames as (optonal)
+   */
+  timestampToMs(timestamp,frameRate = 0) {
+    let units = timestamp.split(':')
+    units = units.map(x => parseInt(x))
+
+    // duration of one frame in ms
+    const frame = frameRate ? (1000 / frameRate) : 0
+
+    return ( (units[0] * 60 * 60) + (units[1] * 60) + units[2]) * 1000 + (units[3] * frame)
+  }
 }
 
 class vtTimer {

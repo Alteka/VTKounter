@@ -21,11 +21,13 @@ const callback = {
 import vtAppQlab from './vtApp/vtAppQlab'
 import vtAppMitti from './vtApp/vtAppMitti'
 import vtAppVmix from './vtApp/vtAppVmix'
+import vtAppPpp from './vtApp/vtAppPpp'
 
 var apps = {
   qlab: new vtAppQlab(config.apps.qlab, callback),
   mitti: new vtAppMitti(config.apps.mitti, callback),
   vmix: new vtAppVmix(config.apps.vmix, callback),
+  ppp: new vtAppPpp(config.apps.ppp, callback)
 }
 
 const OBSWebSocket = require('obs-websocket-js');
@@ -138,7 +140,6 @@ var showMode = false
 // Send Requests
 setInterval(function() {
   if (showMode) {
-    apps[config.appChoice].config = config.apps[config.appChoice]
     apps[config.appChoice].send()
   }
 
@@ -200,10 +201,11 @@ ipcMain.on('showMode', (event, cfg) => {
   // start connections based on config
   log.info('Going into show mode with config: ', cfg)
 
-  // inform current app
-  apps[config.appChoice].onShowModeStart()
-
   config = cfg;
+
+  // inform current app
+  apps[config.appChoice].config = config.apps[config.appChoice]
+  apps[config.appChoice].onShowModeStart()
 
   if (config.obs.enabled) {
     obsConnect()

@@ -43,6 +43,18 @@
       </el-col>
     </el-row>
     <!-- vMix End -->
+
+    <!-- PPP Start -->
+    <el-row v-if="app.name=='PP+'">
+      <el-form-item label="Port">
+        <el-radio-group v-model="app.port" size="small">
+          <el-radio-button v-for="port in pppPorts" :label="port" :key="port">
+            {{ `${port} (${port == 4647 ? 'TCP' : 'UDP'})` }}
+          </el-radio-button>
+        </el-radio-group>
+      </el-form-item>
+    </el-row>
+    <!-- PPP End -->
     
   </el-form>
 </template>
@@ -60,7 +72,8 @@
           ]
         },
         qlabFilters: ['red', 'yellow', 'green', 'blue', 'purple'],
-        qlabCueTypes: ['Video', 'Audio', 'Text', 'Camera', 'Mic', 'Group']
+        qlabCueTypes: ['Video', 'Audio', 'Text', 'Camera', 'Mic', 'Group'],
+        pppPorts: [4647, 7000],
       }
     }
   }
