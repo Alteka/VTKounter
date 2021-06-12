@@ -141,6 +141,11 @@ var showMode = false
 setInterval(function() {
   if (showMode) {
     apps[config.appChoice].send()
+
+    if( (new Date()).getTime() > apps[config.appChoice].timer.lastUpdated + config.timeout * 1000) {
+      // the app hasn't responded for a while
+      appError(new Error(`Timeout (${config.timeout}) reached`))
+    }
   }
 
   if (!ConnectedToOBS && showMode && config.obs.enabled) {
@@ -151,7 +156,7 @@ setInterval(function() {
 /**
  * Callback from successful response from selected app
  */
-function appSuccess () {
+function appSuccess() {
   //log.info(apps[config.appChoice].timer)
 
   // show successful connection to the app
@@ -173,7 +178,7 @@ function appSuccess () {
  * Callback from unsuccessful response from selected app
  * @param {Error} error - Reported error from the app
  */
-function appError (error) {
+function appError(error) {
   // show unsuccessful connection to the app
   controlWindow.webContents.send('vtStatus', false)
 

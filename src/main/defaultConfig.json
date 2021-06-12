@@ -4,6 +4,7 @@
     "noVTText": "No VT",
     "showPercentage": true,
     "showCueName": true,
+    "timeout": 3,
     "apps": {
         "qlab": {
             "name": "QLab",
@@ -23,7 +24,7 @@
         "ppp": {
             "name": "PP+",
             "ip": "127.0.0.1",
-            "port": 4647
+            "port": 7000
         }
     },
     "obs": {

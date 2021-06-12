@@ -11,8 +11,21 @@ export default class vtApp {
     this.config = config
     this.callback = callback
 
+    // handler for updating objects last updated time
+    this.updateLastUpdated = {
+      set(target, property, value) {
+        // update last updated time to now
+        target.lastUpdated = (new Date()).getTime()
+        // update the requested value
+        target[property] = value
+
+        return true
+      }
+    }
+
     // info for the current running VT
-    this.timer = new vtTimer()
+    this._timer = new vtTimer()
+    this.timer = new Proxy(this._timer,this.updateLastUpdated)
   }
 
   /**
@@ -73,6 +86,8 @@ class vtTimer {
    */
   constructor() {
     this.reset()
+    // set last updated to now
+    this.lastUpdated = (new Date()).getTime()
   }
 
   get remaining() {
