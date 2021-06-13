@@ -1,6 +1,6 @@
 const log = require('electron-log') // remove
 
-export default class vtApp {
+class vtApp {
   /**
    * Logic and behaviour of each app supported by VT Kounter
    * @param {Object} config - Config for this app
@@ -78,6 +78,8 @@ export default class vtApp {
     return ( (units[0] * 60 * 60) + (units[1] * 60) + units[2]) * 1000 + (units[3] * frame)
   }
 }
+
+module.exports = vtApp
 
 class vtTimer {
   /**

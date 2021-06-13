@@ -1,8 +1,8 @@
-import vtApp from './vtApp'
+const vtApp = require('./vtApp')
 const axios = require('axios')
-import { parseString } from 'xml2js'
+const parseString = require('xml2js').parseString
 
-export default class vtAppVmix extends vtApp {
+class vtAppVmix extends vtApp {
   send() {
     axios.get(`http://${this.config.ip}:8088/api`)
     .then(this.receive.bind(this))
@@ -60,3 +60,5 @@ export default class vtAppVmix extends vtApp {
     })
   }
 }
+
+module.exports = vtAppVmix

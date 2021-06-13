@@ -1,9 +1,9 @@
-import vtApp from './vtApp'
+const vtApp = require('./vtApp')
 const dgram = require('dgram')
 const net = require('net')
 //const log = require('electron-log')
 
-export default class vtAppVmix extends vtApp {
+class vtAppPpp extends vtApp {
   constructor(...args) {
     super(...args)
 
@@ -153,3 +153,5 @@ export default class vtAppVmix extends vtApp {
     this._nextTCPCommand = index
   }
 }
+
+module.exports = vtAppPpp

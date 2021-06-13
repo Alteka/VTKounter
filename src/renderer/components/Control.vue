@@ -44,7 +44,7 @@
         <core-controls :config="config"></core-controls>
       </el-tab-pane>
 
-      <el-tab-pane v-for="(app, name) in config.apps" :label="app.name" :key="name" v-if="config.appChoice==name">
+      <el-tab-pane v-for="(app, name) in config.apps" :label="(app.longName ? app.longName : app.name)" :key="name" v-if="config.appChoice==name">
         <app-controls :app="app"></app-controls>
       </el-tab-pane>
 

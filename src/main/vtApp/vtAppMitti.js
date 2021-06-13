@@ -1,8 +1,8 @@
-import vtApp from './vtApp'
+const vtApp = require('./vtApp')
 const { Client, Server } = require('node-osc')
 const log = require('electron-log')
 
-export default class vtAppMitti extends vtApp {
+class vtAppMitti extends vtApp {
   constructor(...args) {
     super(...args)
     
@@ -80,3 +80,5 @@ export default class vtAppMitti extends vtApp {
     this.client = null
   }
 }
+
+module.exports = vtAppMitti

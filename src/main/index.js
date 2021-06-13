@@ -17,17 +17,11 @@ const callback = {
   onReceiveError: appError,
 }
 
-// TODO: automate this (based on apps in config?)
-import vtAppQlab from './vtApp/vtAppQlab'
-import vtAppMitti from './vtApp/vtAppMitti'
-import vtAppVmix from './vtApp/vtAppVmix'
-import vtAppPpp from './vtApp/vtAppPpp'
+var apps = {}
 
-var apps = {
-  qlab: new vtAppQlab(config.apps.qlab, callback),
-  mitti: new vtAppMitti(config.apps.mitti, callback),
-  vmix: new vtAppVmix(config.apps.vmix, callback),
-  ppp: new vtAppPpp(config.apps.ppp, callback)
+for (const [name, app] of Object.entries(config.apps)) {
+  let vtApp = require(`./vtApp/vtApp${name}`)
+  apps[name] = new vtApp(app.config, callback)
 }
 
 const OBSWebSocket = require('obs-websocket-js');
@@ -35,7 +29,6 @@ const obs = new OBSWebSocket();
 
 if (process.env.NODE_ENV !== 'development') {
   global.__static = require('path').join(__dirname, '/static').replace(/\\/g, '\\\\')
-  store.clear()
   log.info('Running in production mode')
 }
 
@@ -131,8 +124,6 @@ ipcMain.on('factoryReset', () => {
 //========================//
 //       VT Kounter       //
 //========================//
-var currentDuration
-var matchingCues = []
 var lastSet = ""
 var ConnectedToOBS = false
 var showMode = false

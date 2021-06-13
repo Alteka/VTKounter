@@ -1,28 +1,29 @@
 {
     "timerFormat": "H:mm:ss",
-    "appChoice": "qlab",
+    "appChoice": "Qlab",
     "noVTText": "No VT",
     "showPercentage": true,
     "showCueName": true,
     "timeout": 3,
     "apps": {
-        "qlab": {
+        "Qlab": {
             "name": "QLab",
             "ip": "127.0.0.1",
             "filterColour": [],
             "filterCueType": []
         },
-        "mitti": {
+        "Mitti": {
             "name": "Mitti",
             "ip": "127.0.0.1"
         },
-        "vmix": {
+        "Vmix": {
             "name": "vMix",
             "ip": "127.0.0.1",
             "input": ""
         },
-        "ppp": {
+        "Ppp": {
             "name": "PP+",
+            "longName": "PlaybackPro Plus",
             "ip": "127.0.0.1",
             "port": 7000
         }
