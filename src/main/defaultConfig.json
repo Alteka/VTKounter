@@ -34,5 +34,8 @@
         "password": "",
         "source": "VTKounter",
         "enabled": false
+    },
+    "webserver": {
+        "fontsize": 48
     }
 }

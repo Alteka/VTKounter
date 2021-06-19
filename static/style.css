@@ -1,3 +1,22 @@
 body {
     font-family: 'Courier New', monospace;
   }
+
+  #app {
+      width: 100%;
+      height: 100%;
+      top: 0;
+      left: 0;
+      position: absolute;
+      display: inline-block;
+      text-align:center;
+      white-space: nowrap;
+      font-size: 500px;
+  }
+
+  #fit {
+      width: 100%;
+      max-width: 100%;
+      white-space: nowrap;
+      display: inline-block;
+  }

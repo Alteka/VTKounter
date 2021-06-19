@@ -9,10 +9,11 @@ var compareVersions = require('compare-versions')
 const Store = require('electron-store')
 const Nucleus = require('nucleus-nodejs')
 var nodeStatic = require('node-static')
+const { networkInterfaces } = require('os')
 
 const store = new Store()
 var config = store.get('VTKounterConfig', getDefaultConfig())
-if (config.apps === undefined) {
+if (config.apps === undefined || config.webserver === undefined) {
   config = getDefaultConfig()
   log.info('Resetting config as structure has changed: Lazy migration...')
 }
@@ -125,6 +126,18 @@ ipcMain.on('factoryReset', () => {
   Nucleus.track('Factory Reset')
 })
 
+ipcMain.on('networkInfo', (event) => {
+  const nets = networkInterfaces()
+  const results = []
+  for (const name of Object.keys(nets)) {
+      for (const net of nets[name]) {
+          if (net.family === 'IPv4' && !net.internal) {
+              results.push(net.address)
+          }
+      }
+  }
+  controlWindow.webContents.send('networkInfo', results)
+})
 
 //========================//
 //       VT Kounter       //

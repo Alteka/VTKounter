@@ -51,6 +51,10 @@
       <el-tab-pane label="OBS" name="obs">
         <obs-controls :obs="config.obs"></obs-controls>
       </el-tab-pane>
+
+      <el-tab-pane label="Web Server" name="webserver">
+        <webserver-controls :webserver="config.webserver"></webserver-controls>
+      </el-tab-pane>
     </el-tabs>
 
     <resize-observer @notify="handleResize" />
@@ -62,10 +66,11 @@ const { ipcRenderer } = require('electron')
 import ObsControls from './Control/ObsControls'
 import AppControls from './Control/AppControls'
 import CoreControls from './Control/CoreControls'
+import WebserverControls from './Control/WebserverControls'
 
   export default {
     name: 'control',
-    components: { ObsControls, AppControls, CoreControls },
+    components: { ObsControls, AppControls, CoreControls, WebserverControls },
     data: function () {
       return {
         tab: 'core',
