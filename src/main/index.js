@@ -12,6 +12,10 @@ var nodeStatic = require('node-static')
 
 const store = new Store()
 var config = store.get('VTKounterConfig', getDefaultConfig())
+if (config.apps === undefined) {
+  config = getDefaultConfig()
+  log.info('Resetting config as structure has changed: Lazy migration...')
+}
 
 const callback = {
   onReceiveSuccess: appSuccess,
