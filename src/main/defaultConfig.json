@@ -1,22 +1,38 @@
 {
-"timerFormat": "H:mm:ss",
-"appChoice": "QLab",
-"noVTText": "No VT",
-"showPercentage": true,
-"showCueName": true,
-"qlab": {
-    "ip": "127.0.0.1",
-    "filterColour": [],
-    "filterCueType": []
-},
-"mitti": {
-    "ip": "127.0.0.1"
-},
-"obs": {
-    "ip": "127.0.0.1",
-    "port": "4444",
-    "password": "",
-    "source": "VTKounter",
-    "enabled": false
-}
+    "timerFormat": "H:mm:ss",
+    "appChoice": "Qlab",
+    "noVTText": "No VT",
+    "showPercentage": true,
+    "showCueName": true,
+    "timeout": 3,
+    "apps": {
+        "Qlab": {
+            "name": "QLab",
+            "ip": "127.0.0.1",
+            "filterColour": [],
+            "filterCueType": []
+        },
+        "Mitti": {
+            "name": "Mitti",
+            "ip": "127.0.0.1"
+        },
+        "Vmix": {
+            "name": "vMix",
+            "ip": "127.0.0.1",
+            "input": ""
+        },
+        "Ppp": {
+            "name": "PP+",
+            "longName": "PlaybackPro Plus",
+            "ip": "127.0.0.1",
+            "port": 7000
+        }
+    },
+    "obs": {
+        "ip": "127.0.0.1",
+        "port": "4444",
+        "password": "",
+        "source": "VTKounter",
+        "enabled": false
+    }
 }

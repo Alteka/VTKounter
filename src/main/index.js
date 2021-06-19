@@ -11,21 +11,22 @@ const Nucleus = require('nucleus-nodejs')
 var nodeStatic = require('node-static')
 
 const store = new Store()
-var config = {}
+var config = store.get('VTKounterConfig', getDefaultConfig())
 
-const { Client, Server } = require('node-osc');
-var qlab = null;
-var mitti = null;
+const callback = {
+  onReceiveSuccess: appSuccess,
+  onReceiveError: appError,
+}
+
+var apps = {}
+
+for (const [name, app] of Object.entries(config.apps)) {
+  let vtApp = require(`./vtApp/vtApp${name}`)
+  apps[name] = new vtApp(app.config, callback)
+}
+
 const OBSWebSocket = require('obs-websocket-js');
 const obs = new OBSWebSocket();
-
-var oscServer = new Server(53001, '0.0.0.0', () => {
-  log.info('QLab OSC Server is listening on port 53001');
-})
-
-var mittiOscServer = new Server(1234, '0.0.0.0', () => {
-  log.info('Mitti OSC Server is listening on port 1234');
-})
 
 if (process.env.NODE_ENV !== 'development') {
   global.__static = require('path').join(__dirname, '/static').replace(/\\/g, '\\\\')
@@ -72,8 +73,6 @@ function createWindow () {
 app.on('ready', function() {
   log.info('Launching VT Kounter')
   createWindow()
-
-  config = store.get('VTKounterConfig', getDefaultConfig())
 
   if (!store.has('VTKounterInstallID')) {
     let newId = UUID()
@@ -126,22 +125,19 @@ ipcMain.on('factoryReset', () => {
 //========================//
 //       VT Kounter       //
 //========================//
-var currentDuration
-var matchingCues = []
 var lastSet = ""
 var ConnectedToOBS = false
 var showMode = false
 
-
+// Send Requests
 setInterval(function() {
-  if (showMode && config.appChoice == 'QLab') {
-    qlab.send('/cue/active/currentDuration', 200, () => { })
-    qlab.send('/cue/active/actionElapsed', 200, () => { })
-    qlab.send('/runningCues', 200, () => { })
-  }
+  if (showMode) {
+    apps[config.appChoice].send()
 
-  if (showMode && config.appChoice == 'Mitti') {
-    mitti.send('/mitti/cueTimeLeft', 200, () => { })
+    if( (new Date()).getTime() > apps[config.appChoice].timer.lastUpdated + config.timeout * 1000) {
+      // the app hasn't responded for a while
+      appError(new Error(`Timeout (${config.timeout}) reached`))
+    }
   }
 
   if (!ConnectedToOBS && showMode && config.obs.enabled) {
@@ -149,19 +145,51 @@ setInterval(function() {
   }
 }, 1000)
 
+/**
+ * Callback from successful response from selected app
+ */
+function appSuccess() {
+  //log.info(apps[config.appChoice].timer)
+
+  // show successful connection to the app
+  controlWindow.webContents.send('vtStatus', true)
+
+  if(apps[config.appChoice].timer.noVT) {
+    // clear the timer when no VT is playing and stop
+    clearTimer()
+    return
+  }
+
+  // update the GUI
+  updateCueName(apps[config.appChoice].timer.cueName)
+  setTimerInSeconds(apps[config.appChoice].timer.seconds.remaining)
+  setTimerProgress(apps[config.appChoice].timer.progress)
+}
+
+/**
+ * Callback from unsuccessful response from selected app
+ * @param {Error} error - Reported error from the app
+ */
+function appError(error) {
+  // show unsuccessful connection to the app
+  controlWindow.webContents.send('vtStatus', false)
+
+  // clear the current running VT from the timer
+  clearTimer()
+
+  // log the error
+  log.warn(`${config.appChoice}: ${error.message ? error.message : 'undefined'}`)
+}
+
 ipcMain.on('configMode', (event) => {
   // stop all services and disconnect
   log.info('Going into config mode')
   obs.disconnect()
   showMode = false
-  if (config.appChoice == 'QLab') {
-    qlab.close()
-    qlab = null
-  }
-  if (config.appChoice == 'Mitti') {
-    mitti.close()
-    mitti = null
-  }
+
+  // inform current app
+  apps[config.appChoice].onShowModeStop()
+
   controlWindow.webContents.send('vtStatus', false)
   controlWindow.webContents.send('obsStatus', false)
 })
@@ -169,15 +197,12 @@ ipcMain.on('configMode', (event) => {
 ipcMain.on('showMode', (event, cfg) => {
   // start connections based on config
   log.info('Going into show mode with config: ', cfg)
-  config = cfg;
-  if (config.appChoice == 'QLab') {
-    qlab = new Client(config.qlab.ip, 53000)
-  }
 
-  if (config.appChoice == 'Mitti') {
-    mitti = new Client(config.mitti.ip, 51000)
-    mitti.send('/mitti/resendOSCFeedback', 200, () => { })
-  }
+  config = cfg;
+
+  // inform current app
+  apps[config.appChoice].config = config.apps[config.appChoice]
+  apps[config.appChoice].onShowModeStart()
 
   if (config.obs.enabled) {
     obsConnect()
@@ -195,6 +220,8 @@ ipcMain.on('showMode', (event, cfg) => {
   })
 })
 
+
+// OBS connection
 function obsConnect() {
   if (config.obs.password != '') {
     log.info('Attempting to connect to OBS ' + ' - ', config.obs.ip + ':'+ config.obs.port, config.obs.password)
@@ -223,70 +250,7 @@ obs.on('ConnectionClosed', function(data) {
   controlWindow.webContents.send('obsStatus', false)
 })
 
-oscServer.on('message', function (msg) {
-  var cmd = msg[0].split('/')[4]
-  var data = JSON.parse(msg[1])
-  var cue = msg[0].split('/')[3]
-
-  if (cmd == 'runningCues') {
-    controlWindow.webContents.send('vtStatus', true)
-    matchingCues = [];
-    if (data.data.length > 1) {
-        for (var i = 1; i < data.data.length; i++) {
-            if (config.qlab.filterColour.includes(data.data[i].colorName) || config.qlab.filterColour.length == 0) {
-              if (config.qlab.filterCueType.includes(data.data[i].type) || config.qlab.filterCueType.length == 0) {
-                matchingCues.push(data.data[i].uniqueID)
-              }                
-            }
-        }
-    }  else {
-      clearTimer()
-    }
-    if (matchingCues.length == 1) {
-      updateCueName(data.data[1].listName)
-    }
-    if (matchingCues.length == 0) {
-      clearTimer()
-    }
-    if (matchingCues.length > 1) {
-      log.warn('Multiple matching QLab Cues are running')
-    }
-  }
-  if (cmd == 'currentDuration' && matchingCues[0] == cue) {
-    if (currentDuration !== data.data) {
-        log.info('--==--  QLab VT Started with Duration ' + data.data + '  --==--')
-    }
-    currentDuration = data.data
-  }
-  if (cmd == 'actionElapsed' && matchingCues[0] == cue) {
-    var remaining = Math.round(currentDuration - data.data)
-    if (remaining <0) { remaining = 0 }
-
-    setTimerInSeconds(remaining)
-    setTimerProgress(remaining/currentDuration)
-  }
-})
-
-let mittiTimeElapsed = 0
-mittiOscServer.on('message', function(msg) {
-  controlWindow.webContents.send('vtStatus', true)
-  if (msg[0] == '/mitti/cueTimeLeft' && config.appChoice == 'Mitti') {
-    let rem = msg[1].split(':')
-    let seconds = parseInt(rem[0]*60*-60) + parseInt((rem[1]*60)) + parseInt(rem[2])
-    if (seconds < 1) {
-      clearTimer()
-    } else {
-      setTimerInSeconds(seconds)
-      setTimerProgress(seconds/(mittiTimeElapsed+seconds))
-    }
-  } else if (msg[0] == '/mitti/cueTimeElapsed' && config.appChoice == 'Mitti') {
-    let rem = msg[1].split(':')
-    mittiTimeElapsed = parseInt(rem[0]*60*-60) + parseInt((rem[1]*60)) + parseInt(rem[2])
-  } else if (msg[0] == '/mitti/currentCueName' && config.appChoice == 'Mitti') {
-    updateCueName(msg[1])
-  }
-})
-
+// Updating Timer
 function setTimerInSeconds(seconds) {
   updateTimer(moment().startOf('day').seconds(seconds).format(config.timerFormat))
 
@@ -300,7 +264,7 @@ function setTimerInSeconds(seconds) {
 }
 
 function setTimerProgress(fraction) {
-  controlWindow.webContents.send('percentage', 100-(fraction*100))
+  controlWindow.webContents.send('percentage', fraction*100)
 }
 
 function clearTimer() {
@@ -346,7 +310,6 @@ let cueName = ''
 function updateCueName(name) {
   if (name != cueName) {
     controlWindow.webContents.send('cueName', name)
-    log.info('Cue Name: ', name)
     cueName = name
   }
 }

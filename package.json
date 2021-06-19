@@ -61,7 +61,8 @@
     "vue-electron": "^1.0.6",
     "vue-resize": "^1.0.0",
     "vue-router": "^3.4.9",
-    "ws": "^6.2.1"
+    "ws": "^6.2.1",
+    "xml2js": "^0.4.23"
   },
   "devDependencies": {
     "ajv": "^6.12.6",
