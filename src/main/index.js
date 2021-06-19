@@ -25,8 +25,8 @@ for (const [name, app] of Object.entries(config.apps)) {
   apps[name] = new vtApp(app.config, callback)
 }
 
-const OBSWebSocket = require('obs-websocket-js');
-const obs = new OBSWebSocket();
+const OBSWebSocket = require('obs-websocket-js')
+const obs = new OBSWebSocket()
 
 if (process.env.NODE_ENV !== 'development') {
   global.__static = require('path').join(__dirname, '/static').replace(/\\/g, '\\\\')
@@ -198,7 +198,7 @@ ipcMain.on('showMode', (event, cfg) => {
   // start connections based on config
   log.info('Going into show mode with config: ', cfg)
 
-  config = cfg;
+  config = cfg
 
   // inform current app
   apps[config.appChoice].config = config.apps[config.appChoice]
@@ -275,7 +275,7 @@ function clearTimer() {
   cueName = ''
 }
 
-let obsPlatformIsMac = false;
+let obsPlatformIsMac = false
 
 function updateTimer(time = '-') {
   if (showMode) {
@@ -293,11 +293,11 @@ function updateTimer(time = '-') {
             'text': time
         }).catch(err => { // Promise convention dicates you have a catch on every chain.
             if (err.error == 'not a text gdi plus source') {
-              obsPlatformIsMac = true;
+              obsPlatformIsMac = true
               log.info('OBS is running on a mac, setting source type to Freetype Text')
             } else {
-              obsPlatformIsMac = false;
-              log.error(err);
+              obsPlatformIsMac = false
+              log.error(err)
             }
         })
       }
@@ -323,11 +323,11 @@ function updateCueName(name) {
       request.addListener('end', function () {
           timerServer.serve(request, response, function (err, result) {
             if (err) { // There was an error serving the file
-                log.error("Error serving " + request.url + " - " + err.message);
+                log.error("Error serving " + request.url + " - " + err.message)
  
                 // Respond to the client
-                response.writeHead(err.status, err.headers);
-                response.end();
+                response.writeHead(err.status, err.headers)
+                response.end()
             }
           })
       }).resume()
@@ -369,7 +369,7 @@ axios.get('https://api.github.com/repos/alteka/vtkounter/releases/latest')
         if (response.response == 1) {
           shell.openExternal(link)
         }
-      });
+      })
     } else if (status == 0) {
       // running current/latest version.
       log.info('Auto Update check -- Running latest version: ' + current)
@@ -378,13 +378,13 @@ axios.get('https://api.github.com/repos/alteka/vtkounter/releases/latest')
     }
   })
   .catch(function (error) {
-    log.error(error);
+    log.error(error)
   })
 }, 3000)
 
 function UUID() {
   return 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, function(c) {
-    var r = Math.random() * 16 | 0, v = c == 'x' ? r : (r & 0x3 | 0x8);
-    return v.toString(16);
+    var r = Math.random() * 16 | 0, v = c == 'x' ? r : (r & 0x3 | 0x8)
+    return v.toString(16)
   })
 }
