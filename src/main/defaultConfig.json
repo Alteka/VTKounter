@@ -36,6 +36,7 @@
         "enabled": false
     },
     "webserver": {
-        "fontsize": 48
+        "fontsize": 48,
+        "fg": "#000000"
     }
 }

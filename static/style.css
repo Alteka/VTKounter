@@ -11,12 +11,8 @@ body {
       display: inline-block;
       text-align:center;
       white-space: nowrap;
-      font-size: 500px;
   }
 
-  #fit {
-      width: 100%;
-      max-width: 100%;
-      white-space: nowrap;
-      display: inline-block;
+  .timer {
+    margin: 0;
   }

@@ -231,6 +231,14 @@ import WebserverControls from './Control/WebserverControls'
   color: #ddd;
   border: 1px solid #666;
 }
+.darkMode .el-input-number__decrease {
+  background: #3d3d3d;
+  color: #ddd;
+}
+.darkMode .el-input-number__increase {
+  background: #3d3d3d;
+  color: #ddd;
+}
 .darkMode .el-checkbox-button__inner {
   background: none;
 }
