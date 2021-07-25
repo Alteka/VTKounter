@@ -46,6 +46,24 @@
           </el-form-item>
           </el-col>
         </el-row>
+
+        <el-row>
+          <el-col :span="8">
+            <el-form-item label="Cue Name" label-width="60">
+              <el-switch v-model="webserver.showName"></el-switch>
+            </el-form-item>
+          </el-col>
+          <el-col v-if="webserver.showName" :span="16">
+            <el-form-item label="Name Size" label-width="60">
+              <el-radio-group v-model="webserver.nameSize" size="small">
+                  <el-radio-button label="0.1">1/10</el-radio-button>
+                  <el-radio-button label="0.166">1/6</el-radio-button>
+                  <el-radio-button label="0.2">1/5</el-radio-button>
+                  <el-radio-button label="0.333">1/3</el-radio-button>
+                </el-radio-group>
+          </el-form-item>
+          </el-col>
+        </el-row>
         
         </el-form>
 </template>
@@ -95,7 +113,7 @@ const { ipcRenderer } = require('electron')
     },
     computed: {
       url: function() {
-        return encodeURI('http://' + this.ip + ':56868/?fs=' + this.webserver.fontsize + '&fg=' + this.webserver.fg.substr(1) + '&a=' + this.webserver.align)
+        return encodeURI('http://' + this.ip + ':56868/?fs=' + this.webserver.fontsize + '&fg=' + this.webserver.fg.substr(1) + '&a=' + this.webserver.align + '&sn=' + this.webserver.showName + '&ns=' + this.webserver.nameSize)
       }
     }
   }

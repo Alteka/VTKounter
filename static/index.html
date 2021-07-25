@@ -10,9 +10,11 @@
 
   <div id="app">
     <p v-bind:style="{fontSize: fs+'px', color: '#'+fg, textAlign: a}" class="timer">{{ timer }}</p>
+    <p v-if="showName" v-bind:style="{fontSize: (fs*nameSize)+'px', color: '#'+fg, textAlign: a}" class="timer">{{ cueName }}</p>
   </div>
 
   <script src="socket.io.min.js"></script>
+  <script src="mousetrap.min.js"></script>
   <script src="vue.min.js"></script>
   <script src="app.js"></script>
 </body>

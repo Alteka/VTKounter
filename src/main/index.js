@@ -328,6 +328,7 @@ function updateCueName(name) {
   if (name != cueName) {
     controlWindow.webContents.send('cueName', name)
     cueName = name
+    io.emit('cueName', name)
   }
 }
 
@@ -353,6 +354,10 @@ function updateCueName(name) {
 
   io.on("connection", socket => { 
     console.log('Socket IO Connection!')
+    io.emit('cueName', cueName)
+    if (lastSet != '') {
+      io.emit('timer', lastSet)
+    }
    })
   
   httpServer.listen(56868)
