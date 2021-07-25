@@ -11,21 +11,16 @@ class vtApp {
     this.config = config
     this.callback = callback
 
-    // handler for updating objects last updated time
-    this.updateLastUpdated = {
-      set(target, property, value) {
-        // update last updated time to now
-        target.lastUpdated = (new Date()).getTime()
-        // update the requested value
-        target[property] = value
+    // how it appears in the GUI
+    this.name = "Name"
+    this.longName = ""
+    this.notes = ""
+    this.controls = {}
 
-        return true
-      }
-    }
 
     // info for the current running VT
     this._timer = new vtTimer()
-    this.timer = new Proxy(this._timer,this.updateLastUpdated)
+    this.timer = new Proxy(this._timer,updateLastUpdated)
   }
 
   /**
@@ -80,6 +75,18 @@ class vtApp {
 }
 
 module.exports = vtApp
+
+// handler for updating objects last updated time
+const updateLastUpdated = {
+  set(target, property, value) {
+    // update last updated time to now
+    target.lastUpdated = (new Date()).getTime()
+    // update the requested value
+    target[property] = value
+
+    return true
+  }
+}
 
 class vtTimer {
   /**

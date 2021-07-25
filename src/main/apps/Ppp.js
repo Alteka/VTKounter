@@ -1,4 +1,4 @@
-const vtApp = require('./vtApp')
+const vtApp = require('../vtApp')
 const dgram = require('dgram')
 const net = require('net')
 //const log = require('electron-log')
@@ -6,6 +6,20 @@ const net = require('net')
 class vtAppPpp extends vtApp {
   constructor(...args) {
     super(...args)
+
+    this.name = "PP+"
+    this.longName = "PlaybackPro Plus"
+
+    this.controls = {
+      port: {
+        label: "Port",
+        type: "radio-group",
+        values: [
+          {value: 4647, label: "4647 (TCP)"},
+          {value: 7000, label: "7000 (UDP)"}
+        ]
+      }
+    }
 
     // commands to be sent (from https://www.dtvideolabs.com/user-guide-playbackproplus/#6.2)
     this.commands = [

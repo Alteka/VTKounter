@@ -10,6 +10,8 @@ const Store = require('electron-store')
 const Nucleus = require('nucleus-nodejs')
 var nodeStatic = require('node-static')
 const { networkInterfaces } = require('os')
+const fs = require('fs')
+const path = require('path')
 
 const store = new Store()
 var config = store.get('VTKounterConfig', getDefaultConfig())
@@ -23,12 +25,22 @@ const callback = {
   onReceiveError: appError,
 }
 
+const appsFolder = path.join(__dirname,'./apps')
 var apps = {}
+var appControls = {}
 
-for (const [name, app] of Object.entries(config.apps)) {
-  let vtApp = require(`./vtApp/vtApp${name}`)
-  apps[name] = new vtApp(app.config, callback)
-}
+fs.readdirSync(appsFolder).forEach(file => {
+  let name = path.parse(file).name
+  let vtApp = require(`./apps/${name}`)
+  apps[name] = new vtApp(config.apps[name].config, callback)
+
+  appControls[name] = {
+    name: apps[name].name,
+    longName: apps[name].longName,
+    notes: apps[name].notes,
+    controls: apps[name].controls
+  }
+})
 
 const OBSWebSocket = require('obs-websocket-js')
 const obs = new OBSWebSocket()
@@ -118,6 +130,7 @@ ipcMain.on('openLogs', (event, w, h) => {
 
 ipcMain.on('getConfig', (event) => {
   controlWindow.webContents.send('config', config)
+  controlWindow.webContents.send('appControls', appControls)
   controlWindow.webContents.send('darkMode', nativeTheme.shouldUseDarkColors)
 })
 
