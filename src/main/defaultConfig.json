@@ -37,6 +37,7 @@
     },
     "webserver": {
         "fontsize": 48,
-        "fg": "#000000"
+        "fg": "#000000",
+        "align": "center"
     }
 }

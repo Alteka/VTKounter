@@ -1,5 +1,10 @@
 body {
-    font-family: 'Courier New', monospace;
+    font-family: 'Sansation', monospace;
+  }
+
+  @font-face {
+    font-family: Sansation;
+    src: url(SansationMonoNumbers2.ttf);
   }
 
   #app {

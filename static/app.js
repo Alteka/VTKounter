@@ -1,9 +1,10 @@
 var app = new Vue({
     el: '#app',
     data: {
-      timer: 'Hello Vue!',
+      timer: 'VT Kounter',
       fs: 48,
-      fg: "0000ff"
+      fg: "0000ff",
+      a: "center"
     },
     mounted: function() {
       console.log('setting up socket connection')
@@ -16,9 +17,25 @@ var app = new Vue({
 
 
       const urlParams = new URLSearchParams(window.location.search)
-      this.fs = urlParams.get('fs')
-      this.fg = urlParams.get('fg')
-      
+      if (urlParams.has('fs')) {
+        this.fs = urlParams.get('fs')
+        console.log('Override default font size to ', this.fs)
+      } else {
+        console.log('Font size is using the default of ', this.fs)
+      }
+      if (urlParams.has('fg')) {
+        this.fg = urlParams.get('fg')
+        console.log('Override default text colour to ', this.fg)
+      } else {
+        console.log('Text colour is using the default value of ', this.fg)
+      }
+      if (urlParams.has('a')) {
+        this.a = urlParams.get('a')
+        console.log('Override default text alignment to ', this.a)
+      } else {
+        console.log('Text alignment is using the default of ', this.fs)
+      }
+
 
     }
   })
