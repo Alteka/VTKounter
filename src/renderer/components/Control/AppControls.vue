@@ -29,7 +29,7 @@
     </el-row>
 
     <el-row v-if="appControl.notes" >
-      <p class="notes">{{appControl.notes}}</p>
+      <p class="notes" v-html="appControl.notes"></p>
     </el-row>
     
   </el-form>
@@ -59,6 +59,5 @@
 <style scoped>
 .notes {
   text-align: center;
-  font-size: 80%;
 }
 </style>
