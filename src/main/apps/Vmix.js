@@ -1,8 +1,21 @@
-const vtApp = require('./vtApp')
+const vtApp = require('../vtApp')
 const axios = require('axios')
 const parseString = require('xml2js').parseString
 
 class vtAppVmix extends vtApp {
+  constructor(...args) {
+    super(...args)
+
+    this.name = "vMix"
+    this.controls = {
+      input: {
+        label: "Input #",
+        type: "string",
+        notes: "Leave blank to use the active input"
+      },
+    }
+  }
+
   send() {
     axios.get(`http://${this.config.ip}:8088/api`)
     .then(this.receive.bind(this))

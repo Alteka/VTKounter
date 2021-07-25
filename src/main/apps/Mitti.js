@@ -1,4 +1,4 @@
-const vtApp = require('./vtApp')
+const vtApp = require('../vtApp')
 const { Client, Server } = require('node-osc')
 const log = require('electron-log')
 
@@ -9,6 +9,10 @@ class vtAppMitti extends vtApp {
     // create server & client objects
     this.server = null
     this.client = null
+
+    this.name = "Mitti"
+    this.notes = `In Mitti preferences, select 'OSC/UDP Controls' in the left side-bar.<br />
+    Set 'Feedback' to Custom. Set the port to 1234.`
 
     // to store filtered cues
     this.matchingCues = []

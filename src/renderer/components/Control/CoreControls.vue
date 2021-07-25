@@ -30,11 +30,11 @@
     <el-row>
         <el-form-item label="App Choice" label-width="125px">
           <el-radio-group v-model="config.appChoice" size="small">
-            <el-radio-button v-for="(app, name) in config.apps" :label="name" :key="name">
+            <el-radio-button v-for="(app, name) in appControls" :label="name" :key="name">
               {{ app.name }}
             </el-radio-button>
           </el-radio-group>
-        </el-form-item>          
+        </el-form-item>
     </el-row>
   </el-form>
 </template>
@@ -43,7 +43,8 @@
 const { ipcRenderer } = require('electron')
   export default {
     props: {
-      config: Object
+      config: Object,
+      appControls: Object
     },
     data: function() {
       return {

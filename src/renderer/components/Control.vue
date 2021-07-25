@@ -30,8 +30,8 @@
     <el-row v-if="showMode" style="padding: 10px; text-align: center;">
       <el-col :span="6" v-if="!config.obs.enabled">&nbsp;</el-col>
       <el-col :span="12">
-        <span v-if="vtStatus">{{config.apps[config.appChoice].name}} <i class="fas fa-link green"></i> Connected</span>
-        <span v-if="!vtStatus">{{config.apps[config.appChoice].name}} <i class="fas fa-link red"></i> Not Connected</span>
+        <span v-if="vtStatus">{{appControls[config.appChoice].name}} <i class="fas fa-link green"></i> Connected</span>
+        <span v-if="!vtStatus">{{appControls[config.appChoice].name}} <i class="fas fa-link red"></i> Not Connected</span>
       </el-col>
       <el-col :span="12" v-if="config.obs.enabled">
         <span v-if="obsStatus">OBS <i class="fas fa-link green"></i> Connected</span>
@@ -41,11 +41,11 @@
     
     <el-tabs v-model="tab" style="padding-left: 10px; padding-right: 10px;" v-if="!showMode">
       <el-tab-pane label="Core Settings" name="core">
-        <core-controls :config="config"></core-controls>
+        <core-controls :config="config" :appControls="appControls"></core-controls>
       </el-tab-pane>
 
-      <el-tab-pane :label="(config.apps[config.appChoice].longName ? config.apps[config.appChoice].longName : config.apps[config.appChoice].name)">
-        <app-controls :app="config.apps[config.appChoice]"></app-controls>
+      <el-tab-pane :label="(appControls[config.appChoice].longName ? appControls[config.appChoice].longName : appControls[config.appChoice].name)">
+        <app-controls :app="config.apps[config.appChoice]" :appControl="appControls[config.appChoice]"></app-controls>
       </el-tab-pane>
 
       <el-tab-pane label="OBS" name="obs">
@@ -76,6 +76,7 @@ import WebserverControls from './Control/WebserverControls'
         tab: 'core',
         showMode: false,
         config: require('../../main/defaultConfig.json'),
+        appControls: {},
         vtStatus: false,
         obsStatus: false,
         obsMessage: '',
@@ -117,10 +118,13 @@ import WebserverControls from './Control/WebserverControls'
       ipcRenderer.on('cueName', function(event, val) {
         vm.cueName = val
       })
-
       ipcRenderer.on('config', function(event, cfg) {
         vm.config = cfg
       })
+      ipcRenderer.on('appControls', function(event, appControls) {
+        vm.appControls = appControls
+      })
+
       ipcRenderer.send('getConfig')
     },
     watch: {

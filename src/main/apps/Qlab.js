@@ -1,10 +1,37 @@
-const vtApp = require('./vtApp')
+const vtApp = require('../vtApp')
 const { Client, Server } = require('node-osc')
 const log = require('electron-log')
 
 class vtAppQlab extends vtApp {
   constructor(...args) {
     super(...args)
+
+    this.name = "QLab"
+
+    this.controls = {
+      filterColour: {
+        label: "Filter by Colour",
+        type: "group",
+        values: [
+          {value: "red", label: "Red"},
+          {value: "yellow", label: "Yellow"},
+          {value: "green", label: "Green"},
+          {value: "blue", label: "Purple"},
+          {value: "purple", label: "Purple"},
+        ]
+      },
+      filterCueType: {
+        label: "Filter by Type",
+        type: "group",
+        values: [
+          {value: "Video"},
+          {value: "Audio"},
+          {value: "Text"},
+          {value: "Camera"},
+          {value: "Mic"},
+        ]
+      },
+    }
     
     // create server & client objects
     this.server = null
