@@ -13,7 +13,7 @@ class vtAppPpp extends vtApp {
     this.controls = {
       port: {
         label: "Port",
-        type: "radio",
+        type: "radio-group",
         values: [
           {value: 4647, label: "4647 (TCP)"},
           {value: 7000, label: "7000 (UDP)"}

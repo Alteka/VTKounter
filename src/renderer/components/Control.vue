@@ -44,7 +44,7 @@
         <core-controls :config="config" :appControls="appControls"></core-controls>
       </el-tab-pane>
 
-      <el-tab-pane :label="(appControls[config.appChoice].longName ? appControls[config.appChoice].longName : appControls[config.appChoice].name)">
+      <el-tab-pane v-if="appControls" :label="(appControls[config.appChoice].longName ? appControls[config.appChoice].longName : appControls[config.appChoice].name)">
         <app-controls :app="config.apps[config.appChoice]" :appControl="appControls[config.appChoice]"></app-controls>
       </el-tab-pane>
 
@@ -76,7 +76,7 @@ import WebserverControls from './Control/WebserverControls'
         tab: 'core',
         showMode: false,
         config: require('../../main/defaultConfig.json'),
-        appControls: {},
+        appControls: null,
         vtStatus: false,
         obsStatus: false,
         obsMessage: '',

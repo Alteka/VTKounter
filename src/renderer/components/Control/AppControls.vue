@@ -1,5 +1,5 @@
 <template>
-  <el-form label-width="100px" size="small" :rules="appValidationRules" ref="appForm" :model="app">
+  <el-form label-width="125px" size="small" :rules="appValidationRules" ref="appForm" :model="app">
     <el-row>
       <el-col>
         <el-form-item label="IP Address" prop="ip">
@@ -8,13 +8,28 @@
       </el-col>
     </el-row>
 
-    <el-row v-for="(control, controlID) in appControl" :key="controlID">
+    <el-row v-for="(control, controlID) in appControl.controls" :key="controlID">
       <el-col>
-        <el-form-item :label="control.name">
-          <el-input v-model="app[controlID]"></el-input>
+        <el-form-item :label="control.label">
+          <el-input v-if="control.type=='string'" v-model="app[controlID]"></el-input>
+          <el-switch v-if="control.type=='boolean'" v-model="app[controlID]"></el-switch>
+          <el-radio-group v-if="control.type=='radio-group'" v-model="app[controlID]">
+            <el-radio-button v-for="value in control.values" :key="value.value" :label="value.value">
+              {{value.label ? value.label : value.value}}
+            </el-radio-button>
+          </el-radio-group>
+          <el-checkbox-group v-if="control.type=='checkbox-group'" v-model="app[controlID]">
+            <el-checkbox-button v-for="value in control.values" :key="value.value" :label="value.value">
+              {{value.label ? value.label : value.value}}
+            </el-checkbox-button>
+          </el-checkbox-group>
           <i v-if="control.notes">{{ control.notes }}</i>
         </el-form-item>
       </el-col>
+    </el-row>
+
+    <el-row v-if="appControl.notes" >
+      <p class="notes">{{appControl.notes}}</p>
     </el-row>
     
   </el-form>
@@ -42,5 +57,8 @@
 </script>
 
 <style scoped>
-
+.notes {
+  text-align: center;
+  font-size: 80%;
+}
 </style>

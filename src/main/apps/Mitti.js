@@ -11,7 +11,7 @@ class vtAppMitti extends vtApp {
     this.client = null
 
     this.name = "Mitti"
-    this.notes = `In Mitti preferences, select 'OSC/UDP Controls' in the left side-bar.<br />
+    this.notes = `In Mitti preferences, select 'OSC/UDP Controls' in the left side-bar.\n\n
     Set 'Feedback' to Custom. Set the port to 1234.`
 
     // to store filtered cues
