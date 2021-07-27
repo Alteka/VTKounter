@@ -1,15 +1,17 @@
 const log = require('electron-log') // remove
+const EventEmitter = require('events')
 
-class vtApp {
+class vtApp extends EventEmitter {
   /**
    * Logic and behaviour of each app supported by VT Kounter
    * @param {Object} config - Config for this app
    * @param {Object} callback - Includes callbacks: {onReceiveSuccess(), onReceiveError()}
    */
-  constructor(config, callback) {
+  constructor(config) {
+    super()
+
     // default constructor passing arguments
     this.config = config
-    this.callback = callback
 
     // how it appears in the GUI
     this.name = "Name"
@@ -21,6 +23,18 @@ class vtApp {
     // info for the current running VT
     this._timer = new vtTimer()
     this.timer = new Proxy(this._timer,updateLastUpdated)
+
+    // to be called when there is a successful response from the app
+    // (wrapper for emitter)
+    this.onSuccess = () => {
+      this.emit('success')
+    }
+
+    // to be call when there is an unsuccessful response from the app
+    // (wrapper for emitter)
+    this.onError = (err = null) => {
+      this.emit('error',err ? err : new Error('Undefined error'))
+    }
   }
 
   /**
@@ -33,13 +47,11 @@ class vtApp {
 
   /**
    * Receiver for the app's response to the send()
-   * Expected resolve & reject functions are
-   * this.callback.onReceiveSuccess & this.callback.onReceiveError respectively
+   * Could use a promise with resolve & reject functions
+   * this.onSuccess & this.onError respectively
    */
   receive() {
-    return new Promise((resolve,reject) => {
-      reject(new Error("Receiver undefined"))
-    })
+    return
   }
 
   /**
@@ -48,7 +60,6 @@ class vtApp {
    */
   onShowModeStart() {
     this.timer.reset()
-    return
   }
 
   /**

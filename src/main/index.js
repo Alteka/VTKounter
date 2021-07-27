@@ -20,11 +20,6 @@ if (config.apps === undefined || config.webserver === undefined) {
   log.info('Resetting config as structure has changed: Lazy migration...')
 }
 
-const callback = {
-  onReceiveSuccess: appSuccess,
-  onReceiveError: appError,
-}
-
 const appsFolder = path.join(__dirname,'./apps')
 var apps = {}
 var appControls = {}
@@ -32,7 +27,7 @@ var appControls = {}
 fs.readdirSync(appsFolder).forEach(file => {
   let name = path.parse(file).name
   let vtApp = require(`./apps/${name}`)
-  apps[name] = new vtApp(config.apps[name].config, callback)
+  apps[name] = new vtApp(config.apps[name].config)
 
   appControls[name] = {
     name: apps[name].name,
@@ -219,6 +214,7 @@ ipcMain.on('configMode', (event) => {
 
   // inform current app
   apps[config.appChoice].onShowModeStop()
+  apps[config.appChoice].removeAllListeners()
 
   controlWindow.webContents.send('vtStatus', false)
   controlWindow.webContents.send('obsStatus', false)
@@ -233,6 +229,10 @@ ipcMain.on('showMode', (event, cfg) => {
   // inform current app
   apps[config.appChoice].config = config.apps[config.appChoice]
   apps[config.appChoice].onShowModeStart()
+
+  // add listeners to current app
+  apps[config.appChoice].on('success',appSuccess)
+  apps[config.appChoice].on('error',appError)
 
   if (config.obs.enabled) {
     obsConnect()

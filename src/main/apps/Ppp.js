@@ -48,7 +48,7 @@ class vtAppPpp extends vtApp {
       this.commands.forEach(command => {
         this.client.send(command, this.config.port, this.config.ip, (err) => {
           if(err)
-            this.callback.onReceiveError(err)
+            this.onError(err)
         })
       })
   }
@@ -91,7 +91,7 @@ class vtAppPpp extends vtApp {
     }
 
     // update the GUI
-    this.callback.onReceiveSuccess()
+    this.onSuccess()
   }
 
   onShowModeStart() {
@@ -112,7 +112,7 @@ class vtAppPpp extends vtApp {
           this.nextTCPCommand = 0
 
           this.client.connect(this.config.port, this.config.ip, () => {
-            this.callback.onReceiveSuccess()
+            this.onSuccess()
             // send the next command
             this.client.write(this.commands[this.nextTCPCommand++])
           })
@@ -126,14 +126,14 @@ class vtAppPpp extends vtApp {
 
         default:
           // otherwise throw an error
-          this.callback.onReceiveError(new Error(`Port '${this.config.port}' not supported`))
+          this.onError(new Error(`Port '${this.config.port}' not supported`))
           return
       }
 
-      this.client.on('error', this.callback.onReceiveError)
+      this.client.on('error', this.onError)
     }
     catch(err) {
-      this.callback.onReceiveError(err)
+      this.onError(err)
     }
   }
 
