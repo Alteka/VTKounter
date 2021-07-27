@@ -47,10 +47,7 @@
           ip: [
             { required: true, message: 'The IP Address is required', trigger: 'blur' }
           ]
-        },
-        qlabFilters: ['red', 'yellow', 'green', 'blue', 'purple'],
-        qlabCueTypes: ['Video', 'Audio', 'Text', 'Camera', 'Mic', 'Group'],
-        pppPorts: [4647, 7000],
+        }
       }
     }
   }
