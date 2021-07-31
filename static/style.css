@@ -1,5 +1,15 @@
 body {
-    font-family: 'Courier New', monospace;
+    font-family: 'Sansation', monospace;
+  }
+
+  @font-face {
+    font-family: Sansation;
+    src: url(Sansation-Regular.ttf);
+  }
+
+  @font-face {
+    font-family: DejaVu;
+    src: url(DejaVuLGCSansMono.ttf);
   }
 
   #app {
@@ -15,4 +25,9 @@ body {
 
   .timer {
     margin: 0;
+    font-family: DejaVu, monospace;
+  }
+
+  .cueName {
+    margin: 0; 
   }
