@@ -5,24 +5,7 @@
     "showPercentage": true,
     "showCueName": true,
     "timeout": 3,
-    "apps": {
-        "Qlab": {
-            "ip": "127.0.0.1",
-            "filterColour": [],
-            "filterCueType": []
-        },
-        "Mitti": {
-            "ip": "127.0.0.1"
-        },
-        "Vmix": {
-            "ip": "127.0.0.1",
-            "input": ""
-        },
-        "Ppp": {
-            "ip": "127.0.0.1",
-            "port": 7000
-        }
-    },
+    "apps": {},
     "obs": {
         "ip": "127.0.0.1",
         "port": "4444",

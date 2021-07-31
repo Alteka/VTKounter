@@ -8,9 +8,11 @@ class vtAppVmix extends vtApp {
 
     this.name = "vMix"
     this.controls = {
+      ...this.controls,
       input: {
         label: "Input #",
         type: "string",
+        default: "",
         notes: "Leave blank to use the active input"
       },
     }

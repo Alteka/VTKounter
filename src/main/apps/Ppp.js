@@ -11,9 +11,11 @@ class vtAppPpp extends vtApp {
     this.longName = "PlaybackPro Plus"
 
     this.controls = {
+      ...this.controls,
       port: {
         label: "Port",
         type: "radio-group",
+        default: 7000,
         values: [
           {value: 4647, label: "4647 (TCP)"},
           {value: 7000, label: "7000 (UDP)"}
@@ -21,7 +23,8 @@ class vtAppPpp extends vtApp {
       }
     }
 
-    // commands to be sent (from https://www.dtvideolabs.com/user-guide-playbackproplus/#6.2)
+    // commands to be sent
+    // (from https://www.dtvideolabs.com/user-guide-playbackproplus/#6.2)
     this.commands = [
       'GD', // program clip duration
       'GN', // program clip name

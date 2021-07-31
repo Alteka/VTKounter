@@ -7,17 +7,23 @@ class vtApp extends EventEmitter {
    * @param {Object} config - Config for this app
    * @param {Object} callback - Includes callbacks: {onReceiveSuccess(), onReceiveError()}
    */
-  constructor(config) {
+  constructor() {
     super()
 
-    // default constructor passing arguments
-    this.config = config
+    // initialise config object to be filled onShowModeStart()
+    this.config = {}
 
-    // how it appears in the GUI
-    this.name = "Name"
-    this.longName = ""
-    this.notes = ""
-    this.controls = {}
+    // how the  appears in the GUI
+    this.name = 'App Name'
+    this.longName = ''
+    this.notes = ''
+    this.controls = {
+      ip: {
+        label: "IP Address",
+        type: 'string',
+        default: '127.0.0.1'
+      }
+    }
 
 
     // info for the current running VT

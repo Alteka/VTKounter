@@ -9,9 +9,11 @@ class vtAppQlab extends vtApp {
     this.name = "QLab"
 
     this.controls = {
+      ...this.controls,
       filterColour: {
         label: "Filter by Colour",
         type: "checkbox-group",
+        default: [],
         values: [
           {value: "red", label: "Red"},
           {value: "yellow", label: "Yellow"},
@@ -23,6 +25,7 @@ class vtAppQlab extends vtApp {
       filterCueType: {
         label: "Filter by Type",
         type: "checkbox-group",
+        default: [],
         values: [
           {value: "Video"},
           {value: "Audio"},

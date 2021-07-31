@@ -1,16 +1,9 @@
 <template>
   <el-form label-width="125px" size="small" :rules="appValidationRules" ref="appForm" :model="app">
-    <el-row>
-      <el-col>
-        <el-form-item label="IP Address" prop="ip">
-          <el-input v-model="app.ip"></el-input>
-        </el-form-item>
-      </el-col>
-    </el-row>
-
+    <!-- output all controls for app -->
     <el-row v-for="(control, controlID) in appControl.controls" :key="controlID">
       <el-col>
-        <el-form-item :label="control.label">
+        <el-form-item :label="control.label ? control.label : controlID" :prop="controlID">
           <el-input v-if="control.type=='string'" v-model="app[controlID]"></el-input>
           <el-input-number v-if="control.type=='number'" v-model="app[controlID]" controls-position="right"></el-input-number>
           <el-switch v-if="control.type=='boolean'" v-model="app[controlID]"></el-switch>
@@ -29,10 +22,10 @@
       </el-col>
     </el-row>
 
+    <!-- output notes if app has any -->
     <el-row v-if="appControl.notes" >
       <p class="notes" v-html="appControl.notes"></p>
     </el-row>
-    
   </el-form>
 </template>
 
