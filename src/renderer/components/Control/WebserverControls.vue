@@ -26,15 +26,42 @@
         <el-divider content-position="center">Options</el-divider>
 
         <el-row>
-          <el-col :span="12">
-            <el-form-item label="Text Colour" label-width="100">
+          <el-col :span="5">
+            <el-form-item label="Colour" label-width="50">
               <el-color-picker v-model="webserver.fg"></el-color-picker>
             </el-form-item>
           </el-col>
-          <el-col :span="12">
-            <el-form-item label="Font Size">
-              <el-input-number v-model="webserver.fontsize"></el-input-number>
+          <el-col :span="8">
+            <el-form-item label="Size" label-width="50">
+              <el-input-number v-model="webserver.fontsize" controls-position="right" width="50"></el-input-number>
             </el-form-item>
+          </el-col>
+          <el-col :span="11">
+          <el-form-item label="Align" label-width="50">
+           <el-radio-group v-model="webserver.align" size="small">
+              <el-radio-button label="left">Left</el-radio-button>
+              <el-radio-button label="center">Center</el-radio-button>
+              <el-radio-button label="right">Right</el-radio-button>
+            </el-radio-group>
+          </el-form-item>
+          </el-col>
+        </el-row>
+
+        <el-row>
+          <el-col :span="8">
+            <el-form-item label="Cue Name" label-width="60">
+              <el-switch v-model="webserver.showName"></el-switch>
+            </el-form-item>
+          </el-col>
+          <el-col v-if="webserver.showName" :span="16">
+            <el-form-item label="Name Size" label-width="60">
+              <el-radio-group v-model="webserver.nameSize" size="small">
+                  <el-radio-button label="0.1">1/10</el-radio-button>
+                  <el-radio-button label="0.166">1/6</el-radio-button>
+                  <el-radio-button label="0.2">1/5</el-radio-button>
+                  <el-radio-button label="0.333">1/3</el-radio-button>
+                </el-radio-group>
+          </el-form-item>
           </el-col>
         </el-row>
         
@@ -86,7 +113,7 @@ const { ipcRenderer } = require('electron')
     },
     computed: {
       url: function() {
-        return encodeURI('http://' + this.ip + ':56868/?fs=' + this.webserver.fontsize + '&fg=' + this.webserver.fg.substr(1))
+        return encodeURI('http://' + this.ip + ':56868/?fs=' + this.webserver.fontsize + '&fg=' + this.webserver.fg.substr(1) + '&a=' + this.webserver.align + '&sn=' + this.webserver.showName + '&ns=' + this.webserver.nameSize)
       }
     }
   }
@@ -95,5 +122,8 @@ const { ipcRenderer } = require('electron')
 <style scoped>
 .el-divider--horizontal {
   margin-top: 8px;
+}
+.el-input-number--small {
+  width: 110px;
 }
 </style>
