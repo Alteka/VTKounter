@@ -12,6 +12,7 @@
       <el-col>
         <el-form-item :label="control.label">
           <el-input v-if="control.type=='string'" v-model="app[controlID]"></el-input>
+          <el-input-number v-if="control.type=='number'" v-model="app[controlID]" controls-position="right"></el-input-number>
           <el-switch v-if="control.type=='boolean'" v-model="app[controlID]"></el-switch>
           <el-radio-group v-if="control.type=='radio-group'" v-model="app[controlID]">
             <el-radio-button v-for="value in control.values" :key="value.value" :label="value.value">
@@ -45,7 +46,21 @@
       return {
         appValidationRules: {
           ip: [
-            { required: true, message: 'The IP Address is required', trigger: 'blur' }
+            {
+              required: true,
+              message: 'The IP Address is required',
+              trigger: 'blur'
+            }
+          ],
+          port: [
+            {
+              required: true,
+              type: 'integer',
+              message: 'Valid port is required',
+              trigger: 'change',
+              min: 1,
+              max: 65535
+            }
           ]
         }
       }
