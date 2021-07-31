@@ -1,5 +1,6 @@
 const vtApp = require('../vtApp')
 const axios = require('axios')
+const https = require('https')
 //const log = require('electron-log')
 
 class vtAppPVP extends vtApp {
@@ -36,16 +37,32 @@ class vtAppPVP extends vtApp {
   }
 
   send() {
-    let headers = {}
-    if(this.config.token)
-      headers = {
+    let options = {}
+
+    if(this.config.https) {
+      // HTTPS returns 'certificate has expired' so this ignores that
+      const agent = new https.Agent({  
+        rejectUnauthorized: false
+      })
+
+      options = {
+        ...options,
+        httpsAgent: agent
+      }
+    }
+
+    if(this.config.token) {
+      // add the authentication token if it's been configured
+      options = {
+        ...options,
         headers: {
-          'Authentication': `Bearer ${this.config.token}`
+          'Authorization': `Bearer ${this.config.token}`
         }
       }
+    }
 
     axios.get(
-      `http${this.config.https ? 's' : ''}://${this.config.ip}:${this.config.port}/api/0/transportState/workspace`, headers)
+      `http${this.config.https ? 's' : ''}://${this.config.ip}:${this.config.port}/api/0/transportState/workspace`, options)
     .then(this.receive.bind(this))
     .then(this.onSuccess,this.onError)
   }
