@@ -79,13 +79,13 @@ class vtAppPVP extends vtApp {
 
         // loop through all the layers
         const found = layers.some(layer => {
-          // either a layer hasn't been picked and this layer is playing
-          // or this is the selected layer
           if((!this.config.layer || this.config.layer == layer.transportState.layer.name)
           && layer.transportState.isPlaying) {
+            // either a layer hasn't been picked and this layer is playing
+            // or this is the selected layer
             this.timer.elapsed = layer.transportState.timeElapsed * 1000
             this.timer.remaining = layer.transportState.timeRemaining * 1000
-            //this.timer.cueName = input.title //TODO do a separate query
+            this.timer.cueName = layer.transportState.layer.name // cannot get name of cue
             this.timer.noVT = false
 
             // stop there
