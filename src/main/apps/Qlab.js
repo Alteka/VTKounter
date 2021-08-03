@@ -9,9 +9,11 @@ class vtAppQlab extends vtApp {
     this.name = "QLab"
 
     this.controls = {
+      ...this.controls,
       filterColour: {
         label: "Filter by Colour",
         type: "checkbox-group",
+        default: [],
         values: [
           {value: "red", label: "Red"},
           {value: "yellow", label: "Yellow"},
@@ -23,6 +25,7 @@ class vtAppQlab extends vtApp {
       filterCueType: {
         label: "Filter by Type",
         type: "checkbox-group",
+        default: [],
         values: [
           {value: "Video"},
           {value: "Audio"},
@@ -101,14 +104,14 @@ class vtAppQlab extends vtApp {
 
       // accept response
       this.server.on('message', (msg) => {
-        this.receive(msg).then(this.callback.onReceiveSuccess,this.callback.onReceiveError)
+        this.receive(msg).then(this.onSuccess,this.onError)
       })
 
       // configure client
       this.client = new Client(this.config.ip, 53000)
     }
     catch (err) {
-      this.callback.onReceiveError(err)
+      this.onError(err)
     }
   }
 

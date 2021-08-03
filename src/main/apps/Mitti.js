@@ -63,14 +63,14 @@ class vtAppMitti extends vtApp {
 
       // accept response
       this.server.on('message', (msg) => {
-        this.receive(msg).then(this.callback.onReceiveSuccess,this.callback.onReceiveError)
+        this.receive(msg).then(this.onSuccess,this.onError)
       })
 
       // configure client
       this.client = new Client(this.config.ip, 51000)
     }
     catch (err) {
-      this.callback.onReceiveError(err)
+      this.onError(err)
     }
   }
 

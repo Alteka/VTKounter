@@ -12,35 +12,42 @@ var nodeStatic = require('node-static')
 const { networkInterfaces } = require('os')
 const fs = require('fs')
 const path = require('path')
-
 const store = new Store()
-var config = store.get('VTKounterConfig', getDefaultConfig())
-if (config.apps === undefined || config.webserver === undefined) {
-  config = getDefaultConfig()
-  log.info('Resetting config as structure has changed: Lazy migration...')
-}
 
-const callback = {
-  onReceiveSuccess: appSuccess,
-  onReceiveError: appError,
-}
 
 const appsFolder = path.join(__dirname,'./apps')
 var apps = {}
 var appControls = {}
+var appDefaults = {}
 
+// loop through all files in apps folder
 fs.readdirSync(appsFolder).forEach(file => {
+  // construct apps object with instaces of each vtApp class in
   let name = path.parse(file).name
   let vtApp = require(`./apps/${name}`)
-  apps[name] = new vtApp(config.apps[name].config, callback)
+  apps[name] = new vtApp()
 
+  // keep track of the UI controls each app requires
   appControls[name] = {
     name: apps[name].name,
     longName: apps[name].longName,
     notes: apps[name].notes,
     controls: apps[name].controls
   }
+
+  // keep track of the default values for each control
+  appDefaults[name] = {}
+  Object.entries(apps[name].controls).forEach(([controlID, control]) => {
+    appDefaults[name][controlID] = control.default
+  })
 })
+
+var config = store.get('VTKounterConfig', getDefaultConfig())
+if (config.apps === undefined || config.webserver === undefined) {
+  config = getDefaultConfig()
+  log.info('Resetting config as structure has changed: Lazy migration...')
+  store.set('VTKounterConfig', config)
+}
 
 const OBSWebSocket = require('obs-websocket-js')
 const obs = new OBSWebSocket()
@@ -111,6 +118,7 @@ app.on('activate', () => {
 
 function getDefaultConfig() {
   let defaultConfig = require('./defaultConfig.json')
+  defaultConfig.apps = appDefaults
   return defaultConfig
 }
 
@@ -135,7 +143,9 @@ ipcMain.on('getConfig', (event) => {
 })
 
 ipcMain.on('factoryReset', () => {
-  controlWindow.webContents.send('config', getDefaultConfig())
+  config = getDefaultConfig()
+  controlWindow.webContents.send('config', config)
+  store.set('VTKounterConfig', config)
   Nucleus.track('Factory Reset')
 })
 
@@ -219,6 +229,7 @@ ipcMain.on('configMode', (event) => {
 
   // inform current app
   apps[config.appChoice].onShowModeStop()
+  apps[config.appChoice].removeAllListeners()
 
   controlWindow.webContents.send('vtStatus', false)
   controlWindow.webContents.send('obsStatus', false)
@@ -233,6 +244,10 @@ ipcMain.on('showMode', (event, cfg) => {
   // inform current app
   apps[config.appChoice].config = config.apps[config.appChoice]
   apps[config.appChoice].onShowModeStart()
+
+  // add listeners to current app
+  apps[config.appChoice].on('success',appSuccess)
+  apps[config.appChoice].on('error',appError)
 
   if (config.obs.enabled) {
     obsConnect()

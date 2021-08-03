@@ -11,9 +11,11 @@ class vtAppPpp extends vtApp {
     this.longName = "PlaybackPro Plus"
 
     this.controls = {
+      ...this.controls,
       port: {
         label: "Port",
         type: "radio-group",
+        default: 7000,
         values: [
           {value: 4647, label: "4647 (TCP)"},
           {value: 7000, label: "7000 (UDP)"}
@@ -21,7 +23,8 @@ class vtAppPpp extends vtApp {
       }
     }
 
-    // commands to be sent (from https://www.dtvideolabs.com/user-guide-playbackproplus/#6.2)
+    // commands to be sent
+    // (from https://www.dtvideolabs.com/user-guide-playbackproplus/#6.2)
     this.commands = [
       'GD', // program clip duration
       'GN', // program clip name
@@ -48,7 +51,7 @@ class vtAppPpp extends vtApp {
       this.commands.forEach(command => {
         this.client.send(command, this.config.port, this.config.ip, (err) => {
           if(err)
-            this.callback.onReceiveError(err)
+            this.onError(err)
         })
       })
   }
@@ -91,7 +94,7 @@ class vtAppPpp extends vtApp {
     }
 
     // update the GUI
-    this.callback.onReceiveSuccess()
+    this.onSuccess()
   }
 
   onShowModeStart() {
@@ -112,7 +115,7 @@ class vtAppPpp extends vtApp {
           this.nextTCPCommand = 0
 
           this.client.connect(this.config.port, this.config.ip, () => {
-            this.callback.onReceiveSuccess()
+            this.onSuccess()
             // send the next command
             this.client.write(this.commands[this.nextTCPCommand++])
           })
@@ -126,14 +129,14 @@ class vtAppPpp extends vtApp {
 
         default:
           // otherwise throw an error
-          this.callback.onReceiveError(new Error(`Port '${this.config.port}' not supported`))
+          this.onError(new Error(`Port '${this.config.port}' not supported`))
           return
       }
 
-      this.client.on('error', this.callback.onReceiveError)
+      this.client.on('error', this.onError)
     }
     catch(err) {
-      this.callback.onReceiveError(err)
+      this.onError(err)
     }
   }
 

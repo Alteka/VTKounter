@@ -8,9 +8,11 @@ class vtAppVmix extends vtApp {
 
     this.name = "vMix"
     this.controls = {
+      ...this.controls,
       input: {
         label: "Input #",
         type: "string",
+        default: "",
         notes: "Leave blank to use the active input"
       },
     }
@@ -19,7 +21,7 @@ class vtAppVmix extends vtApp {
   send() {
     axios.get(`http://${this.config.ip}:8088/api`)
     .then(this.receive.bind(this))
-    .then(this.callback.onReceiveSuccess,this.callback.onReceiveError)
+    .then(this.onSuccess,this.onError)
   }
 
   receive(response) {
