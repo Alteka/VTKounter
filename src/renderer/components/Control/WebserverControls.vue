@@ -12,7 +12,7 @@
             </el-form-item>
           </el-col>
           <el-col :span="3" style="text-align: center;">
-            <el-button type="success" icon="el-icon-document-copy" size="small" round @click="copyUrl()"></el-button>
+            <el-button type="success" icon="el-icon-document-copy" size="small" round @click="copyUrl(url)"></el-button>
           </el-col>
         </el-row>
         <el-row v-if="ipAddresses.length > 1">
@@ -64,7 +64,20 @@
           </el-form-item>
           </el-col>
         </el-row>
-        
+
+         <el-divider content-position="center">API</el-divider>
+        <p style="text-align: center;">A simple JSON API exists here<br />It works perfectly in vMix as a Data Source</p>
+        <el-row>
+          <el-col :span="21">
+            <el-form-item label="API URL">
+              <el-input v-model="api" :readonly="true"></el-input>
+            </el-form-item>
+          </el-col>
+          <el-col :span="3" style="text-align: center;">
+            <el-button type="success" icon="el-icon-document-copy" size="small" round @click="copyUrl(api)"></el-button>
+          </el-col>
+        </el-row>
+
         </el-form>
 </template>
 
@@ -94,9 +107,9 @@ const { ipcRenderer } = require('electron')
       updateNetworkInfo: function() {
         ipcRenderer.send('networkInfo')
       },
-      copyUrl: function() {
+      copyUrl: function(value) {
         const el = document.createElement('textarea');  
-        el.value = this.url;                                 
+        el.value = value;                                 
         el.setAttribute('readonly', '');                
         el.style.position = 'absolute';                     
         el.style.left = '-9999px';                      
@@ -114,6 +127,9 @@ const { ipcRenderer } = require('electron')
     computed: {
       url: function() {
         return encodeURI('http://' + this.ip + ':56868/?fs=' + this.webserver.fontsize + '&fg=' + this.webserver.fg.substr(1) + '&a=' + this.webserver.align + '&sn=' + this.webserver.showName + '&ns=' + this.webserver.nameSize)
+      },
+      api: function() {
+        return encodeURI('http://' + this.ip + ':56868/data')
       }
     }
   }

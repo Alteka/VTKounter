@@ -308,8 +308,10 @@ function setTimerInSeconds(seconds) {
   }
 }
 
+let progress = null
 function setTimerProgress(fraction) {
   controlWindow.webContents.send('percentage', fraction*100)
+  progress = fraction*100
 }
 
 function clearTimer() {
@@ -367,6 +369,18 @@ function updateCueName(name) {
   var timerServer = new nodeStatic.Server('./static')
   const httpServer = require('http').createServer(function (request, response) {
       request.addListener('end', function () {
+
+        if (request.url == '/data') {
+          let data = {
+            name: cueName,
+            timer: lastSet,
+            app: config.appChoice,
+            progress: progress,
+            showMode: showMode
+          }
+          response.writeHead(200, { 'Content-Type': 'application/json' });
+          response.end(JSON.stringify(data), 'utf-8');
+        } else {
           timerServer.serve(request, response, function (err, result) {
             if (err) { // There was an error serving the file
                 log.error("Error serving " + request.url + " - " + err.message)
@@ -376,6 +390,7 @@ function updateCueName(name) {
                 response.end()
             }
           })
+        }
       }).resume()
   })
   const io = require("socket.io")(httpServer, {})
