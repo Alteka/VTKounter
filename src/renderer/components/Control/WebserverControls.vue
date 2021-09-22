@@ -129,7 +129,7 @@ const { ipcRenderer } = require('electron')
         return encodeURI('http://' + this.ip + ':56868/?fs=' + this.webserver.fontsize + '&fg=' + this.webserver.fg.substr(1) + '&a=' + this.webserver.align + '&sn=' + this.webserver.showName + '&ns=' + this.webserver.nameSize)
       },
       api: function() {
-        return encodeURI('http://' + this.ip + ':56868/data')
+        return encodeURI('http://' + this.ip + ':56868/api/v1/data/array')
       }
     }
   }

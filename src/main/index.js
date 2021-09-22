@@ -362,50 +362,80 @@ function updateCueName(name) {
   }
 }
 
-
-
-
 // Web Server Stuff and things
-  var timerServer = new nodeStatic.Server('./static')
-  const httpServer = require('http').createServer(function (request, response) {
-      request.addListener('end', function () {
+var timerServer = new nodeStatic.Server('./static')
+const httpServer = require('http').createServer(function (request, response) {
+  request.addListener('end', () => {
 
-        if (request.url == '/data') {
-          let data = {
-            name: cueName,
-            timer: lastSet,
-            app: config.appChoice,
-            progress: progress,
-            showMode: showMode
-          }
-          response.writeHead(200, { 'Content-Type': 'application/json' });
-          response.end(JSON.stringify(data), 'utf-8');
-        } else {
-          timerServer.serve(request, response, function (err, result) {
-            if (err) { // There was an error serving the file
-                log.error("Error serving " + request.url + " - " + err.message)
- 
-                // Respond to the client
-                response.writeHead(err.status, err.headers)
-                response.end()
-            }
-          })
-        }
-      }).resume()
-  })
-  const io = require("socket.io")(httpServer, {})
+    // data to return
+    let data = {
+      name: apps[config.appChoice].timer.cueName,
+      timer: lastSet,
 
-  io.on("connection", socket => { 
-    console.log('Socket IO Connection!')
-    io.emit('cueName', cueName)
-    if (lastSet != '') {
-      io.emit('timer', lastSet)
+      remaining: {
+        hours: Math.floor(apps[config.appChoice].timer.remaining / 1000 / 3600),
+        minutes: Math.floor((apps[config.appChoice].timer.remaining / 1000 / 60) % 60),
+        seconds: Math.floor((apps[config.appChoice].timer.remaining / 1000) % 60)
+      },
+      elapsed: {
+        hours: Math.floor(apps[config.appChoice].timer.elapsed / 1000 / 3600),
+        minutes: Math.floor((apps[config.appChoice].timer.elapsed / 1000 / 60) % 60),
+        seconds: Math.floor((apps[config.appChoice].timer.elapsed / 1000) % 60)
+      },
+      total: {
+        hours: Math.floor(apps[config.appChoice].timer.total / 1000 / 3600),
+        minutes: Math.floor((apps[config.appChoice].timer.total / 1000 / 60) % 60),
+        seconds: Math.floor((apps[config.appChoice].timer.total / 1000) % 60)
+      },
+
+      seconds: apps[config.appChoice].timer.seconds,
+      noVT: apps[config.appChoice].timer.noVT,
+      app: {
+        name: apps[config.appChoice].name,
+        longName: apps[config.appChoice].longName,
+        config: apps[config.appChoice].config
+      },
+      progress: apps[config.appChoice].timer.progress,
+      showMode: showMode
     }
-   })
-  
-  httpServer.listen(56868)
 
+    switch (request.url) {
+      case '/api/v1/data':
+      case '/api/v1/data/json':
+        response.writeHead(200, { 'Content-Type': 'application/json' })
+        response.end(JSON.stringify(data), 'utf-8')
+        break;
+      
+      case '/api/v1/data/array':
+        response.writeHead(200, { 'Content-Type': 'application/json' })
+        response.end(JSON.stringify([data]), 'utf-8')
+        break;
+    
+      default:
+        timerServer.serve(request, response, function (err, result) {
+          if (err) { // There was an error serving the file
+            log.error("Error serving " + request.url + " - " + err.message)
 
+            // Respond to the client
+            response.writeHead(err.status, err.headers)
+            response.end()
+          }
+        })
+        break;
+    }
+  }).resume()
+})
+const io = require("socket.io")(httpServer, {})
+
+io.on("connection", socket => { 
+  console.log('Socket IO Connection!')
+  io.emit('cueName', cueName)
+  if (lastSet != '') {
+    io.emit('timer', lastSet)
+  }
+})
+
+httpServer.listen(56868)
 
 
 // AUTO UPDATE
