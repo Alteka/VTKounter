@@ -400,8 +400,21 @@ const httpServer = require('http').createServer(function (request, response) {
     }
 
     switch (request.url) {
+      case '/api':
+      case '/api/v1':
+        response.writeHead(200, { 'Content-Type': 'application/json' })
+        response.end(JSON.stringify({
+          data: {url: 'api/v1/data', description: 'JSON: Our full api data endpoint as an object'},
+          array: {url: 'api/v1/data/array', description: 'JSON: Our full api endpoint as an array - as required by vMix'},
+          array: {url: 'api/v1/vmix', description: 'JSON: The bare essentials for adding as a data source in vMix'},
+          progress: {url: 'api/v1/progress', description: 'Text: Float from 0 to 1 representing progress through the cue'},
+          timer: {url: 'api/v1/timer', description: 'Text: A formatted string representing the time remaining'},
+          name: {url: 'api/v1/name', description: 'Text: The current cue name/number'},
+          seconds: {url: 'api/v1/seconds', description: 'Text: The number of seconds remaining'}
+        }), 'utf-8')
+        break;
+        
       case '/api/v1/data':
-      case '/api/v1/data/json':
         response.writeHead(200, { 'Content-Type': 'application/json' })
         response.end(JSON.stringify(data), 'utf-8')
         break;
@@ -409,6 +422,35 @@ const httpServer = require('http').createServer(function (request, response) {
       case '/api/v1/data/array':
         response.writeHead(200, { 'Content-Type': 'application/json' })
         response.end(JSON.stringify([data]), 'utf-8')
+        break;
+
+      case '/api/v1/vmix':
+        response.writeHead(200, { 'Content-Type': 'application/json' })
+        let vmix = {
+          vt_name: data.name,
+          timeRemaining: data.timer
+        }
+        response.end(JSON.stringify([vmix]), 'utf-8')
+        break;
+    
+      case '/api/v1/progress':
+        response.writeHead(200)
+        response.end(JSON.stringify(apps[config.appChoice].timer.progress), 'utf-8')
+        break;
+
+      case '/api/v1/timer':
+        response.writeHead(200)
+        response.end(lastSet, 'utf-8')
+        break;
+
+      case '/api/v1/name':
+        response.writeHead(200)
+        response.end(apps[config.appChoice].timer.cueName, 'utf-8')
+        break;
+
+      case '/api/v1/seconds':
+        response.writeHead(200)
+        response.end(JSON.stringify(apps[config.appChoice].timer.seconds.remaining), 'utf-8')
         break;
     
       default:
