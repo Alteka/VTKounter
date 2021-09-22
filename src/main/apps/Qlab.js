@@ -62,7 +62,9 @@ class vtAppQlab extends vtApp {
           for (var i = 1; i < data.data.length; i++) {
             if (this.config.filterColour.includes(data.data[i].colorName) || this.config.filterColour.length == 0) {
               if (this.config.filterCueType.includes(data.data[i].type) || this.config.filterCueType.length == 0) {
-                this.matchingCues.push(data.data[i].uniqueID)
+                if (data.data[i].type != 'Group') {
+                  this.matchingCues.push(data.data[i].uniqueID)
+                }
               }
             }
           }
@@ -70,18 +72,23 @@ class vtAppQlab extends vtApp {
           this.timer.reset()
         }
         if (this.matchingCues.length == 1) {
-          this.timer.cueName = data.data[1].listName
+
+          i=1;
+          while (data.data[i].type == 'Group') {
+            i++;
+          }
+          this.timer.cueName = data.data[i].listName
           this.timer.noVT = false
         }
         if (this.matchingCues.length == 0) {
           this.timer.reset()
         }
         if (this.matchingCues.length > 1) {
-          log.warn('Multiple matching QLab Cues are running')
+          log.warn('Multiple matching QLab Cues are running', this.matchingCues)
         }
       }
       if (cmd == 'currentDuration' && this.matchingCues[0] == cue) {
-        if (this.timer.total !== data.data) {
+        if (this.timer.total !== Math.round(data.data*1000)) {
           log.info('--==--  QLab VT Started with Duration ' + data.data + '  --==--')
         }
         this.timer.total = Math.round(data.data * 1000)
