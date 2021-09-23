@@ -17,9 +17,11 @@
         </el-row>
         <el-row v-if="ipAddresses.length > 1">
           <el-col>
-            <el-select v-model="ip" placeholder="Select IP">
-              <el-option v-for="address in ipAddresses" :key="address" :label="address" :value="address"></el-option>
-            </el-select>
+            <el-form-item label="Select IP Address" label-width="250px;">
+              <el-select v-model="ip" placeholder="Select IP">
+                <el-option v-for="address in ipAddresses" :key="address" :label="address" :value="address"></el-option>
+              </el-select>
+            </el-form-item>
           </el-col>
         </el-row>
 
@@ -66,7 +68,7 @@
         </el-row>
 
          <el-divider content-position="center">API</el-divider>
-        <p style="text-align: center;">A simple JSON API exists here<br />It works perfectly in vMix as a Data Source</p>
+        <p style="text-align: center;">A simple REST API exists here<br />It works perfectly in vMix as a Data Source</p>
         <el-row>
           <el-col :span="21">
             <el-form-item label="API URL">
@@ -75,6 +77,16 @@
           </el-col>
           <el-col :span="3" style="text-align: center;">
             <el-button type="success" icon="el-icon-document-copy" size="small" round @click="copyUrl(api)"></el-button>
+          </el-col>
+        </el-row>
+        <el-row>
+          <el-col :span="21">
+            <el-form-item label="vMix API URL">
+              <el-input v-model="apivmix" :readonly="true"></el-input>
+            </el-form-item>
+          </el-col>
+          <el-col :span="3" style="text-align: center;">
+            <el-button type="success" icon="el-icon-document-copy" size="small" round @click="copyUrl(apivmix)"></el-button>
           </el-col>
         </el-row>
 
@@ -97,7 +109,7 @@ const { ipcRenderer } = require('electron')
     mounted: function() {
       let vm = this
       vm.updateNetworkInfo()
-      setInterval(vm.updateNetworkInfo, 10000)
+      setInterval(vm.updateNetworkInfo, 30000)
       ipcRenderer.on('networkInfo', function(event, networkInfo) {
         vm.ip = networkInfo[0]
         vm.ipAddresses = networkInfo
@@ -129,7 +141,10 @@ const { ipcRenderer } = require('electron')
         return encodeURI('http://' + this.ip + ':56868/?fs=' + this.webserver.fontsize + '&fg=' + this.webserver.fg.substr(1) + '&a=' + this.webserver.align + '&sn=' + this.webserver.showName + '&ns=' + this.webserver.nameSize)
       },
       api: function() {
-        return encodeURI('http://' + this.ip + ':56868/data')
+        return encodeURI('http://' + this.ip + ':56868/api/v1')
+      },
+      apivmix: function() {
+        return encodeURI('http://' + this.ip + ':56868/api/v1/vmix')
       }
     }
   }

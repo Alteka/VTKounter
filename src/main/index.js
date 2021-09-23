@@ -362,50 +362,122 @@ function updateCueName(name) {
   }
 }
 
-
-
-
 // Web Server Stuff and things
-  var timerServer = new nodeStatic.Server('./static')
-  const httpServer = require('http').createServer(function (request, response) {
-      request.addListener('end', function () {
+var timerServer = new nodeStatic.Server('./static')
+const httpServer = require('http').createServer(function (request, response) {
+  request.addListener('end', () => {
 
-        if (request.url == '/data') {
-          let data = {
-            name: cueName,
-            timer: lastSet,
-            app: config.appChoice,
-            progress: progress,
-            showMode: showMode
-          }
-          response.writeHead(200, { 'Content-Type': 'application/json' });
-          response.end(JSON.stringify(data), 'utf-8');
-        } else {
-          timerServer.serve(request, response, function (err, result) {
-            if (err) { // There was an error serving the file
-                log.error("Error serving " + request.url + " - " + err.message)
- 
-                // Respond to the client
-                response.writeHead(err.status, err.headers)
-                response.end()
-            }
-          })
-        }
-      }).resume()
-  })
-  const io = require("socket.io")(httpServer, {})
+    // data to return
+    let data = {
+      name: apps[config.appChoice].timer.cueName,
+      timer: lastSet,
 
-  io.on("connection", socket => { 
-    console.log('Socket IO Connection!')
-    io.emit('cueName', cueName)
-    if (lastSet != '') {
-      io.emit('timer', lastSet)
+      remaining: {
+        hours: Math.floor(apps[config.appChoice].timer.remaining / 1000 / 3600),
+        minutes: Math.floor((apps[config.appChoice].timer.remaining / 1000 / 60) % 60),
+        seconds: Math.floor((apps[config.appChoice].timer.remaining / 1000) % 60)
+      },
+      elapsed: {
+        hours: Math.floor(apps[config.appChoice].timer.elapsed / 1000 / 3600),
+        minutes: Math.floor((apps[config.appChoice].timer.elapsed / 1000 / 60) % 60),
+        seconds: Math.floor((apps[config.appChoice].timer.elapsed / 1000) % 60)
+      },
+      total: {
+        hours: Math.floor(apps[config.appChoice].timer.total / 1000 / 3600),
+        minutes: Math.floor((apps[config.appChoice].timer.total / 1000 / 60) % 60),
+        seconds: Math.floor((apps[config.appChoice].timer.total / 1000) % 60)
+      },
+
+      seconds: apps[config.appChoice].timer.seconds,
+      noVT: apps[config.appChoice].timer.noVT,
+      app: {
+        name: apps[config.appChoice].name,
+        longName: apps[config.appChoice].longName,
+        config: apps[config.appChoice].config
+      },
+      progress: apps[config.appChoice].timer.progress,
+      showMode: showMode
     }
-   })
-  
-  httpServer.listen(56868)
 
+    switch (request.url) {
+      case '/api':
+      case '/api/v1':
+        response.writeHead(200, { 'Content-Type': 'application/json' })
+        response.end(JSON.stringify({
+          data: {url: 'api/v1/data', description: 'JSON: Our full api data endpoint as an object'},
+          array: {url: 'api/v1/data/array', description: 'JSON: Our full api endpoint as an array - as required by vMix'},
+          array: {url: 'api/v1/vmix', description: 'JSON: The bare essentials for adding as a data source in vMix'},
+          progress: {url: 'api/v1/progress', description: 'Text: Float from 0 to 1 representing progress through the cue'},
+          timer: {url: 'api/v1/timer', description: 'Text: A formatted string representing the time remaining'},
+          name: {url: 'api/v1/name', description: 'Text: The current cue name/number'},
+          seconds: {url: 'api/v1/seconds', description: 'Text: The number of seconds remaining'}
+        }), 'utf-8')
+        break;
+        
+      case '/api/v1/data':
+        response.writeHead(200, { 'Content-Type': 'application/json' })
+        response.end(JSON.stringify(data), 'utf-8')
+        break;
+      
+      case '/api/v1/data/array':
+        response.writeHead(200, { 'Content-Type': 'application/json' })
+        response.end(JSON.stringify([data]), 'utf-8')
+        break;
 
+      case '/api/v1/vmix':
+        response.writeHead(200, { 'Content-Type': 'application/json' })
+        let vmix = {
+          vt_name: data.name,
+          timeRemaining: data.timer
+        }
+        response.end(JSON.stringify([vmix]), 'utf-8')
+        break;
+    
+      case '/api/v1/progress':
+        response.writeHead(200)
+        response.end(JSON.stringify(apps[config.appChoice].timer.progress), 'utf-8')
+        break;
+
+      case '/api/v1/timer':
+        response.writeHead(200)
+        response.end(lastSet, 'utf-8')
+        break;
+
+      case '/api/v1/name':
+        response.writeHead(200)
+        response.end(apps[config.appChoice].timer.cueName, 'utf-8')
+        break;
+
+      case '/api/v1/seconds':
+        response.writeHead(200)
+        response.end(JSON.stringify(apps[config.appChoice].timer.seconds.remaining), 'utf-8')
+        break;
+    
+      default:
+        timerServer.serve(request, response, function (err, result) {
+          if (err) { // There was an error serving the file
+            log.error("Error serving " + request.url + " - " + err.message)
+
+            // Respond to the client
+            response.writeHead(err.status, err.headers)
+            response.end()
+          }
+        })
+        break;
+    }
+  }).resume()
+})
+const io = require("socket.io")(httpServer, {})
+
+io.on("connection", socket => { 
+  console.log('Socket IO Connection!')
+  io.emit('cueName', cueName)
+  if (lastSet != '') {
+    io.emit('timer', lastSet)
+  }
+})
+
+httpServer.listen(56868)
 
 
 // AUTO UPDATE
