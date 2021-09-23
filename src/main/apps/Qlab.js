@@ -47,7 +47,7 @@ class vtAppQlab extends vtApp {
   send() {
     this.client.send('/cue/active/currentDuration', 200, () => { })
     this.client.send('/cue/active/actionElapsed', 200, () => { })
-    this.client.send('/runningCues', 200, () => { })
+    this.client.send('/runningOrPausedCues', 200, () => { })
   }
 
   receive(msg) {
@@ -56,10 +56,10 @@ class vtAppQlab extends vtApp {
       var data = JSON.parse(msg[1])
       var cue = msg[0].split('/')[3]
 
-      if (cmd == 'runningCues') {
+      if (cmd == 'runningOrPausedCues') {
         this.matchingCues = [];
-        if (data.data.length > 1) {
-          for (var i = 1; i < data.data.length; i++) {
+        if (data.data.length > 0) {
+          for (var i = 0; i < data.data.length; i++) {
             if (this.config.filterColour.includes(data.data[i].colorName) || this.config.filterColour.length == 0) {
               if (this.config.filterCueType.includes(data.data[i].type) || this.config.filterCueType.length == 0) {
                 if (data.data[i].type != 'Group') {
@@ -72,8 +72,7 @@ class vtAppQlab extends vtApp {
           this.timer.reset()
         }
         if (this.matchingCues.length == 1) {
-
-          i=1;
+          i=0;
           while (data.data[i].type == 'Group') {
             i++;
           }
