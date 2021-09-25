@@ -30,11 +30,14 @@
       "dist/electron/**/*"
     ],
     "mac": {
-      "icon": "build/icons/icon.png",
-      "target": "pkg"
+      "icon": "build/icons/icon.png"
     },
     "win": {
-      "icon": "build/icons/icon.png"
+      "icon": "build/icons/icon.png",
+      "target": [
+        "portable",
+        "nsis"
+      ]
     },
     "nsis": {
       "oneClick": false,
@@ -55,6 +58,7 @@
     "node-static": "^0.7.11",
     "nucleus-nodejs": "^3.0.8",
     "obs-websocket-js": "^4.0.2",
+    "require-dir": "^1.2.0",
     "say": "^0.16.0",
     "socket.io": "^4.1.2",
     "vue": "^2.6.12",

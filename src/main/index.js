@@ -13,19 +13,17 @@ const { networkInterfaces } = require('os')
 const fs = require('fs')
 const path = require('path')
 const store = new Store()
+const requireDir = require('require-dir')
 
-
-const appsFolder = path.join(__dirname,'./apps')
-var apps = {}
+const appsFolder = path.join(__static,'apps')
+var apps = requireDir(appsFolder)
 var appControls = {}
 var appDefaults = {}
 
 // loop through all files in apps folder
-fs.readdirSync(appsFolder).forEach(file => {
-  // construct apps object with instaces of each vtApp class in
-  let name = path.parse(file).name
-  let vtApp = require(`./apps/${name}`)
-  apps[name] = new vtApp()
+for(const name in apps) {
+  // create instances of each app
+  apps[name] = new apps[name]()
 
   // keep track of the UI controls each app requires
   appControls[name] = {
@@ -40,7 +38,7 @@ fs.readdirSync(appsFolder).forEach(file => {
   Object.entries(apps[name].controls).forEach(([controlID, control]) => {
     appDefaults[name][controlID] = control.default
   })
-})
+}
 
 var config = store.get('VTKounterConfig', getDefaultConfig())
 if (config.apps === undefined || config.webserver === undefined) {
