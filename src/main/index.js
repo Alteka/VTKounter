@@ -7,7 +7,8 @@ const { exec } = require('child_process')
 const axios = require('axios')
 var compareVersions = require('compare-versions')
 const Store = require('electron-store')
-const Nucleus = require('nucleus-nodejs')
+import Analytics from 'analytics'
+import googleAnalytics from '@analytics/google-analytics'
 var nodeStatic = require('node-static')
 const { networkInterfaces } = require('os')
 const fs = require('fs')
@@ -19,6 +20,17 @@ const appsFolder = path.join(__dirname,'./apps')
 var apps = {}
 var appControls = {}
 var appDefaults = {}
+
+// Set up analytics to use google
+const analytics = Analytics({
+  app: 'VTKounter',
+  version: 100,
+  plugins: [
+    googleAnalytics({
+      trackingId: 'UA-183734846-2',
+    })
+  ]
+})
 
 // loop through all files in apps folder
 fs.readdirSync(appsFolder).forEach(file => {
@@ -103,10 +115,13 @@ app.on('ready', function() {
     log.info('First Runtime and created Install ID: ' + newId)
     store.set('VTKounterInstallID', newId)
   }
-  Nucleus.setUserId(store.get('VTKounterInstallID'))
+  // Nucleus.setUserId(store.get('VTKounterInstallID'))
   log.info('Install ID: ' + store.get('VTKounterInstallID'))
-  Nucleus.init('60a11e942bb3f447cc2a48a0', { disableInDev: false })
-  Nucleus.appStarted()
+  // Nucleus.init('60a11e942bb3f447cc2a48a0', { disableInDev: false })
+  // Nucleus.appStarted()
+
+  analytics.identify(store.get('VTKounterInstallID'))
+  analytics.track('AppLaunched')
 
 })
 
@@ -133,7 +148,7 @@ ipcMain.on('controlResize', (event, w, h) => {
 ipcMain.on('openLogs', (event, w, h) => {
   const path = log.transports.file.findLogPath()
   shell.showItemInFolder(path)
-  Nucleus.track('Open Logs')
+  analytics.track('Open Logs')
 })
 
 ipcMain.on('getConfig', (event) => {
@@ -146,7 +161,7 @@ ipcMain.on('factoryReset', () => {
   config = getDefaultConfig()
   controlWindow.webContents.send('config', config)
   store.set('VTKounterConfig', config)
-  Nucleus.track('Factory Reset')
+  analytics.track('Factory Reset')
 })
 
 ipcMain.on('networkInfo', (event) => {
@@ -257,12 +272,8 @@ ipcMain.on('showMode', (event, cfg) => {
   store.set('VTKounterConfig', config)
   clearTimer()
 
-  Nucleus.track('Show Mode', {
-    app: config.appChoice,
-    showPercentage: config.showPercentage,
-    showCueName: config.showCueName,
-    obs: config.obs.enabled
-  })
+  analytics.track('ShowMode')
+  analytics.page({ title: config.appChoice, href:config.appChoice, path:config.appChoice}) // store the app used as a page view.
 })
 
 
@@ -282,6 +293,7 @@ obs.on('AuthenticationSuccess', function(data) {
   log.info('Connected to OBS & Authenticated')
   ConnectedToOBS = true
   controlWindow.webContents.send('obsStatus', true)
+  analytics.track('ConnectedToOBS')
 })
 
 obs.on('AuthenticationFailure', function(data) {
