@@ -115,10 +115,8 @@ app.on('ready', function() {
     log.info('First Runtime and created Install ID: ' + newId)
     store.set('VTKounterInstallID', newId)
   }
-  // Nucleus.setUserId(store.get('VTKounterInstallID'))
+
   log.info('Install ID: ' + store.get('VTKounterInstallID'))
-  // Nucleus.init('60a11e942bb3f447cc2a48a0', { disableInDev: false })
-  // Nucleus.appStarted()
 
   analytics.identify(store.get('VTKounterInstallID'))
   analytics.track('AppLaunched')
