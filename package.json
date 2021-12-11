@@ -46,7 +46,9 @@
     }
   },
   "dependencies": {
+    "@analytics/google-analytics": "^0.5.3",
     "@fortawesome/fontawesome-free": "^5.15.1",
+    "analytics": "^0.7.18",
     "axios": "^0.21.1",
     "compare-versions": "^3.6.0",
     "electron-log": "^4.3.0",
@@ -61,6 +63,7 @@
     "require-dir": "^1.2.0",
     "say": "^0.16.0",
     "socket.io": "^4.1.2",
+    "universal-analytics": "^0.5.1",
     "vue": "^2.6.12",
     "vue-electron": "^1.0.6",
     "vue-resize": "^1.0.0",
