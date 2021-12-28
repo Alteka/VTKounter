@@ -14,12 +14,7 @@ const { networkInterfaces } = require('os')
 const fs = require('fs')
 const path = require('path')
 const store = new Store()
-
-
-const appsFolder = path.join(__dirname,'./apps')
-var apps = {}
-var appControls = {}
-var appDefaults = {}
+import { v4 as uuidv4 } from 'uuid';
 
 // Set up analytics to use google
 const analytics = Analytics({
@@ -28,14 +23,40 @@ const analytics = Analytics({
   plugins: [
     googleAnalytics({
       trackingId: 'UA-183734846-2',
+      tasks: {
+        // Set checkProtocolTask for electron apps & chrome extensions
+        checkProtocolTask: null,
+      }
     })
   ]
 })
 
+if (!store.has('VTKounterInstallID')) {
+  let newId = uuidv4()
+  log.info('First Runtime and created Install ID: ' + newId)
+  store.set('VTKounterInstallID', newId)
+} else {
+  log.info('Loading with Install ID: ' + store.get('VTKounterInstallID'))
+}
+
+analytics.identify(store.get('VTKounterInstallID'), {
+  firstName: 'Version',
+  lastName: require('./../../package.json').version
+}, () => {
+  console.log('do this after identify')
+})
+
+
+var appArray = ['Mitti', 'Ppp', 'PVP', 'Qlab', 'Vmix'];
+var apps = {}
+var appControls = {}
+var appDefaults = {}
+
 // loop through all files in apps folder
-fs.readdirSync(appsFolder).forEach(file => {
+for (const f in appArray) {
+
   // construct apps object with instaces of each vtApp class in
-  let name = path.parse(file).name
+  let name = appArray[f]
   let vtApp = require(`./apps/${name}`)
   apps[name] = new vtApp()
 
@@ -52,7 +73,7 @@ fs.readdirSync(appsFolder).forEach(file => {
   Object.entries(apps[name].controls).forEach(([controlID, control]) => {
     appDefaults[name][controlID] = control.default
   })
-})
+}
 
 var config = store.get('VTKounterConfig', getDefaultConfig())
 if (config.apps === undefined || config.webserver === undefined) {
@@ -110,15 +131,6 @@ app.on('ready', function() {
   log.info('Launching VT Kounter')
   createWindow()
 
-  if (!store.has('VTKounterInstallID')) {
-    let newId = UUID()
-    log.info('First Runtime and created Install ID: ' + newId)
-    store.set('VTKounterInstallID', newId)
-  }
-
-  log.info('Install ID: ' + store.get('VTKounterInstallID'))
-
-  analytics.identify(store.get('VTKounterInstallID'))
   analytics.track('AppLaunched')
 
 })
@@ -528,10 +540,3 @@ axios.get('https://api.github.com/repos/alteka/vtkounter/releases/latest')
     log.error(error)
   })
 }, 3000)
-
-function UUID() {
-  return 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, function(c) {
-    var r = Math.random() * 16 | 0, v = c == 'x' ? r : (r & 0x3 | 0x8)
-    return v.toString(16)
-  })
-}
