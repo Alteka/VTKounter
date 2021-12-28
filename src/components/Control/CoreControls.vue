@@ -40,7 +40,6 @@
 </template>
 
 <script>
-const { ipcRenderer } = require('electron')
   export default {
     props: {
       config: Object,
@@ -57,7 +56,7 @@ const { ipcRenderer } = require('electron')
     },
     methods: {
       factoryReset: function() {
-        ipcRenderer.send('factoryReset')
+        window.ipcRenderer.send('factoryReset')
       }
     }
   }

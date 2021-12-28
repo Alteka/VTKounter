@@ -1,6 +1,4 @@
 <template>
-  <div>
-    
     <el-tabs v-model="tab" style="padding-left: 10px; padding-right: 10px;">
       <el-tab-pane label="Core Settings" name="core">
         <core-controls :config="config" :appControls="appControls"></core-controls>
@@ -18,19 +16,15 @@
         <webserver-controls :webserver="config.webserver"></webserver-controls>
       </el-tab-pane>
     </el-tabs>
-
-  </div>
 </template>
 
 <script>
-const { ipcRenderer } = require('electron')
 import ObsControls from './Control/ObsControls'
 import AppControls from './Control/AppControls'
 import CoreControls from './Control/CoreControls'
 import WebserverControls from './Control/WebserverControls'
 
   export default {
-    name: 'control',
     components: { ObsControls, AppControls, CoreControls, WebserverControls },
     props: {
       config: Object,

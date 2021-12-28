@@ -94,8 +94,6 @@
 </template>
 
 <script>
-const { ipcRenderer } = require('electron')
-
   export default {
     props: {
       webserver: Object
@@ -110,14 +108,14 @@ const { ipcRenderer } = require('electron')
       let vm = this
       vm.updateNetworkInfo()
       setInterval(vm.updateNetworkInfo, 30000)
-      ipcRenderer.on('networkInfo', function(event, networkInfo) {
+      window.ipcRenderer.receive('networkInfo', function(networkInfo) {
         vm.ip = networkInfo[0]
         vm.ipAddresses = networkInfo
       })
     },
     methods: {
       updateNetworkInfo: function() {
-        ipcRenderer.send('networkInfo')
+        window.ipcRenderer.send('networkInfo')
       },
       copyUrl: function(value) {
         const el = document.createElement('textarea');  

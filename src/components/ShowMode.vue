@@ -26,8 +26,6 @@
 </template>
 
 <script>
-const { ipcRenderer } = require('electron')
-
   export default {
     name: 'showMode',
     props: {
@@ -47,29 +45,29 @@ const { ipcRenderer } = require('electron')
       }
     },
     mounted: function(){
-      this.$nextTick(function () {
-        let h = document.getElementById('wrapper').clientHeight
-        let w = document.getElementById('wrapper').clientWidth
-        ipcRenderer.send('controlResize', w, h)
-      })
+      // this.$nextTick(function () {
+      //   let h = document.getElementById('wrapper').clientHeight
+      //   let w = document.getElementById('wrapper').clientWidth
+      //   window.ipcRenderer.send('controlResize', w, h)
+      // })
       let vm = this
-      ipcRenderer.on('vtStatus', function(event, status) {
+      window.ipcRenderer.receive('vtStatus', function(status) {
         vm.vtStatus = status
       })
-      ipcRenderer.on('obsStatus', function(event, status, msg) {
+      window.ipcRenderer.receive('obsStatus', function(status, msg) {
         vm.obsStatus = status
         vm.obsMessage = msg
       })
-      ipcRenderer.on('timer', function(event, timer) {
+      window.ipcRenderer.receive('timer', function(timer) {
         vm.timer = timer
       })
-      ipcRenderer.on('percentage', function(event, data) {
+      window.ipcRenderer.receive('percentage', function(data) {
         vm.percentage = data
       })
-      ipcRenderer.on('warning', function(event, val) {
+      window.ipcRenderer.receive('warning', function(val) {
         vm.warning = val
       })
-      ipcRenderer.on('cueName', function(event, val) {
+      window.ipcRenderer.receive('cueName', function(val) {
         vm.cueName = val
       })
     },

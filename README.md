@@ -21,14 +21,19 @@ The app is based around Electron to create and manage the windows. The content i
 #You'll need to have node.js installed
 
 # install dependencies
-npm install
+yarn install
 
 # serve with hot reload at localhost:9080
-npm run dev
+yarn run electron:serve
 
 # build electron application for production
-npm run build
+yarn run electron:build
 ```
+
+---
+
+### Customize configuration
+See [Configuration Reference](https://cli.vuejs.org/config/).
 
 ---
 
