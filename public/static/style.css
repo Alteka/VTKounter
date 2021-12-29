@@ -1,0 +1,33 @@
+body {
+    font-family: 'Sansation', monospace;
+  }
+
+  @font-face {
+    font-family: Sansation;
+    src: url(Sansation-Regular.ttf);
+  }
+
+  @font-face {
+    font-family: DejaVu;
+    src: url(DejaVuLGCSansMono.ttf);
+  }
+
+  #app {
+      width: 100%;
+      height: 100%;
+      top: 0;
+      left: 0;
+      position: absolute;
+      display: inline-block;
+      text-align:center;
+      white-space: nowrap;
+  }
+
+  .timer {
+    margin: 0;
+    font-family: DejaVu, monospace;
+  }
+
+  .cueName {
+    margin: 0; 
+  }

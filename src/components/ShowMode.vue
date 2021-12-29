@@ -45,11 +45,11 @@
       }
     },
     mounted: function(){
-      // this.$nextTick(function () {
-      //   let h = document.getElementById('wrapper').clientHeight
-      //   let w = document.getElementById('wrapper').clientWidth
-      //   window.ipcRenderer.send('controlResize', w, h)
-      // })
+      this.$nextTick(function () {
+        let h = document.getElementById('wrapper').clientHeight
+        let w = document.getElementById('wrapper').clientWidth
+        window.ipcRenderer.send('controlResize', {width: w, height: h})
+      })
       let vm = this
       window.ipcRenderer.receive('vtStatus', function(status) {
         vm.vtStatus = status
