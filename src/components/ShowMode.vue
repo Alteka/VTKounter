@@ -1,7 +1,5 @@
 <template>
-  <div>
-
-    <el-row style="font-family: DejaVuSansMono; font-size: 400%; text-align: center;" :style="{ color: warningColour, 'font-size': size + '%'}">
+    <el-row class="timer" justify="center" :style="{ color: warningColour, 'font-size': size + '%'}">
       {{timer}}
     </el-row>
     <el-row v-if="config.showPercentage" style="padding: 10px; text-align: center;">
@@ -21,8 +19,6 @@
         <span v-if="!obsStatus">OBS <i class="fas fa-link red"></i> Not Connected: {{obsMessage}}</span>
       </el-col>
     </el-row>
-    
-  </div>
 </template>
 
 <script>
@@ -45,11 +41,6 @@
       }
     },
     mounted: function(){
-      this.$nextTick(function () {
-        let h = document.getElementById('wrapper').clientHeight
-        let w = document.getElementById('wrapper').clientWidth
-        window.ipcRenderer.send('controlResize', {width: w, height: h})
-      })
       let vm = this
       window.ipcRenderer.receive('vtStatus', function(status) {
         vm.vtStatus = status
@@ -86,5 +77,12 @@
 </script>
 
 <style>
-
+@font-face {
+  font-family: DejaVuSansMono;
+  src: url("~@/assets/DejaVuLGCSansMono.ttf");
+}
+.timer {
+ font-family: DejaVuSansMono;
+ font-size: 400%;
+}
 </style>
