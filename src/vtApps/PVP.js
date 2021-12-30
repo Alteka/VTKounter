@@ -22,10 +22,10 @@ class vtAppPVP extends vtApp {
         default: true
       },
       token: {
-        label: "Authenication Token",
+        label: "Auth Token",
         type: "string",
         default: "",
-        notes: "Leave blank to disbale authentication"
+        notes: "Leave blank to disable authentication"
       },
       layer: {
         label: "Layer Name",

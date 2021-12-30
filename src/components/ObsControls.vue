@@ -1,35 +1,35 @@
 <template>
   <el-form label-width="100px" size="small" :rules="obsValidationRules" ref="obsForm" :model="obs">
         <el-row>
-          <el-col :span="24">
             <el-form-item label="Enable OBS Output" label-width="160px">
               <el-switch v-model="obs.enabled"></el-switch>
             </el-form-item>
-          </el-col>
         </el-row>
         <el-row v-if="obs.enabled">
-          <el-col :span="12">
+          <el-col :span="14">
             <el-form-item label="IP Address" prop="ip">
               <el-input v-model="obs.ip"></el-input>
             </el-form-item>
           </el-col>
-          <el-col :span="12">
+          <el-col :span="10">
             <el-form-item label="Port" prop="port">
               <el-input v-model="obs.port"></el-input>
             </el-form-item>
           </el-col>
         </el-row>
         <el-row v-if="obs.enabled">
+          <el-col :span="14">
             <el-form-item label="Password" prop="password">
               <el-input v-model="obs.password"></el-input>
             </el-form-item>
+          </el-col>
         </el-row>
         <el-row v-if="obs.enabled">
           <el-form-item label="Name of text source to update" label-width="240px" prop="name">
             <el-input v-model="obs.source"></el-input>
           </el-form-item>
         </el-row>
-        <el-row style="text-align: center;" v-if="obs.enabled">
+        <el-row justify="center" v-if="obs.enabled">
           <p>OBS Needs to have the WebSocket Server enabled.<br />The socket server must have a password set. </p>
         </el-row>
         </el-form>
@@ -38,7 +38,7 @@
 <script>
   export default {
     props: {
-      obs: Object
+      modelValue: Object // v-model object
     },
     data: function() {
       return {
@@ -55,6 +55,16 @@
           name: [
             { required: true, message: 'This source name is required', trigger: 'blur' }
           ]
+        }
+      }
+    },
+    computed: {
+      obs: {
+        get() {
+          return this.modelValue // return v-model
+        },
+        set(value) {
+          this.$emit('update:modelValue', value) // update the v-model object to parent component
         }
       }
     }

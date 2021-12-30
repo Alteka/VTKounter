@@ -19,15 +19,17 @@ var nodeStatic = require('node-static')
 const { networkInterfaces } = require('os')
 const OBSWebSocket = require('obs-websocket-js')
 const obs = new OBSWebSocket()
+const moment = require('moment')
 
 const store = new Store()
 
-const isDevelopment = process.env.NODE_ENV !== 'production'
 
 
 //======================================//
 //      BOILER PLATE ELECTRON STUFF     //
 //======================================//
+const isDevelopment = process.env.NODE_ENV !== 'production'
+
 protocol.registerSchemesAsPrivileged([
   { scheme: 'app', privileges: { secure: true, standard: true } }
 ])
@@ -197,7 +199,15 @@ ipcMain.on('networkInfo', (event) => {
 //====================================//
 //       Config Store & VT Apps       //
 //====================================//
-var apps = requireDir(path.join(__static,'vtApps'))
+// ! var apps = requireDir(path.join(__static,'vtApps')) -- kinda works but fails to webpack properly - workaround below
+var apps = {
+  Mitti: require('./vtApps/Mitti.js'),
+  Ppp: require('./vtApps/Ppp.js'),
+  PVP: require('./vtApps/PVP.js'),
+  Qlab: require('./vtApps/Qlab.js'),
+  Vmix: require('./vtApps/Vmix.js')
+}
+console.log('APPS', apps)
 var appControls = {}
 var appDefaults = {}
 
@@ -400,7 +410,7 @@ let obsPlatformIsMac = false
 function obsConnect() {
   if (config.obs.password != '') {
     log.info('Attempting to connect to OBS ' + ' - ', config.obs.ip + ':'+ config.obs.port, config.obs.password)
-    obs.connect({ address: config.obs.ip + ':'+ config.obs.port, password: config.obs.password }).catch(err => { // Promise convention dicates you have a catch on every chain.
+    obs.connect({ address: config.obs.ip + ':'+ config.obs.port, password: config.obs.password }).catch(err => {
         log.error('OBS connection error: ', err.description)
     })
   } else {

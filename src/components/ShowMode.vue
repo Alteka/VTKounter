@@ -1,11 +1,13 @@
 <template>
-    <el-row class="timer" justify="center" :style="{ color: warningColour, 'font-size': size + '%'}">
+    <el-row id="timer" justify="center" :style="{ color: warningColour, 'font-size': size + '%'}">
       {{timer}}
     </el-row>
-    <el-row v-if="config.showPercentage" style="padding: 10px; text-align: center;">
-      <el-progress :percentage="percentage" :color="warningColour" :show-text="false"></el-progress>
+    <el-row v-if="config.showPercentage" style="padding: 10px;" justify="left">
+      <el-col :span="24">
+        <el-progress :percentage="percentage" :show-text="false" :color="warningColour" />
+      </el-col>
     </el-row>
-    <el-row v-if="config.showCueName" style="padding: 10px; text-align: center;">
+    <el-row v-if="config.showCueName" style="padding: 10px;" justify="center">
       {{ cueName }}
     </el-row>
     <el-row style="padding: 10px; text-align: center;">
@@ -81,7 +83,7 @@
   font-family: DejaVuSansMono;
   src: url("~@/assets/DejaVuLGCSansMono.ttf");
 }
-.timer {
+#timer {
  font-family: DejaVuSansMono;
  font-size: 400%;
 }

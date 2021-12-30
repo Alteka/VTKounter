@@ -1,7 +1,7 @@
 <template>
-  <el-form label-width="125px" size="small" :rules="appValidationRules" ref="appForm" :model="app">
+  <el-form label-width="125px" size="small" :rules="appValidationRules" ref="appForm" :model="app" style="text-align: left;">
     <!-- output all controls for app -->
-    <el-row v-for="(control, controlID) in appControl.controls" :key="controlID">
+    <el-row v-for="(control, controlID) in appControl.controls" :key="controlID" justify="left">
       <el-col>
         <el-form-item :label="control.label ? control.label : controlID" :prop="controlID">
           <el-input v-if="control.type=='string'" v-model="app[controlID]"></el-input>
@@ -23,7 +23,7 @@
     </el-row>
 
     <!-- output notes if app has any -->
-    <el-row v-if="appControl.notes" >
+    <el-row v-if="appControl.notes" justify="center">
       <p class="notes" v-html="appControl.notes"></p>
     </el-row>
   </el-form>
@@ -32,8 +32,18 @@
 <script>
   export default {
     props: {
-      app: Object,
+      modelValue: Object, // v-model object
       appControl: Object
+    },
+    computed: {
+      app: {
+        get() {
+          return this.modelValue // return v-model
+        },
+        set(value) {
+          this.$emit('update:modelValue', value) // update the v-model object to parent component
+        }
+      },
     },
     data: function() {
       return {

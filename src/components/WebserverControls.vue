@@ -1,6 +1,6 @@
 <template>
   <el-form label-width="100px" size="small" ref="obsForm">
-        <el-row>
+        <el-row justify="center">
           <p style="margin-top: 0px;">     
             You can view the time remaining in a browser window:
           </p>
@@ -96,7 +96,7 @@
 <script>
   export default {
     props: {
-      webserver: Object
+      modelValue: Object // v-model object
     },
     data: function() {
       return {
@@ -135,6 +135,14 @@
     }
     },
     computed: {
+      webserver: {
+        get() {
+          return this.modelValue // return v-model
+        },
+        set(value) {
+          this.$emit('update:modelValue', value) // update the v-model object to parent component
+        }
+      },
       url: function() {
         return encodeURI('http://' + this.ip + ':56868/?fs=' + this.webserver.fontsize + '&fg=' + this.webserver.fg.substr(1) + '&a=' + this.webserver.align + '&sn=' + this.webserver.showName + '&ns=' + this.webserver.nameSize)
       },

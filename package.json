@@ -18,16 +18,6 @@
     "postinstall": "electron-builder install-app-deps",
     "postuninstall": "electron-builder install-app-deps"
   },
-  "depsToAdd": {
-    "image-size": "^0.9.3",
-    "moment": "^2.29.1",
-    "node-osc": "^5.2.3",
-    "node-static": "^0.7.11",
-    "obs-websocket-js": "^4.0.2",
-    "socket.io": "^4.1.2",
-    "ws": "^6.2.2",
-    "xml2js": "^0.4.23"
-  },
   "dependencies": {
     "@analytics/google-analytics": "^0.5.3",
     "@fortawesome/fontawesome-free": "^5.15.4",
@@ -78,7 +68,6 @@
       "parser": "babel-eslint"
     },
     "rules": {
-      "vue/no-mutating-props": "warn"
     }
   },
   "browserslist": [

@@ -1,20 +1,20 @@
 <template>
 <div style="position: relative;" :class="{ darkMode : darkMode }">
   <el-row style="padding-top: 10px;">
-    <el-col :span="17" style="font-size: 36px; padding-left: 10px;">
+    <el-col :span="17" class="title" >
       <img src="~@/assets/bug.png" height="26" @click="openLogs()" /> VT Kounter
     </el-col>
     <el-col :span="7">
       <el-switch style="display: block" v-model="showMode" active-color="#6ab42f" active-text="Show" inactive-text="Setup"></el-switch>
     </el-col>
   </el-row>
-  <div style="position: absolute; top: 40px; right: 10px; font-size: 80%;" v-if="showMode">Size&nbsp;
+  <div class="sizeControls" v-if="showMode">Size&nbsp;
     <el-button-group>
       <el-button round type="success" size="mini" @click="size-=25">-</el-button>
       <el-button round type="success" size="mini" @click="size+=25">+</el-button>
     </el-button-group>
   </div>
-  <div style="font-size: 70%; position: absolute; top: 50px; right: 18px;" v-if="!showMode">v{{ version }}</div>
+  <div class="version" v-if="!showMode">v{{ version }}</div>
 
 
   <el-divider content-position="center" v-if="showMode">Time Remaining</el-divider>
@@ -24,19 +24,19 @@
   
   <el-tabs v-if="!showMode" v-model="tab" style="padding-left: 10px; padding-right: 10px;">
       <el-tab-pane label="Core Settings" name="core">
-        <core-controls :config="config" :appControls="appControls"></core-controls>
+        <core-controls v-model="config" :appControls="appControls"></core-controls>
       </el-tab-pane>
 
       <el-tab-pane v-if="appControls" :label="(appControls[config.appChoice].longName ? appControls[config.appChoice].longName : appControls[config.appChoice].name)">
-        <app-controls :app="config.apps[config.appChoice]" :appControl="appControls[config.appChoice]"></app-controls>
+        <app-controls v-model="config.apps[config.appChoice]" :appControl="appControls[config.appChoice]"></app-controls>
       </el-tab-pane>
 
       <el-tab-pane label="OBS" name="obs">
-        <obs-controls :obs="config.obs"></obs-controls>
+        <obs-controls v-model="config.obs"></obs-controls>
       </el-tab-pane>
 
       <el-tab-pane label="Web Server" name="webserver">
-        <webserver-controls :webserver="config.webserver"></webserver-controls>
+        <webserver-controls v-model="config.webserver"></webserver-controls>
       </el-tab-pane>
     </el-tabs>
 
@@ -85,7 +85,8 @@ export default {
       showMode: function(newVal) {
         if (newVal) {
           // going into config mode
-          window.ipcRenderer.send('showMode', this.config)
+          // console.log(JSON.parse(JSON.stringify(this.config)))
+          window.ipcRenderer.send('showMode', JSON.parse(JSON.stringify(this.config)))
         } else {
           // going into show mode
           window.ipcRenderer.send('configMode')
@@ -119,6 +120,32 @@ body {
 @font-face {
   font-family: Sansation;
   src: url("~@/assets/Sansation-Regular.ttf");
+}
+
+.green {
+  color: #6ab42f;
+  margin-right: 5px;
+}
+.red {
+  color: #ff3333;
+}
+
+.title {
+  font-size: 36px;
+  padding-left: 10px;
+  text-align: left;
+}
+.version {
+  font-size: 70%; 
+  position: absolute;
+  top: 50px;
+  right: 18px;
+}
+.sizeControls {
+  position: absolute;
+  top: 40px;
+  right: 10px;
+  font-size: 80%;
 }
 
 .darkMode {

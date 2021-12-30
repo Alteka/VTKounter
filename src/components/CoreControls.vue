@@ -42,7 +42,7 @@
 <script>
   export default {
     props: {
-      config: Object,
+      modelValue: Object, // v-model object
       appControls: Object
     },
     data: function() {
@@ -53,6 +53,16 @@
           ]
         }
       }
+    },
+    computed: {
+      config: {
+        get() {
+          return this.modelValue // return v-model
+        },
+        set(value) {
+          this.$emit('update:modelValue', value) // update the v-model object to parent component
+        }
+      },
     },
     methods: {
       factoryReset: function() {
