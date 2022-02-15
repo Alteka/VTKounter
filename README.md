@@ -32,9 +32,5 @@ yarn run electron:build
 
 ---
 
-### Customize configuration
-See [Configuration Reference](https://cli.vuejs.org/config/).
-
----
 
 For more information please see our website: [Alteka Solutions](https://alteka.solutions/)
