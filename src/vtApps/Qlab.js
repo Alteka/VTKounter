@@ -18,7 +18,7 @@ class vtAppQlab extends vtApp {
           {value: "red", label: "Red"},
           {value: "yellow", label: "Yellow"},
           {value: "green", label: "Green"},
-          {value: "blue", label: "Purple"},
+          {value: "blue", label: "Blue"},
           {value: "purple", label: "Purple"},
         ]
       },
@@ -48,6 +48,7 @@ class vtAppQlab extends vtApp {
     this.client.send('/cue/active/currentDuration', 200, () => { })
     this.client.send('/cue/active/actionElapsed', 200, () => { })
     this.client.send('/runningOrPausedCues', 200, () => { })
+    this.client.send('/selectedCues', 200, () => { })
   }
 
   receive(msg) {
@@ -55,6 +56,11 @@ class vtAppQlab extends vtApp {
       var cmd = msg[0].split('/')[4]
       var data = JSON.parse(msg[1])
       var cue = msg[0].split('/')[3]
+
+      if(cmd == 'selectedCues'){
+        console.log(data.data[0])
+        this.timer.armedCueName = data.data[0] ? data.data[0].listName : null
+      }
 
       if (cmd == 'runningOrPausedCues') {
         this.matchingCues = [];
