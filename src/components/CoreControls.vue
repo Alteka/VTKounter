@@ -28,6 +28,13 @@
       </el-col>
     </el-row>
     <el-row>
+      <el-col :span="12">
+        <el-form-item label="Text Warning Colors">
+          <el-switch v-model="config.textWarningColors"></el-switch>
+        </el-form-item>
+      </el-col>
+    </el-row>
+    <el-row>
         <el-form-item label="VT App Choice">
           <el-radio-group v-model="config.appChoice" size="small">
             <el-radio-button v-for="(app, name) in appControls" :label="name" :key="name">
