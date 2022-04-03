@@ -14,8 +14,7 @@ const path = require('path')
 const menu = require('./menu.js').menu
 
 // Project Specific includes
-const requireDir = require('require-dir')
-var nodeStatic = require('node-static')
+let nodeStatic = require('node-static')
 const { networkInterfaces } = require('os')
 const OBSWebSocket = require('obs-websocket-js')
 const obs = new OBSWebSocket()
@@ -89,8 +88,8 @@ async function createWindow() {
     height: 450,
     show: false,
     useContentSize: true,
-    maximizable: false,
-    resizable: false,
+    maximizable: true,
+    resizable: true,
     webPreferences: {
       nodeIntegration: process.env.ELECTRON_NODE_INTEGRATION,
       contextIsolation: !process.env.ELECTRON_NODE_INTEGRATION,
@@ -159,9 +158,11 @@ app.on('ready', async () => {
 //========================//
 //       IPC Handlers     //
 //========================//
+/**
 ipcMain.on('controlResize', (_, data) => {
   controlWindow.setContentSize(540, data)
 })
+ */
 
 ipcMain.on('openLogs', () => {
   const path = log.transports.file.findLogPath()
@@ -270,6 +271,7 @@ setInterval(function() {
 /* ----------- Callback from successful response from selected app ---------- */
 function appSuccess() {
   controlWindow.webContents.send('vtStatus', true)
+  updateArmedCueName(apps[config.appChoice].timer.armedCueName)
 
   if(apps[config.appChoice].timer.noVT) {
     // clear the timer when no VT is playing and stop
@@ -398,6 +400,15 @@ function updateCueName(name) {
     controlWindow.webContents.send('cueName', name)
     cueName = name
     io.emit('cueName', name)
+  }
+}
+
+let armedCueName = ''
+function updateArmedCueName(name) {
+  if (name != armedCueName) {
+    controlWindow.webContents.send('armedCueName', name)
+    armedCueName = name
+    io.emit('armedCueName', name)
   }
 }
 

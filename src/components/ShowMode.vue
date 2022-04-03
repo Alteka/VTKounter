@@ -1,15 +1,21 @@
 <template>
-    <el-row id="timer" justify="center" :style="{ color: warningColour, 'font-size': size + '%'}">
-      {{timer}}
+    <el-row id="timer" justify="center" :style="{'font-size': size/1.5 + '%', 'color': config.textWarningColor ? warningColour : '#fff'}">
+      {{ timer }}
     </el-row>
-    <el-row v-if="config.showPercentage" style="padding: 10px;" justify="left">
+    <el-row :style="{'font-size': size/2.5 + '%'}" v-if="config.showCueName" justify="center">
+      <div v-if="showArmedCueName && armedCueName">
+        <span style="color:#999">STBY:</span>&nbsp;{{ armedCueName }}
+      </div>
+      <div v-else>
+        <span style="color:#9f9" v-if="cueName">PLAY:</span>&nbsp;{{ cueName }}
+      </div>
+    </el-row>
+    <el-row v-if="config.showPercentage" style="padding: 10px 20px; " justify="left">
       <el-col :span="24">
         <el-progress :percentage="percentage" :show-text="false" :color="warningColour" />
       </el-col>
     </el-row>
-    <el-row v-if="config.showCueName" style="padding: 10px;" justify="center">
-      {{ cueName }}
-    </el-row>
+
     <el-row style="padding: 10px; text-align: center;">
       <el-col :span="6" v-if="!config.obs.enabled">&nbsp;</el-col>
       <el-col :span="12">
@@ -39,7 +45,8 @@
         percentage: 0,
         cueName: '',
         timer: 'No VT',
-        warning: false
+        warning: false,
+        armedCueName: ''
       }
     },
     mounted: function(){
@@ -63,6 +70,9 @@
       window.ipcRenderer.receive('cueName', function(val) {
         vm.cueName = val
       })
+      window.ipcRenderer.receive('armedCueName', function(val) {
+        vm.armedCueName = val
+      })
     },
     computed: {
       warningColour: function() {
@@ -71,8 +81,11 @@
         } else if (this.warning == 'closer') {
           return '#ff3333'
         } else {
-          return '#6ab42f'
+          return '#fff'
         }
+      },
+      showArmedCueName: function(){
+        return this.config.showSelectedCue && this.config.noVTText == this.timer
       }
     }
   }
@@ -84,7 +97,12 @@
   src: url("~@/assets/DejaVuLGCSansMono.ttf");
 }
 #timer {
- font-family: DejaVuSansMono;
- font-size: 400%;
+  font-family: DejaVuSansMono;
+  font-size: 400%;
+  flex: 1;
+  display: flex;
+  justify-items: center;
+  justify-content: center;
+  align-items: center;
 }
 </style>
