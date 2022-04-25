@@ -205,7 +205,8 @@ var apps = {
   Ppp: require('./vtApps/Ppp.js'),
   PVP: require('./vtApps/PVP.js'),
   Qlab: require('./vtApps/Qlab.js'),
-  Vmix: require('./vtApps/Vmix.js')
+  Vmix: require('./vtApps/Vmix.js'),
+  Hyperdeck: require('./vtApps/Hyperdeck.js')
 }
 console.log('APPS', apps)
 var appControls = {}

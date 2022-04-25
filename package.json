@@ -28,6 +28,7 @@
     "electron-log": "^4.4.4",
     "electron-store": "^8.0.1",
     "element-plus": "1.0.2-beta.71",
+    "hyperdeck-js-lib": "^1.7.0",
     "moment": "^2.29.1",
     "node-osc": "^6.1.11",
     "node-static": "^0.7.11",
@@ -67,8 +68,7 @@
     "parserOptions": {
       "parser": "babel-eslint"
     },
-    "rules": {
-    }
+    "rules": {}
   },
   "browserslist": [
     "> 1%",
