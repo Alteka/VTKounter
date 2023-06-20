@@ -3,7 +3,7 @@ const { app, Menu, MenuItem } = require('electron')
 const menu = new Menu()
 
 menu.append(new MenuItem({
-    label: app.name,
+    label: 'VTKounter',
     submenu: [
         { role: 'about' },
         { type: 'separator' },

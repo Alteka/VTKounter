@@ -4,9 +4,6 @@ import { app, protocol, BrowserWindow, Menu, ipcMain, dialog, shell, nativeTheme
 import { createProtocol } from 'vue-cli-plugin-electron-builder/lib'
 import installExtension, { VUEJS3_DEVTOOLS } from 'electron-devtools-installer'
 import compareVersions from 'compare-versions'
-import { v4 as uuidv4 } from 'uuid'
-import Analytics from 'analytics'
-import googleAnalytics from '@analytics/google-analytics'
 const log = require('electron-log')
 const axios = require('axios')
 const Store = require('electron-store')
@@ -14,8 +11,7 @@ const path = require('path')
 const menu = require('./menu.js').menu
 
 // Project Specific includes
-const requireDir = require('require-dir')
-var nodeStatic = require('node-static')
+let nodeStatic = require('node-static')
 const { networkInterfaces } = require('os')
 const OBSWebSocket = require('obs-websocket-js')
 const obs = new OBSWebSocket()
@@ -89,8 +85,8 @@ async function createWindow() {
     height: 450,
     show: false,
     useContentSize: true,
-    maximizable: false,
-    resizable: false,
+    maximizable: true,
+    resizable: true,
     webPreferences: {
       nodeIntegration: process.env.ELECTRON_NODE_INTEGRATION,
       contextIsolation: !process.env.ELECTRON_NODE_INTEGRATION,
@@ -117,56 +113,18 @@ async function createWindow() {
   }
 }
 
-
-
-//=====================//
-//       Analytics     //
-//=====================//
-const analytics = Analytics({
-  app: 'VTKounter',
-  version: 100,
-  plugins: [
-    googleAnalytics({
-      trackingId: 'UA-183734846-2',
-      tasks: {
-        // Set checkProtocolTask for electron apps & chrome extensions
-        checkProtocolTask: null,
-      }
-    })
-  ]
-})
-app.on('ready', async () => {
-  if (!store.has('VTKounterInstallID')) {
-    let newId = uuidv4()
-    log.info('First Runtime and created Install ID: ' + newId)
-    store.set('VTKounterInstallID', newId)
-  } else {
-    log.info('Install ID: ' + store.get('VTKounterInstallID'))
-  }
-
-  analytics.identify(store.get('VTKounterInstallID'), {
-    firstName: 'Version',
-    lastName: require('./../package.json').version
-  }, () => {
-    console.log('do this after identify')
-  })
-
-  analytics.track('AppLaunched')
-})
-
-
-
 //========================//
 //       IPC Handlers     //
 //========================//
+/**
 ipcMain.on('controlResize', (_, data) => {
   controlWindow.setContentSize(540, data)
 })
+ */
 
 ipcMain.on('openLogs', () => {
   const path = log.transports.file.findLogPath()
   shell.showItemInFolder(path)
-  analytics.track('Open Logs')
 })
 
 ipcMain.on('getConfig', (event) => {
@@ -179,7 +137,6 @@ ipcMain.on('factoryReset', () => {
   config = getDefaultConfig()
   controlWindow.webContents.send('config', config)
   store.set('VTKounterConfig', config)
-  analytics.track('Factory Reset')
 })
 
 ipcMain.on('networkInfo', (event) => {
@@ -271,6 +228,7 @@ setInterval(function() {
 /* ----------- Callback from successful response from selected app ---------- */
 function appSuccess() {
   controlWindow.webContents.send('vtStatus', true)
+  updateArmedCueName(apps[config.appChoice].timer.armedCueName)
 
   if(apps[config.appChoice].timer.noVT) {
     // clear the timer when no VT is playing and stop
@@ -331,9 +289,6 @@ ipcMain.on('showMode', (event, cfg) => {
   showMode = true
   store.set('VTKounterConfig', config)
   clearTimer()
-
-  analytics.track('ShowMode')
-  analytics.page({ title: config.appChoice, href:config.appChoice, path:config.appChoice}) // store the app used as a page view.
 })
 
 
@@ -402,6 +357,15 @@ function updateCueName(name) {
   }
 }
 
+let armedCueName = ''
+function updateArmedCueName(name) {
+  if (name != armedCueName) {
+    controlWindow.webContents.send('armedCueName', name)
+    armedCueName = name
+    io.emit('armedCueName', name)
+  }
+}
+
 
 
 /* -------------------------------------------------------------------------- */
@@ -423,7 +387,6 @@ obs.on('AuthenticationSuccess', function(data) {
   log.info('Connected to OBS & Authenticated')
   ConnectedToOBS = true
   controlWindow.webContents.send('obsStatus', true)
-  analytics.track('ConnectedToOBS')
 })
 
 obs.on('AuthenticationFailure', function(data) {
@@ -557,35 +520,3 @@ io.on("connection", socket => {
   }
 })
 httpServer.listen(56868)
-
-
-
-//========================//
-//     Update Checker     //
-//========================//
-setTimeout(function() {
-axios.get('https://api.github.com/repos/alteka/vtkounter/releases/latest')
-  .then(function (response) {
-    let status = compareVersions(response.data.tag_name, require('./../package.json').version, '>')
-    if (status == 1) { 
-      dialog.showMessageBox(controlWindow, {
-        type: 'question',
-        title: 'An Update Is Available',
-        message: 'Would you like to download version: ' + response.data.tag_name,
-        buttons: ['Cancel', 'Yes']
-      }).then(function (response) {
-        if (response.response == 1) {
-          shell.openExternal('https://alteka.solutions/vt-kounter')
-          analytics.track("Open Update Link")
-        }
-      });
-    } else if (status == 0) {
-      log.info('Running latest version')
-    } else if (status == -1) {
-      log.info('Running version newer than release')
-    }
-  })
-  .catch(function (error) {
-    console.log(error);
-  })
-}, 10000)

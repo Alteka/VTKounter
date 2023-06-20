@@ -1,5 +1,5 @@
 <template>
-<div style="position: relative;" :class="{ darkMode : darkMode }">
+<div style="position: relative; min-height:100vh; display:flex; flex-direction: column;" :class="{ darkMode : darkMode }">
   <el-row style="padding-top: 10px;">
     <el-col :span="17" class="title" >
       <img src="~@/assets/bug.png" height="26" @click="openLogs()" /> VT Kounter
@@ -15,12 +15,8 @@
     </el-button-group>
   </div>
   <div class="version" v-if="!showMode">v{{ version }}</div>
-
-
-  <el-divider content-position="center" v-if="showMode">Time Remaining</el-divider>
   
   <show-mode v-if="showMode" :config="config" :appControls="appControls" :size="size"></show-mode>
-  
   
   <el-tabs v-if="!showMode" v-model="tab" style="padding-left: 10px; padding-right: 10px;">
       <el-tab-pane label="Core Settings" name="core">
@@ -59,7 +55,7 @@ export default {
         showMode: false,
         config: require('./defaultConfig.json'),
         appControls: null,
-        darkMode: false,
+        darkMode: true,
         size: 400,
         version: require('./../package.json').version,
         tab: 'core'
@@ -70,9 +66,6 @@ export default {
         window.ipcRenderer.send('controlResize', document.getElementById('app').clientHeight)
       })
       let vm = this
-      window.ipcRenderer.receive('darkMode', function(val) {
-        vm.darkMode = val
-      })
       window.ipcRenderer.receive('config', function(cfg) {
         vm.config = cfg
       })
@@ -149,8 +142,8 @@ body {
 }
 
 .darkMode {
-  background: #222;
-  color: #aaa;
+  background: #000;
+  color: #ccc;
 }
 .darkMode .el-divider {
   background: #555;
