@@ -81,7 +81,7 @@ let controlWindow
 async function createWindow() {
   log.info('Showing control window')
   controlWindow = new BrowserWindow({
-    width: 540,
+    width: 720,
     height: 450,
     show: false,
     useContentSize: true,
@@ -118,7 +118,7 @@ async function createWindow() {
 //========================//
 /**
 ipcMain.on('controlResize', (_, data) => {
-  controlWindow.setContentSize(540, data)
+  controlWindow.setContentSize(720, data)
 })
  */
 
@@ -162,8 +162,9 @@ var apps = {
   Ppp: require('./vtApps/Ppp.js'),
   PVP: require('./vtApps/PVP.js'),
   Qlab: require('./vtApps/Qlab.js'),
+  Qlab5: require('./vtApps/Qlab5.js'),
   Vmix: require('./vtApps/Vmix.js'),
-  Hyperdeck: require('./vtApps/Hyperdeck.js')
+  Hyperdeck: require('./vtApps/Hyperdeck.js'),
 }
 console.log('APPS', apps)
 var appControls = {}
@@ -188,12 +189,8 @@ for(const name in apps) {
   })
 }
 
-var config = store.get('VTKounterConfig', getDefaultConfig())
-if (config.apps === undefined || config.webserver === undefined) {
-  config = getDefaultConfig()
-  log.info('Resetting config as structure has changed: Lazy migration...')
-  store.set('VTKounterConfig', config)
-}
+let config = Object.assign({}, getDefaultConfig(), store.get('VTKounterConfig'))
+store.set('VTKounterConfig', config)
 
 function getDefaultConfig() {
   let defaultConfig = require('./defaultConfig.json')
@@ -216,7 +213,7 @@ setInterval(function() {
 
     if( (new Date()).getTime() > apps[config.appChoice].timer.lastUpdated + config.timeout * 1000) {
       // the app hasn't responded for a while
-      appError(new Error(`Timeout (${config.timeout}) reached`))
+      //appError(new Error(`Timeout (${config.timeout}) reached`))
     }
   }
 
