@@ -52,20 +52,12 @@ class vtAppQlab5 extends vtApp {
 
     // create storage variables
     this.workspaceId = null
-    this.authenticatedWorkspaceId = null
-    this.authenticationFailed = false
 
     // to store filtered cues
     this.matchingCues = []
   }
 
   send() {
-    if(this.config.passcode &&
-        (!this.authenticatedWorkspaceId ||
-            this.authenticatedWorkspaceId !== this.workspaceId)){
-      return
-    }
-
     if(this.workspaceId){
       this.client.send('/workspace/' + this.workspaceId + '/selectedCues', 200, () => { })
     }
@@ -83,24 +75,6 @@ class vtAppQlab5 extends vtApp {
       let commandArray = msg[0].split('/')
       let cmd = commandArray[commandArray.length-1]
       let data = JSON.parse(msg[1])
-
-      console.log(msg)
-
-      if(data.status == 'denied'){
-        if(this.workspaceId == data.workspace_id && !this.authenticationFailed){
-          this.authenticationFailed = true
-        } else {
-          this.authenticateWorkspace(data.workspace_id)
-        }
-      }
-
-      /**
-       * Check if we have a reply to auth to handle
-       */
-      if(cmd == 'connect ' + this.config.passcode){
-        this.authenticatedWorkspace(data)
-        return
-      }
 
       /**
        * A cue is selected
@@ -123,18 +97,6 @@ class vtAppQlab5 extends vtApp {
 
       resolve()
     })
-  }
-
-  authenticateWorkspace(workspaceId){
-    this.workspaceId = workspaceId
-
-    log.debug('Running OSC authentication, ' + '/workspace/' + this.workspaceId + '/connect ' + this.config.passcode)
-    this.client.send('/workspace/' + this.workspaceId + '/connect ' + this.config.passcode,200,()=>{})
-  }
-
-  authenticatedWorkspace(data){
-    log.debug('Reply from OSC authentication',data)
-    this.authenticatedWorkspaceId = this.workspaceId
   }
 
   selectedCue(data){

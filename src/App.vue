@@ -68,7 +68,6 @@ export default {
       })
       let vm = this
       window.ipcRenderer.receive('config', function(cfg) {
-        console.log('Received config', cfg)
         vm.config = cfg
       })
       window.ipcRenderer.receive('appControls', function(appControls) {

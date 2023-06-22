@@ -1,12 +1,12 @@
 <template>
-    <el-row id="timer" justify="center" :style="{'font-size': size/1.5 + '%', 'color': config.textWarningColor ? warningColour : '#fff'}">
+    <el-row id="timer" justify="center" :style="{'font-size': size/1.5 + '%', 'color': config.textWarningColors ? warningColour : '#fff'}">
       <span>{{ timer }}</span>
       <div :style="{'font-size': '50%'}" style="margin-top:10px;" v-if="config.showCueName">
         <div v-if="showArmedCueName && armedCueName">
-          <span style="color:#999;font-weight:bold;">STBY:</span>&nbsp;{{ armedCueName }}
+          <span style="color:#999;font-weight:bold;">STBY:</span>&nbsp;<span style="color:white">{{ armedCueName }}</span>
         </div>
         <div v-else-if="!showArmedCueName && cueName">
-          <span style="color:#9f9;font-weight:bold;">PLAY:</span>&nbsp;{{ cueName }}
+          <span style="color:#9f9;font-weight:bold;">PLAY:</span> <span style="color:white">{{ cueName }}</span>
         </div>
       </div>
     </el-row>
@@ -88,7 +88,6 @@
         }
       },
       showArmedCueName: function(){
-        console.log(this.config.showArmedCue, this.config.noVTText, this.timer)
         return this.config.showArmedCue && this.config.noVTText == this.timer
       }
     }
