@@ -4,6 +4,7 @@ import { app, protocol, BrowserWindow, Menu, ipcMain, dialog, shell, nativeTheme
 import { createProtocol } from 'vue-cli-plugin-electron-builder/lib'
 import installExtension, { VUEJS_DEVTOOLS } from 'electron-devtools-installer'
 const log = require('electron-log')
+const axios = require('axios')
 const Store = require('electron-store')
 const path = require('path')
 const menu = require('./menu.js').menu
@@ -205,7 +206,7 @@ setInterval(function() {
     apps[config.appChoice].send()
 
     if( (new Date()).getTime() > apps[config.appChoice].timer.lastUpdated + config.timeout * 1000) {
-      //the app hasn't responded for a while
+      // the app hasn't responded for a while
       appError(new Error(`Timeout (${config.timeout}) reached`))
     }
   }
@@ -510,3 +511,33 @@ io.on("connection", socket => {
   }
 })
 httpServer.listen(56868)
+
+//========================//
+//     Update Checker     //
+//========================//
+setTimeout(function() {
+  axios.get('https://api.github.com/repos/alteka/vtkounter/releases/latest')
+      .then(function (response) {
+        let status = compareVersions(response.data.tag_name, require('./../package.json').version, '>')
+        if (status == 1) {
+          dialog.showMessageBox(controlWindow, {
+            type: 'question',
+            title: 'An Update Is Available',
+            message: 'Would you like to download version: ' + response.data.tag_name,
+            buttons: ['Cancel', 'Yes']
+          }).then(function (response) {
+            if (response.response == 1) {
+              shell.openExternal('https://alteka.solutions/vt-kounter')
+              analytics.track("Open Update Link")
+            }
+          });
+        } else if (status == 0) {
+          log.info('Running latest version')
+        } else if (status == -1) {
+          log.info('Running version newer than release')
+        }
+      })
+      .catch(function (error) {
+        console.log(error);
+      })
+}, 10000)

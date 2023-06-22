@@ -67,6 +67,9 @@ export default {
         window.ipcRenderer.send('controlResize', document.getElementById('app').clientHeight)
       })
       let vm = this
+      window.ipcRenderer.receive('darkMode', function(val) {
+        vm.darkMode = val
+      })
       window.ipcRenderer.receive('config', function(cfg) {
         vm.config = cfg
       })
