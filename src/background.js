@@ -45,11 +45,14 @@ app.on('activate', () => {
   if (BrowserWindow.getAllWindows().length === 0) createWindow()
 })
 
-app.on('ready', () => {
-  installExtension(VUEJS_DEVTOOLS)
-      .then((name) => console.log(`Added Extension:  ${name}`))
-      .catch((err) => console.log('Could not add extension. An error occurred: ', err));
-
+app.on('ready', async () => {
+  if (isDevelopment && !process.env.IS_TEST) {
+    try {
+      await installExtension(VUEJS_DEVTOOLS)
+    } catch (e) {
+      console.error('Vue Devtools failed to install:', e.toString())
+    }
+  }
   createWindow()
 })
 
