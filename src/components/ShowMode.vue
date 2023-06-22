@@ -10,7 +10,7 @@
         <span style="color:#9f9" v-if="cueName">PLAY:</span>&nbsp;{{ cueName }}
       </div>
     </el-row>
-    <el-row v-if="config.showPercentage" style="padding: 10px 20px; " justify="left">
+    <el-row v-if="config.showPercentage" style="padding: 10px 20px; " justify="start">
       <el-col :span="24">
         <el-progress :percentage="percentage" :show-text="false" :color="warningColour" />
       </el-col>
@@ -85,6 +85,7 @@
         }
       },
       showArmedCueName: function(){
+        console.log(this.config.showSelectedCue, this.config.noVTText, this.timer)
         return this.config.showSelectedCue && this.config.noVTText == this.timer
       }
     }

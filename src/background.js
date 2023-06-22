@@ -2,10 +2,8 @@
 
 import { app, protocol, BrowserWindow, Menu, ipcMain, dialog, shell, nativeTheme } from 'electron'
 import { createProtocol } from 'vue-cli-plugin-electron-builder/lib'
-import installExtension, { VUEJS3_DEVTOOLS } from 'electron-devtools-installer'
-import compareVersions from 'compare-versions'
+import installExtension, { VUEJS_DEVTOOLS } from 'electron-devtools-installer'
 const log = require('electron-log')
-const axios = require('axios')
 const Store = require('electron-store')
 const path = require('path')
 const menu = require('./menu.js').menu
@@ -18,8 +16,6 @@ const obs = new OBSWebSocket()
 const moment = require('moment')
 
 const store = new Store()
-
-
 
 //======================================//
 //      BOILER PLATE ELECTRON STUFF     //
@@ -47,14 +43,11 @@ app.on('activate', () => {
   if (BrowserWindow.getAllWindows().length === 0) createWindow()
 })
 
-app.on('ready', async () => {
-  if (isDevelopment && !process.env.IS_TEST) {
-    try {
-      await installExtension(VUEJS3_DEVTOOLS)
-    } catch (e) {
-      console.error('Vue Devtools failed to install:', e.toString())
-    }
-  }
+app.on('ready', () => {
+  installExtension(VUEJS_DEVTOOLS)
+      .then((name) => console.log(`Added Extension:  ${name}`))
+      .catch((err) => console.log('Could not add extension. An error occurred: ', err));
+
   createWindow()
 })
 
@@ -81,8 +74,8 @@ let controlWindow
 async function createWindow() {
   log.info('Showing control window')
   controlWindow = new BrowserWindow({
-    width: 720,
-    height: 450,
+    width: 800,
+    height: 500,
     show: false,
     useContentSize: true,
     maximizable: true,

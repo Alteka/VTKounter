@@ -2,7 +2,7 @@
   <el-form label-width="110px" size="small" :rules="coreValidationRules" ref="coreForm" :model="config">
     <el-row >
       <el-col :span="18">
-        <el-form-item label="Time Format" prop="timerFormat">
+        <el-form-item label="Time Format" prop="timerFormat" label-width="125px">
           <el-input v-model="config.timerFormat"></el-input>
         </el-form-item>
       </el-col>
@@ -11,13 +11,13 @@
       </el-col>
     </el-row>
     <el-row>
-      <el-form-item label="Text for no VT">
+      <el-form-item label="Text for no VT" label-width="125px">
         <el-input v-model="config.noVTText"></el-input>
       </el-form-item>
     </el-row>
     <el-row>
       <el-col :span="12">
-        <el-form-item label="Show Progress">
+        <el-form-item label="Show Progress" label-width="125px">
           <el-switch v-model="config.showPercentage"></el-switch>            
         </el-form-item>
       </el-col>
@@ -29,13 +29,13 @@
     </el-row>
     <el-row>
       <el-col :span="12">
-        <el-form-item label="Text Warning Colors">
+        <el-form-item label="Text Warning Colors" label-width="125px">
           <el-switch v-model="config.textWarningColors"></el-switch>
         </el-form-item>
       </el-col>
     </el-row>
     <el-row>
-        <el-form-item label="VT App Choice">
+        <el-form-item label="VT App Choice" label-width="125px">
           <el-radio-group v-model="config.appChoice" size="small">
             <el-radio-button v-for="(app, name) in appControls" :label="name" :key="name">
               {{ app.name }}

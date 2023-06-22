@@ -68,7 +68,7 @@ class vtAppQlab extends vtApp {
 
       if(cmd == 'selectedCues'){
         if(!data.data[0]){
-          //We wait 1.5 second to clear the armedCueName to avoid a brief flash of "No VT" text
+          //We wait 2.5 seconds to clear the armedCueName to avoid a brief flash of "No VT" text
           setTimeout(()=>{
             this.timer.armedCueName = null
           },2500)
@@ -103,7 +103,7 @@ class vtAppQlab extends vtApp {
           if (this.matchingCues.length >= 1) {
             this.timer.cueName = this.matchingCues[0].listName
           } else if (this.matchingCues.length == 0) {
-            console.log('resetting because no cues matched')
+            //console.log('resetting because no cues matched')
             this.timer.reset()
           }
         } else {

@@ -10,8 +10,8 @@
   </el-row>
   <div class="sizeControls" v-if="showMode">Size&nbsp;
     <el-button-group>
-      <el-button round type="success" size="mini" @click="size-=25">-</el-button>
-      <el-button round type="success" size="mini" @click="size+=25">+</el-button>
+      <el-button round type="success" size="small" @click="size-=25">-</el-button>
+      <el-button round type="success" size="small" @click="size+=25">+</el-button>
     </el-button-group>
   </div>
   <div class="version" v-if="!showMode">v{{ version }}</div>
@@ -190,10 +190,12 @@ body {
   color: #ddd;
   border: 1px solid #666;
 }
+.darkMode .el-input__wrapper {
+  background: #3d3d3d;
+}
 .darkMode .el-input__inner {
   background: #3d3d3d;
   color: #ddd;
-  border: 1px solid #666;
 }
 .darkMode .el-input-number__decrease {
   background: #3d3d3d;

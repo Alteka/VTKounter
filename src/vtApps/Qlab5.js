@@ -61,14 +61,14 @@ class vtAppQlab5 extends vtApp {
     }
 
     //this.client.send('/cue/selected', 200, () => { })
-    this.client.send('/cue/active/currentDuration', 200, () => { })
-    this.client.send('/cue/active/actionElapsed', 200, () => { })
-    this.client.send('/runningOrPausedCues/shallow', 200, () => { })
+    //this.client.send('/cue/active/currentDuration', 200, () => { })
+    //this.client.send('/cue/active/actionElapsed', 200, () => { })
+    this.client.send('/runningOrPausedCues', 200, () => { })
   }
 
   receive(msg) {
     return new Promise((resolve,reject) => {
-      log.debug(msg)
+
 
       let commandArray = msg[0].split('/')
       let cmd = commandArray[commandArray.length-1]
@@ -100,7 +100,8 @@ class vtAppQlab5 extends vtApp {
         this.selectedCue(data)
       }
 
-      if (cmd == 'shallow') {
+      if (cmd == 'runningOrPausedCues') {
+        log.debug('runningOrPausedCues', data)
         this.matchingCues = [];
 
         if (data.data.length > 0) {
