@@ -3,8 +3,9 @@
 import { app, protocol, BrowserWindow, Menu, ipcMain, dialog, shell, nativeTheme } from 'electron'
 import { createProtocol } from 'vue-cli-plugin-electron-builder/lib'
 import installExtension, { VUEJS_DEVTOOLS } from 'electron-devtools-installer'
+import compareVersions from 'compare-versions'
 const log = require('electron-log')
-const axios = require('axios')
+const axios = require('axios').default
 const Store = require('electron-store')
 const path = require('path')
 const menu = require('./menu.js').menu
