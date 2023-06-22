@@ -32,26 +32,22 @@ class vtAppQlab extends vtApp {
           {value: "Text"},
           {value: "Camera"},
           {value: "Mic"},
-          {value: "Group"},
         ]
       },
     }
-    
+
     // create server & client objects
     this.server = null
     this.client = null
 
     // to store filtered cues
     this.matchingCues = []
-    this.selectedCue = null
   }
 
   send() {
     this.client.send('/cue/active/currentDuration', 200, () => { })
     this.client.send('/cue/active/actionElapsed', 200, () => { })
     this.client.send('/runningOrPausedCues', 200, () => { })
-    this.client.send('/selectedCues', 200, () => { })
-    this.client.send('/cue/' + this.selectedCue + '/currentDuration', 200, () => { })
   }
 
   receive(msg) {
@@ -60,62 +56,44 @@ class vtAppQlab extends vtApp {
       var data = JSON.parse(msg[1])
       var cue = msg[0].split('/')[3]
 
-      if(cmd == 'selectedCues'){
-        if(!data.data[0]){
-          //We wait 2.5 seconds to clear the armedCueName to avoid a brief flash of "No VT" text
-          setTimeout(()=>{
-            this.timer.armedCueName = null
-          },2500)
-
-          return
-        }
-        
-        let cueNumber = data.data[0].number
-        let listName = data.data[0].listName
-
-        this.selectedCue = cueNumber
-
-        if(this.timer.armedCueName == listName){
-          return
-        }
-
-        this.timer.armedCueName = listName
-      }
-
       if (cmd == 'runningOrPausedCues') {
-        this.matchingCues = []
-
-        if(data.data.length){
-          for (let i = 0; i < data.data.length; i++) {
+        this.matchingCues = [];
+        if (data.data.length > 0) {
+          for (var i = 0; i < data.data.length; i++) {
             if (this.config.filterColour.includes(data.data[i].colorName) || this.config.filterColour.length == 0) {
               if (this.config.filterCueType.includes(data.data[i].type) || this.config.filterCueType.length == 0) {
-                this.matchingCues.push(data.data[i])
+                if (data.data[i].type != 'Group') {
+                  this.matchingCues.push(data.data[i].uniqueID)
+                }
               }
             }
           }
-
-          if (this.matchingCues.length >= 1) {
-            this.timer.cueName = this.matchingCues[0].listName
-          } else if (this.matchingCues.length == 0) {
-            //console.log('resetting because no cues matched')
-            this.timer.reset()
-          }
-        } else {
+        }  else {
           this.timer.reset()
         }
-      }
-
-      if (cmd == 'currentDuration' && this.matchingCues[0] && this.matchingCues[0].uniqueID == cue) {
-        this.timer.noVT = false
-        if (this.timer.total !== Math.round(data.data*1000) - 500) {
-          log.info('--==--  QLab VT Started with Duration ' + data.data + '  --==--')
-          this.timer.elapsed = 1
+        if (this.matchingCues.length == 1) {
+          i=0;
+          while (data.data[i].type == 'Group') {
+            i++;
+          }
+          this.timer.cueName = data.data[i].listName
+          this.timer.noVT = false
         }
-        this.timer.total = Math.round(data.data * 1000) - 500 //we cheat and subtract 500ms because we'd rather have the count be a little early than late
+        if (this.matchingCues.length == 0) {
+          this.timer.reset()
+        }
+        if (this.matchingCues.length > 1) {
+          log.warn('Multiple matching QLab Cues are running', this.matchingCues)
+        }
       }
-
-      if (cmd == 'actionElapsed' && this.matchingCues[0] && this.matchingCues[0].uniqueID == cue) {
-        this.timer.elapsed = Math.min(Math.round(data.data * 1000),this.timer.total)
+      if (cmd == 'currentDuration' && this.matchingCues[0] == cue) {
+        if (this.timer.total !== Math.round(data.data*1000)) {
+          log.info('--==--  QLab VT Started with Duration ' + data.data + '  --==--')
+        }
+        this.timer.total = Math.round(data.data * 1000)
+      }
+      if (cmd == 'actionElapsed' && this.matchingCues[0] == cue) {
+        this.timer.elapsed = Math.round(data.data * 1000)
       }
 
       resolve()
