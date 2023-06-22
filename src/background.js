@@ -529,7 +529,6 @@ setTimeout(function() {
           }).then(function (response) {
             if (response.response == 1) {
               shell.openExternal('https://alteka.solutions/vt-kounter')
-              analytics.track("Open Update Link")
             }
           });
         } else if (status == 0) {
