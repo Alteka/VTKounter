@@ -8,6 +8,7 @@
     "type": "git",
     "url": "https://github.com/Alteka/VTKounter"
   },
+  "main": "background.js",
   "scripts": {
     "serve": "vue-cli-service serve",
     "build": "vue-cli-service build",

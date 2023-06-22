@@ -95,12 +95,8 @@
 </script>
 
 <style>
-@font-face {
-  font-family: DejaVuSansMono;
-  src: url("~@/assets/DejaVuLGCSansMono.ttf");
-}
 #timer {
-  font-family: DejaVuSansMono;
+  font-family: DejaVu;
   font-size: 400%;
   flex: 1;
   display: flex;
