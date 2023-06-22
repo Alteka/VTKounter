@@ -1,14 +1,17 @@
 <template>
     <el-row id="timer" justify="center" :style="{'font-size': size/1.5 + '%', 'color': config.textWarningColor ? warningColour : '#fff'}">
-      {{ timer }}
+      <span>{{ timer }}</span>
+      <div :style="{'font-size': '50%'}" style="margin-top:10px;" v-if="config.showCueName">
+        <div v-if="showArmedCueName && armedCueName">
+          <span style="color:#999;font-weight:bold;">STBY:</span>&nbsp;{{ armedCueName }}
+        </div>
+        <div v-else-if="!showArmedCueName && cueName">
+          <span style="color:#9f9;font-weight:bold;">PLAY:</span>&nbsp;{{ cueName }}
+        </div>
+      </div>
     </el-row>
-    <el-row :style="{'font-size': size/2.5 + '%'}" v-if="config.showCueName" justify="center">
-      <div v-if="showArmedCueName && armedCueName">
-        <span style="color:#999">STBY:</span>&nbsp;{{ armedCueName }}
-      </div>
-      <div v-else>
-        <span style="color:#9f9" v-if="cueName">PLAY:</span>&nbsp;{{ cueName }}
-      </div>
+    <el-row justify="center">
+
     </el-row>
     <el-row v-if="config.showPercentage" style="padding: 10px 20px; " justify="start">
       <el-col :span="24">
@@ -85,8 +88,8 @@
         }
       },
       showArmedCueName: function(){
-        console.log(this.config.showSelectedCue, this.config.noVTText, this.timer)
-        return this.config.showSelectedCue && this.config.noVTText == this.timer
+        console.log(this.config.showArmedCue, this.config.noVTText, this.timer)
+        return this.config.showArmedCue && this.config.noVTText == this.timer
       }
     }
   }
@@ -105,5 +108,6 @@
   justify-items: center;
   justify-content: center;
   align-items: center;
+  flex-direction: column;
 }
 </style>

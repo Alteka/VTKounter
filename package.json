@@ -51,6 +51,7 @@
     "electron-devtools-installer": "^3.2.0",
     "eslint": "^7.5.0",
     "eslint-plugin-vue": "^7.0.0",
+    "lodash-es": "^4.17.21",
     "sass": "^1.27.0",
     "sass-loader": "^10.0.4",
     "vue-cli-plugin-electron-builder": "~2.1.1",

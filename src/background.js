@@ -205,15 +205,15 @@ setInterval(function() {
     apps[config.appChoice].send()
 
     if( (new Date()).getTime() > apps[config.appChoice].timer.lastUpdated + config.timeout * 1000) {
-      // the app hasn't responded for a while
-      //appError(new Error(`Timeout (${config.timeout}) reached`))
+      //the app hasn't responded for a while
+      appError(new Error(`Timeout (${config.timeout}) reached`))
     }
   }
 
   if (!ConnectedToOBS && showMode && config.obs.enabled) {
       obsConnect()
   }
-}, 1000)
+}, 250)
 
 /* ----------- Callback from successful response from selected app ---------- */
 function appSuccess() {

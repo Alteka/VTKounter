@@ -35,12 +35,6 @@ class vtAppQlab extends vtApp {
           {value: "Group"},
         ]
       },
-      showSelectedCue: {
-        label: "Show selected cue when VT Idle",
-        type: "boolean",
-        default: true,
-      },
-
     }
     
     // create server & client objects

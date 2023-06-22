@@ -1,6 +1,7 @@
 const vtApp = require('../vtApp')
 const { Client, Server } = require('node-osc')
 const log = require('electron-log')
+const {forEach} = require('lodash-es')
 
 class vtAppQlab5 extends vtApp {
   constructor(...args) {
@@ -39,6 +40,10 @@ class vtAppQlab5 extends vtApp {
           {value: "Mic"},
         ]
       },
+      info: {
+        label: 'Info',
+        notes: '! Cues must have numbers for Qlab5 integration to work correctly !'
+      },
     }
     
     // create server & client objects
@@ -48,6 +53,7 @@ class vtAppQlab5 extends vtApp {
     // create storage variables
     this.workspaceId = null
     this.authenticatedWorkspaceId = null
+    this.authenticationFailed = false
 
     // to store filtered cues
     this.matchingCues = []
@@ -60,19 +66,33 @@ class vtAppQlab5 extends vtApp {
       return
     }
 
-    //this.client.send('/cue/selected', 200, () => { })
-    //this.client.send('/cue/active/currentDuration', 200, () => { })
-    //this.client.send('/cue/active/actionElapsed', 200, () => { })
+    if(this.workspaceId){
+      this.client.send('/workspace/' + this.workspaceId + '/selectedCues', 200, () => { })
+    }
+
     this.client.send('/runningOrPausedCues', 200, () => { })
+  }
+
+  getPlayingCueStatus(){
+    this.client.send('/cue/' + this.matchingCues[0].number + '/currentDuration', 200, () => { })
+    this.client.send('/cue/' + this.matchingCues[0].number + '/actionElapsed', 200, () => { })
   }
 
   receive(msg) {
     return new Promise((resolve,reject) => {
-
-
       let commandArray = msg[0].split('/')
       let cmd = commandArray[commandArray.length-1]
       let data = JSON.parse(msg[1])
+
+      console.log(msg)
+
+      if(data.status == 'denied'){
+        if(this.workspaceId == data.workspace_id && !this.authenticationFailed){
+          this.authenticationFailed = true
+        } else {
+          this.authenticateWorkspace(data.workspace_id)
+        }
+      }
 
       /**
        * Check if we have a reply to auth to handle
@@ -83,64 +103,22 @@ class vtAppQlab5 extends vtApp {
       }
 
       /**
-       * Check if we need to auth
-       */
-      if(this.config.passcode &&
-          data.workspace_id &&
-          (!this.authenticatedWorkspaceId ||
-          this.authenticatedWorkspaceId !== this.workspaceId)){
-        this.authenticateWorkspace(data.workspace_id)
-        return
-      }
-
-      /**
        * A cue is selected
        */
-      if(cmd == 'selected'){
+      if(cmd == 'selectedCues'){
         this.selectedCue(data)
       }
 
       if (cmd == 'runningOrPausedCues') {
-        log.debug('runningOrPausedCues', data)
-        this.matchingCues = [];
-
-        if (data.data.length > 0) {
-          for (var i = 0; i < data.data.length; i++) {
-            if (this.config.filterColour.includes(data.data[i].colorName) || this.config.filterColour.length == 0) {
-              if (this.config.filterCueType.includes(data.data[i].type) || this.config.filterCueType.length == 0) {
-                if (data.data[i].type != 'Group') {
-                  this.matchingCues.push({
-                    uniqueId: data.data[i].uniqueID,
-                    listName: data.data[i].listName,
-                  })
-                }
-              }
-            }
-          }
-        }  else {
-          this.timer.reset()
-        }
-
-        if (this.matchingCues.length == 1) {
-          this.timer.cueName = this.matchingCues[0].cueName,
-          this.timer.noVT = false
-        }
-        if (this.matchingCues.length == 0) {
-          this.timer.reset()
-        }
-        if (this.matchingCues.length > 1) {
-          log.warn('Multiple matching QLab Cues are running', this.matchingCues)
-        }
+        this.runningOrPausedCues(data)
       }
 
       if (cmd == 'currentDuration') {
-        if (this.timer.total !== Math.round(data.data*1000)) {
-          log.info('--==--  QLab VT Started with Duration ' + data.data + '  --==--')
-        }
-        this.timer.total = Math.round(data.data * 1000)
+        this.currentDuration(data)
       }
+
       if (cmd == 'actionElapsed') {
-        this.timer.elapsed = Math.round(data.data * 1000)
+        this.actionElapsed(data)
       }
 
       resolve()
@@ -160,8 +138,68 @@ class vtAppQlab5 extends vtApp {
   }
 
   selectedCue(data){
-    let workspaceId = data.workspace_id
-    //console.log('Selected cue', data, workspaceId)
+    let selectedCues = this.matchCues(data.data)
+
+    if (selectedCues.length == 1) {
+      //log.debug('selectedCue: 1 match', selectedCues[0])
+      this.timer.armedCueName = selectedCues[0].listName
+    } else if(selectedCues.length == 0){
+      this.timer.armedCueName = null
+    }
+  }
+
+  runningOrPausedCues(data){
+    this.workspaceId = data.workspace_id
+
+    this.matchingCues = this.matchCues(data.data)
+
+    if (this.matchingCues.length == 1) {
+      //log.debug('runningOrPausedCues: 1 match', this.matchingCues[0])
+      this.timer.cueName = this.matchingCues[0].listName,
+      this.getPlayingCueStatus()
+    }
+    if (this.matchingCues.length == 0) {
+      if(!this.timer.noVT){
+        log.info('--==--  QLab5 VT stopped  --==--')
+        this.timer.noVT = true
+      }
+
+      this.timer.reset()
+    }
+    if (this.matchingCues.length > 1) {
+      log.warn('Multiple matching QLab Cues are running', this.matchingCues)
+    }
+  }
+
+  currentDuration(data) {
+    //log.debug('currentDuration',data)
+    if (this.timer.total !== Math.round(data.data*1000)) {
+      log.info('--==--  QLab5 VT Started with Duration ' + data.data + '  --==--')
+    }
+    this.timer.noVT = false
+    this.timer.total = Math.round(data.data * 1000)
+  }
+
+  matchCues(data){
+    let matchingCues = [];
+
+    forEach(data, (cue) => {
+      if ((this.config.filterColour.includes(cue.colorName) || this.config.filterColour.length == 0) &&
+          (this.config.filterCueType.includes(cue.type) || this.config.filterCueType.length == 0)) {
+        matchingCues.push({
+          uniqueId: cue.uniqueID,
+          listName: cue.listName,
+          number: cue.number,
+        })
+      }
+    })
+
+    return matchingCues
+  }
+
+  actionElapsed(data){
+    //log.debug('actionElapsed',data)
+    this.timer.elapsed = Math.round(data.data * 1000)
   }
 
   onShowModeStart() {
@@ -180,7 +218,7 @@ class vtAppQlab5 extends vtApp {
       // configure client
       this.client = new Client(this.config.ip, 53000)
 
-      this.client.send('/cue/selected', 200, () => { })
+      this.client.send('/runningOrPausedCues', 200, () => { })
     }
     catch (err) {
       this.onError(err)

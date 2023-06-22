@@ -4,6 +4,7 @@
     "noVTText": "No VT",
     "showPercentage": true,
     "showCueName": true,
+    "showArmedCue": true,
     "timeout": 3,
     "apps": {},
     "obs": {

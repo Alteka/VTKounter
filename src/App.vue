@@ -1,20 +1,21 @@
 <template>
 <div style="position: relative; min-height:100vh; display:flex; flex-direction: column;" :class="{ darkMode : darkMode }">
   <el-row style="padding-top: 10px;">
-    <el-col :span="17" class="title" >
+    <el-col :span="18" class="title" >
       <img src="~@/assets/bug.png" height="26" @click="openLogs()" /> VT Kounter
     </el-col>
-    <el-col :span="7">
-      <el-switch style="display: block" v-model="showMode" active-color="#6ab42f" active-text="Show" inactive-text="Setup"></el-switch>
+    <el-col :span="6">
+      <el-switch v-model="showMode" active-color="#6ab42f" active-text="Show" inactive-text="Setup"></el-switch>
     </el-col>
+    <div class="sizeControls" v-if="showMode">Size&nbsp;
+      <el-button-group>
+        <el-button round type="success" size="small" @click="size-=25">-</el-button>
+        <el-button round type="success" size="small" @click="size+=25">+</el-button>
+      </el-button-group>
+    </div>
+    <div class="version" v-if="!showMode">v{{ version }}</div>
   </el-row>
-  <div class="sizeControls" v-if="showMode">Size&nbsp;
-    <el-button-group>
-      <el-button round type="success" size="small" @click="size-=25">-</el-button>
-      <el-button round type="success" size="small" @click="size+=25">+</el-button>
-    </el-button-group>
-  </div>
-  <div class="version" v-if="!showMode">v{{ version }}</div>
+
   
   <show-mode v-if="showMode" :config="config" :appControls="appControls" :size="size"></show-mode>
   
@@ -67,6 +68,7 @@ export default {
       })
       let vm = this
       window.ipcRenderer.receive('config', function(cfg) {
+        console.log('Received config', cfg)
         vm.config = cfg
       })
       window.ipcRenderer.receive('appControls', function(appControls) {
@@ -136,9 +138,10 @@ body {
 }
 .sizeControls {
   position: absolute;
-  top: 40px;
+  top: 48px;
   right: 10px;
   font-size: 80%;
+  z-index:5;
 }
 
 .darkMode {

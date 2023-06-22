@@ -16,14 +16,19 @@
       </el-form-item>
     </el-row>
     <el-row>
-      <el-col :span="12">
+      <el-col :span="8">
         <el-form-item label="Show Progress" label-width="125px">
           <el-switch v-model="config.showPercentage"></el-switch>            
         </el-form-item>
       </el-col>
-      <el-col :span="12">
+      <el-col :span="8">
         <el-form-item label="Show VT Name" label-width="125px">
           <el-switch v-model="config.showCueName"></el-switch>            
+        </el-form-item>
+      </el-col>
+      <el-col :span="8">
+        <el-form-item label="Show Armed VT Name" label-width="150px">
+          <el-switch v-model="config.showArmedCue"></el-switch>
         </el-form-item>
       </el-col>
     </el-row>
