@@ -11,11 +11,6 @@ class vtAppQlab5 extends vtApp {
 
     this.controls = {
       ...this.controls,
-      passcode: {
-        label: "OSC Passcode",
-        type: 'string',
-        default: ''
-      },
       filterColour: {
         label: "Filter by Colour",
         type: "checkbox-group",
