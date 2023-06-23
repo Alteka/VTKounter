@@ -13,7 +13,7 @@ const menu = require('./menu.js').menu
 // Project Specific includes
 let nodeStatic = require('node-static')
 const { networkInterfaces } = require('os')
-const OBSWebSocket = require('obs-websocket-js')
+const OBSWebSocket = require('obs-websocket-js').default
 const obs = new OBSWebSocket()
 const moment = require('moment')
 
