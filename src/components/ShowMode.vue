@@ -33,6 +33,9 @@
 </template>
 
 <script>
+import {Howl} from 'howler';
+import CountdownSprite from '/static/CountdownSprite.mp3'
+
   export default {
     name: 'showMode',
     props: {
@@ -49,8 +52,32 @@
         cueName: '',
         timer: 'No VT',
         warning: false,
-        armedCueName: ''
+        armedCueName: '',
+        secondsLeft: -1,
+        sound: null,
+        soundSprites: {
+          '30': [0, 1000],
+          '20': [1000, 1000],
+          '15': [2000, 1000],
+          '10': [3000, 1000],
+          '9': [4000, 1000],
+          '8': [5000, 1000],
+          '7': [6000, 1000],
+          '6': [7000, 1000],
+          '5': [8000, 1000],
+          '4': [9000, 1000],
+          '3': [10000, 1000],
+          '2': [11000, 1000],
+          '1': [12000, 1000],
+          '0': [13000, 1000],
+        }
       }
+    },
+    created(){
+      this.sound = new Howl({
+        src: [CountdownSprite],
+        sprite: this.soundSprites
+      });
     },
     mounted: function(){
       let vm = this
@@ -76,6 +103,11 @@
       window.ipcRenderer.receive('armedCueName', function(val) {
         vm.armedCueName = val
       })
+      window.ipcRenderer.receive('secondsLeft', function(val) {
+        vm.secondsLeft = val
+      })
+
+
     },
     computed: {
       warningColour: function() {
@@ -89,6 +121,18 @@
       },
       showArmedCueName: function(){
         return this.config.showArmedCue && this.config.noVTText == this.timer
+      }
+    },
+    watch: {
+      secondsLeft(newValue){
+        if(!this.config.audioCountdown){
+          return
+        }
+
+        newValue = newValue.toString()
+        if(Object.keys(this.soundSprites).indexOf(newValue) !== -1){
+          this.sound.play(newValue)
+        }
       }
     }
   }

@@ -29,6 +29,7 @@
     "electron-log": "^4.4.4",
     "electron-store": "^8.0.1",
     "element-plus": "^2.3.6",
+    "howler": "^2.2.3",
     "hyperdeck-js-lib": "^1.7.0",
     "moment": "^2.29.1",
     "node-osc": "^6.1.11",

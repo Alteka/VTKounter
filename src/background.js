@@ -291,6 +291,8 @@ ipcMain.on('showMode', (event, cfg) => {
 function setTimerInSeconds(seconds) {
   updateTimer(moment().startOf('day').seconds(seconds).format(config.timerFormat))
 
+  controlWindow.webContents.send('secondsLeft', seconds)
+
   if (seconds <= 30 && seconds > 10) {
     controlWindow.webContents.send('warning', 'close')
   } else if (seconds <= 10) {

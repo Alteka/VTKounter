@@ -33,9 +33,14 @@
       </el-col>
     </el-row>
     <el-row>
-      <el-col :span="12">
+      <el-col :span="8">
         <el-form-item label="Text Warning Colors" label-width="125px">
           <el-switch v-model="config.textWarningColors"></el-switch>
+        </el-form-item>
+      </el-col>
+      <el-col :span="8">
+        <el-form-item label="Voice Countdown" label-width="125px">
+          <el-switch v-model="config.audioCountdown"></el-switch>
         </el-form-item>
       </el-col>
     </el-row>

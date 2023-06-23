@@ -5,6 +5,7 @@
     "showPercentage": true,
     "showCueName": true,
     "showArmedCue": true,
+    "audioCountdown": false,
     "timeout": 3,
     "apps": {},
     "obs": {
