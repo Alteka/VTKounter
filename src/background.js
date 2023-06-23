@@ -446,7 +446,7 @@ const httpServer = require('http').createServer(function (request, response) {
         response.end(JSON.stringify({
           data: {url: 'api/v1/data', description: 'JSON: Our full api data endpoint as an object'},
           array: {url: 'api/v1/data/array', description: 'JSON: Our full api endpoint as an array - as required by vMix'},
-          array: {url: 'api/v1/vmix', description: 'JSON: The bare essentials for adding as a data source in vMix'},
+          vmix: {url: 'api/v1/vmix', description: 'JSON: The bare essentials for adding as a data source in vMix'},
           progress: {url: 'api/v1/progress', description: 'Text: Float from 0 to 1 representing progress through the cue'},
           timer: {url: 'api/v1/timer', description: 'Text: A formatted string representing the time remaining'},
           name: {url: 'api/v1/name', description: 'Text: The current cue name/number'},

@@ -12,7 +12,9 @@
             </el-form-item>
           </el-col>
           <el-col :span="3" style="text-align: center;">
-            <el-button type="success" icon="el-icon-document-copy" size="small" round @click="copyUrl(url)"></el-button>
+            <el-button type="success" size="small" round @click="copyUrl(url)">
+              <i class="fas fa-copy white"></i>&nbsp;&nbsp;Copy
+            </el-button>
           </el-col>
         </el-row>
         <el-row v-if="ipAddresses.length > 1">
@@ -76,7 +78,9 @@
             </el-form-item>
           </el-col>
           <el-col :span="3" style="text-align: center;">
-            <el-button type="success" icon="el-icon-document-copy" size="small" round @click="copyUrl(api)"></el-button>
+            <el-button type="success" size="small" round @click="copyUrl(api)">
+              <i class="fas fa-copy white"></i>&nbsp;&nbsp;Copy
+            </el-button>
           </el-col>
         </el-row>
         <el-row>
@@ -86,7 +90,9 @@
             </el-form-item>
           </el-col>
           <el-col :span="3" style="text-align: center;">
-            <el-button type="success" icon="el-icon-document-copy" size="small" round @click="copyUrl(apivmix)"></el-button>
+            <el-button type="success" size="small" round @click="copyUrl(apivmix)">
+              <i class="fas fa-copy white"></i>&nbsp;&nbsp;Copy
+            </el-button>
           </el-col>
         </el-row>
 
