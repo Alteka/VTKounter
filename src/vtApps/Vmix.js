@@ -1,5 +1,5 @@
 const vtApp = require('../vtApp')
-const axios = require('axios')
+const axios = require('axios').default
 const parseString = require('xml2js').parseString
 
 class vtAppVmix extends vtApp {
