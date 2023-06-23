@@ -128,7 +128,6 @@ ipcMain.on('openLogs', () => {
 ipcMain.on('getConfig', (event) => {
   controlWindow.webContents.send('config', config)
   controlWindow.webContents.send('appControls', appControls)
-  controlWindow.webContents.send('darkMode', nativeTheme.shouldUseDarkColors)
 })
 
 ipcMain.on('factoryReset', () => {

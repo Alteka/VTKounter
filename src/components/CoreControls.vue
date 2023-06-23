@@ -43,6 +43,11 @@
           <el-switch v-model="config.audioCountdown"></el-switch>
         </el-form-item>
       </el-col>
+      <el-col :span="8">
+        <el-form-item label="Dark Mode" label-width="150px">
+          <el-switch v-model="config.darkMode"></el-switch>
+        </el-form-item>
+      </el-col>
     </el-row>
     <el-row>
         <el-form-item label="VT App Choice" label-width="125px">

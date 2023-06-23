@@ -2,6 +2,7 @@
     "timerFormat": "H:mm:ss",
     "appChoice": "Qlab",
     "noVTText": "No VT",
+    "darkMode": true,
     "showPercentage": true,
     "showCueName": true,
     "showArmedCue": true,

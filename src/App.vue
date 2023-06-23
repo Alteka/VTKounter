@@ -1,5 +1,5 @@
 <template>
-<div style="position: relative; min-height:100vh; display:flex; flex-direction: column;" :class="{ darkMode : darkMode }">
+<div style="position: relative; min-height:100vh; display:flex; flex-direction: column;" :class="{ darkMode : config.darkMode }">
   <el-row style="padding-top: 10px;">
     <el-col :span="18" class="title" >
       <img src="~@/assets/bug.png" height="26" @click="openLogs()" /> VT Kounter
@@ -56,7 +56,6 @@ export default {
         showMode: false,
         config: require('./defaultConfig.json'),
         appControls: null,
-        darkMode: true,
         size: 400,
         version: require('./../package.json').version,
         tab: 'core'
@@ -67,9 +66,6 @@ export default {
         window.ipcRenderer.send('controlResize', document.getElementById('app').clientHeight)
       })
       let vm = this
-      window.ipcRenderer.receive('darkMode', function(val) {
-        vm.darkMode = val
-      })
       window.ipcRenderer.receive('config', function(cfg) {
         vm.config = cfg
       })
@@ -212,5 +208,9 @@ body {
 }
 .darkMode .el-checkbox-button__inner {
   background: none;
+}
+
+.darkMode #timer {
+  color:#fff;
 }
 </style>
