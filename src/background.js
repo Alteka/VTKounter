@@ -153,8 +153,8 @@ ipcMain.on('networkInfo', (event) => {
 //====================================//
 //       Config Store & VT Apps       //
 //====================================//
-// ! var apps = requireDir(path.join(__static,'vtApps')) -- kinda works but fails to webpack properly - workaround below
-var apps = {
+// ! let apps = requireDir(path.join(__static,'vtApps')) -- kinda works but fails to webpack properly - workaround below
+let apps = {
   Mitti: require('./vtApps/Mitti.js'),
   Ppp: require('./vtApps/Ppp.js'),
   PVP: require('./vtApps/PVP.js'),
@@ -162,10 +162,11 @@ var apps = {
   Qlab5: require('./vtApps/Qlab5.js'),
   Vmix: require('./vtApps/Vmix.js'),
   Hyperdeck: require('./vtApps/Hyperdeck.js'),
+  VLC: require('./vtApps/VLC.js'),
 }
 console.log('APPS', apps)
-var appControls = {}
-var appDefaults = {}
+let appControls = {}
+let appDefaults = {}
 
 for(const name in apps) {
   // create instances of each app
@@ -186,7 +187,11 @@ for(const name in apps) {
   })
 }
 
-let config = Object.assign({}, getDefaultConfig(), store.get('VTKounterConfig'))
+let config = store.get('VTKounterConfig', getDefaultConfig())
+if (Object.keys(config.apps).length !== Object.keys(apps).length) {
+  config = getDefaultConfig()
+  log.info('Resetting config as structure has changed: Lazy migration...')
+}
 store.set('VTKounterConfig', config)
 
 function getDefaultConfig() {
@@ -199,9 +204,9 @@ function getDefaultConfig() {
 /* -------------------------------------------------------------------------- */
 /*                                 VT Kounter                                 */
 /* -------------------------------------------------------------------------- */
-var lastSet = ""
-var ConnectedToOBS = false
-var showMode = false
+let lastSet = ""
+let ConnectedToOBS = false
+let showMode = false
 
 // Send Requests
 setInterval(function() {
@@ -322,7 +327,7 @@ function updateTimer(time = '-') {
       io.emit('timer', time)
 
       if (ConnectedToOBS) {
-        var type = 'SetTextGDIPlusProperties'
+        let type = 'SetTextGDIPlusProperties'
         if (obsPlatformIsMac) {
           type = 'SetTextFreetype2Properties'
         }
@@ -402,7 +407,7 @@ obs.on('ConnectionClosed', function(data) {
 /* -------------------------------------------------------------------------- */
 /*                             Web Server and API                             */
 /* -------------------------------------------------------------------------- */
-var timerServer = new nodeStatic.Server(path.join(__static, 'static'))
+let timerServer = new nodeStatic.Server(path.join(__static, 'static'))
 const httpServer = require('http').createServer(function (request, response) {
   request.addListener('end', () => {
 

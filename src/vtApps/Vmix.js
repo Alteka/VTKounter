@@ -38,13 +38,13 @@ class vtAppVmix extends vtApp {
     
         // set the input number to either the active input or the number selected
         try {
-          var inputNumber = parseInt(this.config.input ? this.config.input : xml.vmix.active)
+          let inputNumber = parseInt(this.config.input ? this.config.input : xml.vmix.active)
         }
         catch (err) {
           reject(new Error(`Could not parse the input number: ${err}`))
         }
 
-        var found = false
+        let found = false
 
         // loop through inputs in vMix
         xml.vmix.inputs[0].input.forEach((input, index) => {

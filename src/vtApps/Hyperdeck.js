@@ -1,6 +1,6 @@
 const vtApp = require('../vtApp')
 const log = require('electron-log')
-var HyperdeckLib = require("hyperdeck-js-lib")
+let HyperdeckLib = require("hyperdeck-js-lib")
 
 class vtAppMitti extends vtApp {
   constructor(...args) {
