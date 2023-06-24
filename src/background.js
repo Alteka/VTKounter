@@ -161,7 +161,7 @@ let apps = {
   Qlab: require('./vtApps/Qlab.js'),
   Qlab5: require('./vtApps/Qlab5.js'),
   Vmix: require('./vtApps/Vmix.js'),
-  Hyperdeck: require('./vtApps/Hyperdeck.js'),
+  //Hyperdeck: require('./vtApps/Hyperdeck.js'),
   VLC: require('./vtApps/VLC.js'),
 }
 console.log('APPS', apps)
