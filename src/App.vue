@@ -1,5 +1,5 @@
 <template>
-<div style="position: relative; min-height:100vh; display:flex; flex-direction: column;" :class="{ darkMode : config.darkMode }">
+<div style="position: relative; min-height:100vh; display:flex; flex-direction: column;" :class="{ darkMode : config.darkMode, showMode : showMode }">
   <el-row style="padding-top: 10px;">
     <el-col :span="18" class="title" >
       <img src="~@/assets/bug.png" height="26" @click="openLogs()" /> VT Kounter
@@ -143,9 +143,14 @@ body {
 }
 
 .darkMode {
-  background: #000;
-  color: #ccc;
+  background: #222;
+  color: #aaa;
 }
+
+.darkMode.showMode {
+  background:#000;
+}
+
 .darkMode .el-divider {
   background: #555;
 }
