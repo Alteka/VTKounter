@@ -35,10 +35,12 @@ class vtAppVmix extends vtApp {
         // stop if invalid XML
         if(err)
           reject(new Error(`API XML parse error: ${err}`))
+
+        let inputNumber = null;
     
         // set the input number to either the active input or the number selected
         try {
-          let inputNumber = parseInt(this.config.input ? this.config.input : xml.vmix.active)
+          inputNumber = parseInt(this.config.input ? this.config.input : xml.vmix.active)
         }
         catch (err) {
           reject(new Error(`Could not parse the input number: ${err}`))
@@ -47,8 +49,7 @@ class vtAppVmix extends vtApp {
         let found = false
 
         // loop through inputs in vMix
-        xml.vmix.inputs[0].input.forEach((input, index) => {
-  
+        xml.vmix.inputs[0].input.forEach((input) => {
           input = input.$
   
           // found the selected input 
