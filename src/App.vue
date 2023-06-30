@@ -1,26 +1,23 @@
 <template>
-<div style="position: relative;" :class="{ darkMode : darkMode }">
+<div style="position: relative; min-height:100vh; display:flex; flex-direction: column;" :class="{ darkMode : config.darkMode, showMode : showMode }">
   <el-row style="padding-top: 10px;">
-    <el-col :span="17" class="title" >
+    <el-col :span="18" class="title" >
       <img src="~@/assets/bug.png" height="26" @click="openLogs()" /> VT Kounter
     </el-col>
-    <el-col :span="7">
-      <el-switch style="display: block" v-model="showMode" active-color="#6ab42f" active-text="Show" inactive-text="Setup"></el-switch>
+    <el-col :span="6">
+      <el-switch v-model="showMode" active-color="#6ab42f" active-text="Show" inactive-text="Setup"></el-switch>
     </el-col>
+    <div class="sizeControls" v-if="showMode">Size&nbsp;
+      <el-button-group>
+        <el-button round type="success" size="small" @click="size-=25">-</el-button>
+        <el-button round type="success" size="small" @click="size+=25">+</el-button>
+      </el-button-group>
+    </div>
+    <div class="version" v-if="!showMode">v{{ version }}</div>
   </el-row>
-  <div class="sizeControls" v-if="showMode">Size&nbsp;
-    <el-button-group>
-      <el-button round type="success" size="mini" @click="size-=25">-</el-button>
-      <el-button round type="success" size="mini" @click="size+=25">+</el-button>
-    </el-button-group>
-  </div>
-  <div class="version" v-if="!showMode">v{{ version }}</div>
 
-
-  <el-divider content-position="center" v-if="showMode">Time Remaining</el-divider>
   
   <show-mode v-if="showMode" :config="config" :appControls="appControls" :size="size"></show-mode>
-  
   
   <el-tabs v-if="!showMode" v-model="tab" style="padding-left: 10px; padding-right: 10px;">
       <el-tab-pane label="Core Settings" name="core">
@@ -59,7 +56,6 @@ export default {
         showMode: false,
         config: require('./defaultConfig.json'),
         appControls: null,
-        darkMode: false,
         size: 400,
         version: require('./../package.json').version,
         tab: 'core'
@@ -70,9 +66,6 @@ export default {
         window.ipcRenderer.send('controlResize', document.getElementById('app').clientHeight)
       })
       let vm = this
-      window.ipcRenderer.receive('darkMode', function(val) {
-        vm.darkMode = val
-      })
       window.ipcRenderer.receive('config', function(cfg) {
         vm.config = cfg
       })
@@ -143,15 +136,21 @@ body {
 }
 .sizeControls {
   position: absolute;
-  top: 40px;
+  top: 48px;
   right: 10px;
   font-size: 80%;
+  z-index:5;
 }
 
 .darkMode {
   background: #222;
   color: #aaa;
 }
+
+.darkMode.showMode {
+  background:#000;
+}
+
 .darkMode .el-divider {
   background: #555;
 }
@@ -197,10 +196,12 @@ body {
   color: #ddd;
   border: 1px solid #666;
 }
+.darkMode .el-input__wrapper {
+  background: #3d3d3d;
+}
 .darkMode .el-input__inner {
   background: #3d3d3d;
   color: #ddd;
-  border: 1px solid #666;
 }
 .darkMode .el-input-number__decrease {
   background: #3d3d3d;
@@ -212,5 +213,9 @@ body {
 }
 .darkMode .el-checkbox-button__inner {
   background: none;
+}
+
+.darkMode #timer {
+  color:#fff;
 }
 </style>

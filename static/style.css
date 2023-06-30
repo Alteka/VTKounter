@@ -4,12 +4,12 @@ body {
 
   @font-face {
     font-family: Sansation;
-    src: url(Sansation-Regular.ttf);
+    src: url("Sansation-Regular.ttf");
   }
 
   @font-face {
     font-family: DejaVu;
-    src: url(DejaVuLGCSansMono.ttf);
+    src: url("DejaVuLGCSansMono.ttf");
   }
 
   #app {
@@ -23,7 +23,7 @@ body {
       white-space: nowrap;
   }
 
-  .timer {
+  #timer {
     margin: 0;
     font-family: DejaVu, monospace;
   }

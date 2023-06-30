@@ -18,7 +18,7 @@ class vtAppQlab extends vtApp {
           {value: "red", label: "Red"},
           {value: "yellow", label: "Yellow"},
           {value: "green", label: "Green"},
-          {value: "blue", label: "Purple"},
+          {value: "blue", label: "Blue"},
           {value: "purple", label: "Purple"},
         ]
       },
@@ -35,7 +35,7 @@ class vtAppQlab extends vtApp {
         ]
       },
     }
-    
+
     // create server & client objects
     this.server = null
     this.client = null
@@ -52,14 +52,14 @@ class vtAppQlab extends vtApp {
 
   receive(msg) {
     return new Promise((resolve,reject) => {
-      var cmd = msg[0].split('/')[4]
-      var data = JSON.parse(msg[1])
-      var cue = msg[0].split('/')[3]
+      let cmd = msg[0].split('/')[4]
+      let data = JSON.parse(msg[1])
+      let cue = msg[0].split('/')[3]
 
       if (cmd == 'runningOrPausedCues') {
         this.matchingCues = [];
         if (data.data.length > 0) {
-          for (var i = 0; i < data.data.length; i++) {
+          for (let i = 0; i < data.data.length; i++) {
             if (this.config.filterColour.includes(data.data[i].colorName) || this.config.filterColour.length == 0) {
               if (this.config.filterCueType.includes(data.data[i].type) || this.config.filterCueType.length == 0) {
                 if (data.data[i].type != 'Group') {

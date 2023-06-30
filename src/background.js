@@ -2,28 +2,22 @@
 
 import { app, protocol, BrowserWindow, Menu, ipcMain, dialog, shell, nativeTheme } from 'electron'
 import { createProtocol } from 'vue-cli-plugin-electron-builder/lib'
-import installExtension, { VUEJS3_DEVTOOLS } from 'electron-devtools-installer'
+import installExtension, { VUEJS_DEVTOOLS } from 'electron-devtools-installer'
 import compareVersions from 'compare-versions'
-import { v4 as uuidv4 } from 'uuid'
-import Analytics from 'analytics'
-import googleAnalytics from '@analytics/google-analytics'
 const log = require('electron-log')
-const axios = require('axios')
+const axios = require('axios').default
 const Store = require('electron-store')
 const path = require('path')
 const menu = require('./menu.js').menu
 
 // Project Specific includes
-const requireDir = require('require-dir')
-var nodeStatic = require('node-static')
+let nodeStatic = require('node-static')
 const { networkInterfaces } = require('os')
-const OBSWebSocket = require('obs-websocket-js')
+const OBSWebSocket = require('obs-websocket-js').default
 const obs = new OBSWebSocket()
 const moment = require('moment')
 
 const store = new Store()
-
-
 
 //======================================//
 //      BOILER PLATE ELECTRON STUFF     //
@@ -54,7 +48,7 @@ app.on('activate', () => {
 app.on('ready', async () => {
   if (isDevelopment && !process.env.IS_TEST) {
     try {
-      await installExtension(VUEJS3_DEVTOOLS)
+      await installExtension(VUEJS_DEVTOOLS)
     } catch (e) {
       console.error('Vue Devtools failed to install:', e.toString())
     }
@@ -85,12 +79,12 @@ let controlWindow
 async function createWindow() {
   log.info('Showing control window')
   controlWindow = new BrowserWindow({
-    width: 540,
-    height: 450,
+    width: 800,
+    height: 500,
     show: false,
     useContentSize: true,
-    maximizable: false,
-    resizable: false,
+    maximizable: true,
+    resizable: true,
     webPreferences: {
       nodeIntegration: process.env.ELECTRON_NODE_INTEGRATION,
       contextIsolation: !process.env.ELECTRON_NODE_INTEGRATION,
@@ -117,69 +111,29 @@ async function createWindow() {
   }
 }
 
-
-
-//=====================//
-//       Analytics     //
-//=====================//
-const analytics = Analytics({
-  app: 'VTKounter',
-  version: 100,
-  plugins: [
-    googleAnalytics({
-      trackingId: 'UA-183734846-2',
-      tasks: {
-        // Set checkProtocolTask for electron apps & chrome extensions
-        checkProtocolTask: null,
-      }
-    })
-  ]
-})
-app.on('ready', async () => {
-  if (!store.has('VTKounterInstallID')) {
-    let newId = uuidv4()
-    log.info('First Runtime and created Install ID: ' + newId)
-    store.set('VTKounterInstallID', newId)
-  } else {
-    log.info('Install ID: ' + store.get('VTKounterInstallID'))
-  }
-
-  analytics.identify(store.get('VTKounterInstallID'), {
-    firstName: 'Version',
-    lastName: require('./../package.json').version
-  }, () => {
-    console.log('do this after identify')
-  })
-
-  analytics.track('AppLaunched')
-})
-
-
-
 //========================//
 //       IPC Handlers     //
 //========================//
+/**
 ipcMain.on('controlResize', (_, data) => {
-  controlWindow.setContentSize(540, data)
+  controlWindow.setContentSize(720, data)
 })
+ */
 
 ipcMain.on('openLogs', () => {
   const path = log.transports.file.findLogPath()
   shell.showItemInFolder(path)
-  analytics.track('Open Logs')
 })
 
 ipcMain.on('getConfig', (event) => {
   controlWindow.webContents.send('config', config)
   controlWindow.webContents.send('appControls', appControls)
-  controlWindow.webContents.send('darkMode', nativeTheme.shouldUseDarkColors)
 })
 
 ipcMain.on('factoryReset', () => {
   config = getDefaultConfig()
   controlWindow.webContents.send('config', config)
   store.set('VTKounterConfig', config)
-  analytics.track('Factory Reset')
 })
 
 ipcMain.on('networkInfo', (event) => {
@@ -199,18 +153,20 @@ ipcMain.on('networkInfo', (event) => {
 //====================================//
 //       Config Store & VT Apps       //
 //====================================//
-// ! var apps = requireDir(path.join(__static,'vtApps')) -- kinda works but fails to webpack properly - workaround below
-var apps = {
+// ! let apps = requireDir(path.join(__static,'vtApps')) -- kinda works but fails to webpack properly - workaround below
+let apps = {
   Mitti: require('./vtApps/Mitti.js'),
   Ppp: require('./vtApps/Ppp.js'),
   PVP: require('./vtApps/PVP.js'),
   Qlab: require('./vtApps/Qlab.js'),
+  Qlab5: require('./vtApps/Qlab5.js'),
   Vmix: require('./vtApps/Vmix.js'),
-  Hyperdeck: require('./vtApps/Hyperdeck.js')
+  //Hyperdeck: require('./vtApps/Hyperdeck.js'),
+  VLC: require('./vtApps/VLC.js'),
 }
 console.log('APPS', apps)
-var appControls = {}
-var appDefaults = {}
+let appControls = {}
+let appDefaults = {}
 
 for(const name in apps) {
   // create instances of each app
@@ -231,12 +187,12 @@ for(const name in apps) {
   })
 }
 
-var config = store.get('VTKounterConfig', getDefaultConfig())
-if (config.apps === undefined || config.webserver === undefined) {
+let config = store.get('VTKounterConfig', getDefaultConfig())
+if (Object.keys(config.apps).length !== Object.keys(apps).length) {
   config = getDefaultConfig()
   log.info('Resetting config as structure has changed: Lazy migration...')
-  store.set('VTKounterConfig', config)
 }
+store.set('VTKounterConfig', config)
 
 function getDefaultConfig() {
   let defaultConfig = require('./defaultConfig.json')
@@ -248,9 +204,9 @@ function getDefaultConfig() {
 /* -------------------------------------------------------------------------- */
 /*                                 VT Kounter                                 */
 /* -------------------------------------------------------------------------- */
-var lastSet = ""
-var ConnectedToOBS = false
-var showMode = false
+let lastSet = ""
+let ConnectedToOBS = false
+let showMode = false
 
 // Send Requests
 setInterval(function() {
@@ -266,11 +222,12 @@ setInterval(function() {
   if (!ConnectedToOBS && showMode && config.obs.enabled) {
       obsConnect()
   }
-}, 1000)
+}, 250)
 
 /* ----------- Callback from successful response from selected app ---------- */
 function appSuccess() {
   controlWindow.webContents.send('vtStatus', true)
+  updateArmedCueName(apps[config.appChoice].timer.armedCueName)
 
   if(apps[config.appChoice].timer.noVT) {
     // clear the timer when no VT is playing and stop
@@ -331,15 +288,14 @@ ipcMain.on('showMode', (event, cfg) => {
   showMode = true
   store.set('VTKounterConfig', config)
   clearTimer()
-
-  analytics.track('ShowMode')
-  analytics.page({ title: config.appChoice, href:config.appChoice, path:config.appChoice}) // store the app used as a page view.
 })
 
 
 // Updating Timer
 function setTimerInSeconds(seconds) {
   updateTimer(moment().startOf('day').seconds(seconds).format(config.timerFormat))
+
+  controlWindow.webContents.send('secondsLeft', seconds)
 
   if (seconds <= 30 && seconds > 10) {
     controlWindow.webContents.send('warning', 'close')
@@ -371,7 +327,7 @@ function updateTimer(time = '-') {
       io.emit('timer', time)
 
       if (ConnectedToOBS) {
-        var type = 'SetTextGDIPlusProperties'
+        let type = 'SetTextGDIPlusProperties'
         if (obsPlatformIsMac) {
           type = 'SetTextFreetype2Properties'
         }
@@ -402,6 +358,15 @@ function updateCueName(name) {
   }
 }
 
+let armedCueName = ''
+function updateArmedCueName(name) {
+  if (name != armedCueName) {
+    controlWindow.webContents.send('armedCueName', name)
+    armedCueName = name
+    io.emit('armedCueName', name)
+  }
+}
+
 
 
 /* -------------------------------------------------------------------------- */
@@ -423,7 +388,6 @@ obs.on('AuthenticationSuccess', function(data) {
   log.info('Connected to OBS & Authenticated')
   ConnectedToOBS = true
   controlWindow.webContents.send('obsStatus', true)
-  analytics.track('ConnectedToOBS')
 })
 
 obs.on('AuthenticationFailure', function(data) {
@@ -443,7 +407,7 @@ obs.on('ConnectionClosed', function(data) {
 /* -------------------------------------------------------------------------- */
 /*                             Web Server and API                             */
 /* -------------------------------------------------------------------------- */
-var timerServer = new nodeStatic.Server(path.join(__static, 'static'))
+let timerServer = new nodeStatic.Server(path.join(__static, 'static'))
 const httpServer = require('http').createServer(function (request, response) {
   request.addListener('end', () => {
 
@@ -486,7 +450,7 @@ const httpServer = require('http').createServer(function (request, response) {
         response.end(JSON.stringify({
           data: {url: 'api/v1/data', description: 'JSON: Our full api data endpoint as an object'},
           array: {url: 'api/v1/data/array', description: 'JSON: Our full api endpoint as an array - as required by vMix'},
-          array: {url: 'api/v1/vmix', description: 'JSON: The bare essentials for adding as a data source in vMix'},
+          vmix: {url: 'api/v1/vmix', description: 'JSON: The bare essentials for adding as a data source in vMix'},
           progress: {url: 'api/v1/progress', description: 'Text: Float from 0 to 1 representing progress through the cue'},
           timer: {url: 'api/v1/timer', description: 'Text: A formatted string representing the time remaining'},
           name: {url: 'api/v1/name', description: 'Text: The current cue name/number'},
@@ -558,34 +522,31 @@ io.on("connection", socket => {
 })
 httpServer.listen(56868)
 
-
-
 //========================//
 //     Update Checker     //
 //========================//
 setTimeout(function() {
-axios.get('https://api.github.com/repos/alteka/vtkounter/releases/latest')
-  .then(function (response) {
-    let status = compareVersions(response.data.tag_name, require('./../package.json').version, '>')
-    if (status == 1) { 
-      dialog.showMessageBox(controlWindow, {
-        type: 'question',
-        title: 'An Update Is Available',
-        message: 'Would you like to download version: ' + response.data.tag_name,
-        buttons: ['Cancel', 'Yes']
-      }).then(function (response) {
-        if (response.response == 1) {
-          shell.openExternal('https://alteka.solutions/vt-kounter')
-          analytics.track("Open Update Link")
+  axios.get('https://api.github.com/repos/alteka/vtkounter/releases/latest')
+      .then(function (response) {
+        let status = compareVersions(response.data.tag_name, require('./../package.json').version, '>')
+        if (status == 1) {
+          dialog.showMessageBox(controlWindow, {
+            type: 'question',
+            title: 'An Update Is Available',
+            message: 'Would you like to download version: ' + response.data.tag_name,
+            buttons: ['Cancel', 'Yes']
+          }).then(function (response) {
+            if (response.response == 1) {
+              shell.openExternal('https://alteka.solutions/vt-kounter')
+            }
+          });
+        } else if (status == 0) {
+          log.info('Running latest version')
+        } else if (status == -1) {
+          log.info('Running version newer than release')
         }
-      });
-    } else if (status == 0) {
-      log.info('Running latest version')
-    } else if (status == -1) {
-      log.info('Running version newer than release')
-    }
-  })
-  .catch(function (error) {
-    console.log(error);
-  })
+      })
+      .catch(function (error) {
+        console.log(error);
+      })
 }, 10000)

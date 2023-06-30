@@ -1,7 +1,7 @@
 <template>
   <el-form label-width="100px" size="small" ref="obsForm">
         <el-row justify="center">
-          <p style="margin-top: 0px;">     
+          <p style="margin-top: 0px;font-size:13px;">
             You can view the time remaining in a browser window:
           </p>
         </el-row>
@@ -12,7 +12,9 @@
             </el-form-item>
           </el-col>
           <el-col :span="3" style="text-align: center;">
-            <el-button type="success" icon="el-icon-document-copy" size="small" round @click="copyUrl(url)"></el-button>
+            <el-button type="success" size="small" round @click="copyUrl(url)">
+              <i class="fas fa-copy white"></i>&nbsp;&nbsp;Copy
+            </el-button>
           </el-col>
         </el-row>
         <el-row v-if="ipAddresses.length > 1">
@@ -29,7 +31,7 @@
 
         <el-row>
           <el-col :span="5">
-            <el-form-item label="Colour" label-width="50">
+            <el-form-item label="Colour" label-width="100">
               <el-color-picker v-model="webserver.fg"></el-color-picker>
             </el-form-item>
           </el-col>
@@ -51,12 +53,12 @@
 
         <el-row>
           <el-col :span="8">
-            <el-form-item label="Cue Name" label-width="60">
+            <el-form-item label="Cue Name" label-width="100">
               <el-switch v-model="webserver.showName"></el-switch>
             </el-form-item>
           </el-col>
           <el-col v-if="webserver.showName" :span="16">
-            <el-form-item label="Name Size" label-width="60">
+            <el-form-item label="Name Size" label-width="100">
               <el-radio-group v-model="webserver.nameSize" size="small">
                   <el-radio-button label="0.1">1/10</el-radio-button>
                   <el-radio-button label="0.166">1/6</el-radio-button>
@@ -68,7 +70,7 @@
         </el-row>
 
          <el-divider content-position="center">API</el-divider>
-        <p style="text-align: center;">A simple REST API exists here<br />It works perfectly in vMix as a Data Source</p>
+        <p style="text-align: center;font-size:13px;">A simple REST API exists here<br />It works perfectly in vMix as a Data Source</p>
         <el-row>
           <el-col :span="21">
             <el-form-item label="API URL">
@@ -76,7 +78,9 @@
             </el-form-item>
           </el-col>
           <el-col :span="3" style="text-align: center;">
-            <el-button type="success" icon="el-icon-document-copy" size="small" round @click="copyUrl(api)"></el-button>
+            <el-button type="success" size="small" round @click="copyUrl(api)">
+              <i class="fas fa-copy white"></i>&nbsp;&nbsp;Copy
+            </el-button>
           </el-col>
         </el-row>
         <el-row>
@@ -86,7 +90,9 @@
             </el-form-item>
           </el-col>
           <el-col :span="3" style="text-align: center;">
-            <el-button type="success" icon="el-icon-document-copy" size="small" round @click="copyUrl(apivmix)"></el-button>
+            <el-button type="success" size="small" round @click="copyUrl(apivmix)">
+              <i class="fas fa-copy white"></i>&nbsp;&nbsp;Copy
+            </el-button>
           </el-col>
         </el-row>
 

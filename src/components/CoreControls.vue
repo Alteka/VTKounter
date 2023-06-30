@@ -2,7 +2,7 @@
   <el-form label-width="110px" size="small" :rules="coreValidationRules" ref="coreForm" :model="config">
     <el-row >
       <el-col :span="18">
-        <el-form-item label="Time Format" prop="timerFormat">
+        <el-form-item label="Time Format" prop="timerFormat" label-width="125px">
           <el-input v-model="config.timerFormat"></el-input>
         </el-form-item>
       </el-col>
@@ -11,24 +11,46 @@
       </el-col>
     </el-row>
     <el-row>
-      <el-form-item label="Text for no VT">
+      <el-form-item label="Text for no VT" label-width="125px">
         <el-input v-model="config.noVTText"></el-input>
       </el-form-item>
     </el-row>
     <el-row>
-      <el-col :span="12">
-        <el-form-item label="Show Progress">
+      <el-col :span="8">
+        <el-form-item label="Show Progress" label-width="125px">
           <el-switch v-model="config.showPercentage"></el-switch>            
         </el-form-item>
       </el-col>
-      <el-col :span="12">
+      <el-col :span="8">
         <el-form-item label="Show VT Name" label-width="125px">
           <el-switch v-model="config.showCueName"></el-switch>            
         </el-form-item>
       </el-col>
+      <el-col :span="8">
+        <el-form-item label="Show Armed VT Name" label-width="150px">
+          <el-switch v-model="config.showArmedCue"></el-switch>
+        </el-form-item>
+      </el-col>
     </el-row>
     <el-row>
-        <el-form-item label="VT App Choice">
+      <el-col :span="8">
+        <el-form-item label="Text Warning Colors" label-width="125px">
+          <el-switch v-model="config.textWarningColors"></el-switch>
+        </el-form-item>
+      </el-col>
+      <el-col :span="8">
+        <el-form-item label="Voice Countdown" label-width="125px">
+          <el-switch v-model="config.audioCountdown"></el-switch>
+        </el-form-item>
+      </el-col>
+      <el-col :span="8">
+        <el-form-item label="Dark Mode" label-width="150px">
+          <el-switch v-model="config.darkMode"></el-switch>
+        </el-form-item>
+      </el-col>
+    </el-row>
+    <el-row>
+        <el-form-item label="VT App Choice" label-width="125px">
           <el-radio-group v-model="config.appChoice" size="small">
             <el-radio-button v-for="(app, name) in appControls" :label="name" :key="name">
               {{ app.name }}

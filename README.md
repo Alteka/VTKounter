@@ -6,7 +6,23 @@
 ## About
 VT Kounter is designed to help video operators see a nice, large, clear countdown timer for the current video playout. It can also send that timer information to OBS - this is useful for remote productions where you might use OBS to create a 'presenter return' style layout.
 
-We currently support QLab and Mitti, as these are our preferred options, but we're looking to add more. If you have specific requests do have a look at the issues section on GitHub.
+### Supported applications
+- Qlab 4
+- Qlab 5
+- Vmix
+- PVP (ProVideoPlayer)
+- PlaybackPro Plus
+- Mitti
+- Blackmagic Hyperdeck
+
+### Features
+- Customizable time format
+- Progress bar
+- Show playing VT name (Not supported by all apps)
+- Show armed VT name (Not supported by all apps)
+- Webpage for remote viewing on local network
+- Optional Warning / Danger colors when countdown is close to end
+- Audio countdown
 
 ## Download
 Get the latest release here: [Latest Release](https://github.com/Alteka/VTKounter/releases/latest)
@@ -17,20 +33,25 @@ The app is based around Electron to create and manage the windows. The content i
 #### Build Setup
 ``` bash
 #Clone the repo into a folder
-# cd into the folder and run the below
+#cd into the folder and run the below
+
 #You'll need to have node.js installed
+#We've built using node 16.18.0
 
 # install dependencies
-yarn install
+npm install
 
 # serve with hot reload at localhost:9080
-yarn run electron:serve
+npm run electron:serve
 
 # build electron application for production
-yarn run electron:build
+npm run electron:build
 ```
 
 ---
 
 
 For more information please see our website: [Alteka Solutions](https://alteka.solutions/)
+
+### Credits
+Audio for the countdown is by drotzruhn on [freesound.org](https://freesound.org/people/drotzruhn/sounds/407640/)

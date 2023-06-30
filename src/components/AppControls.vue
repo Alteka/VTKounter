@@ -1,7 +1,7 @@
 <template>
   <el-form label-width="125px" size="small" :rules="appValidationRules" ref="appForm" :model="app" style="text-align: left;">
     <!-- output all controls for app -->
-    <el-row v-for="(control, controlID) in appControl.controls" :key="controlID" justify="left">
+    <el-row v-for="(control, controlID) in appControl.controls" :key="controlID" justify="start">
       <el-col>
         <el-form-item :label="control.label ? control.label : controlID" :prop="controlID">
           <el-input v-if="control.type=='string'" v-model="app[controlID]"></el-input>

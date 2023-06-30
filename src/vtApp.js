@@ -117,7 +117,7 @@ class vtTimer {
   }
 
   get remaining() {
-    var remaining = this.total - this.elapsed
+    let remaining = this.total - this.elapsed
     return remaining >= 0 ? remaining : 0
   }
 

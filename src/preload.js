@@ -13,7 +13,7 @@ contextBridge.exposeInMainWorld('ipcRenderer', {
     }
   },
   receive: (channel, func) => {
-    let validChannels = ['darkMode', 'config', 'appControls', 'networkInfo', 'vtStatus', 'obsStatus', 'timer', 'percentage', 'warning', 'cueName']
+    let validChannels = ['darkMode', 'config', 'appControls', 'networkInfo', 'vtStatus', 'obsStatus', 'timer', 'percentage', 'warning', 'cueName', 'armedCueName','secondsLeft']
     if (validChannels.includes(channel)) {
       // Deliberately strip event as it includes `sender`
       ipcRenderer.on(channel, (event, ...args) => func(...args))
