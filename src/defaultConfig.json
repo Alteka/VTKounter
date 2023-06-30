@@ -9,6 +9,10 @@
     "audioCountdown": false,
     "timeout": 3,
     "apps": {},
+    "window": {
+        "width": 720,
+        "height": 500
+    },
     "obs": {
         "ip": "127.0.0.1",
         "port": "4444",

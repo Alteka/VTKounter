@@ -79,12 +79,12 @@ let controlWindow
 async function createWindow() {
   log.info('Showing control window')
   controlWindow = new BrowserWindow({
-    width: 800,
-    height: 500,
+    width: getDefaultConfig().window.width,
+    height: getDefaultConfig().window.height,
     show: false,
     useContentSize: true,
     maximizable: true,
-    resizable: true,
+    resizable: false,
     webPreferences: {
       nodeIntegration: process.env.ELECTRON_NODE_INTEGRATION,
       contextIsolation: !process.env.ELECTRON_NODE_INTEGRATION,
@@ -114,11 +114,11 @@ async function createWindow() {
 //========================//
 //       IPC Handlers     //
 //========================//
-/**
 ipcMain.on('controlResize', (_, data) => {
-  controlWindow.setContentSize(720, data)
+  config.window.width = data.width
+  config.window.height = data.height
+  console.log('setting window size', config.window)
 })
- */
 
 ipcMain.on('openLogs', () => {
   const path = log.transports.file.findLogPath()
@@ -187,7 +187,7 @@ for(const name in apps) {
   })
 }
 
-let config = store.get('VTKounterConfig', getDefaultConfig())
+let config = store.get('VTKounterConfig-1.0.0', getDefaultConfig())
 if (Object.keys(config.apps).length !== Object.keys(apps).length) {
   config = getDefaultConfig()
   log.info('Resetting config as structure has changed: Lazy migration...')
@@ -265,11 +265,16 @@ ipcMain.on('configMode', (event) => {
 
   controlWindow.webContents.send('vtStatus', false)
   controlWindow.webContents.send('obsStatus', false)
+  controlWindow.setContentSize(getDefaultConfig().window.width,getDefaultConfig().window.height)
+  controlWindow.resizable = false
 })
 
 ipcMain.on('showMode', (event, cfg) => {
   // start connections based on config
   log.info('Going into show mode with config: ', cfg)
+  controlWindow.resizable = true
+  console.log(config.window)
+  controlWindow.setContentSize(config.window.width,config.window.height)
 
   config = cfg
 

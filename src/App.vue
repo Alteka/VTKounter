@@ -63,7 +63,9 @@ export default {
     },
     mounted: function(){
       this.$nextTick(function () {
-        window.ipcRenderer.send('controlResize', document.getElementById('app').clientHeight)
+        if (this.showMode) {
+          window.ipcRenderer.send('controlResize', {width: document.getElementById('app').clientWidth, height: document.getElementById('app').clientHeight})
+        }
       })
       let vm = this
       window.ipcRenderer.receive('config', function(cfg) {
@@ -88,7 +90,9 @@ export default {
     },
     methods: {
       handleResize: function() {
-        window.ipcRenderer.send('controlResize', document.getElementById('app').clientHeight)
+        if (this.showMode) {
+          window.ipcRenderer.send('controlResize', {width: document.getElementById('app').clientWidth, height: document.getElementById('app').clientHeight})
+        }
       },
       openLogs: function() {
         window.ipcRenderer.send('openLogs')
