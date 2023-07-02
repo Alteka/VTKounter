@@ -30,16 +30,9 @@ class vtAppVLC extends vtApp {
                 type: 'string',
                 default: '',
                 required: true,
-            },
-            info: {
-                label: 'Info',
-                notes: 'Enable the Web server in "Main Interfaces" in settings, and set a password in the LUA HTTP section.'
-            },
-            info2: {
-                label: ' ',
-                notes: 'A password is required'
             }
         }
+        this.notes = 'Enable the Web server in "Main Interfaces" in settings,<br /> and set a password in the LUA HTTP section.<br /><br />A Password is required'
     }
 
     send() {

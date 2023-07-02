@@ -34,12 +34,9 @@ class vtAppQlab5 extends vtApp {
           {value: "Camera"},
           {value: "Mic"},
         ]
-      },
-      info: {
-        label: 'Info',
-        notes: 'Cues must have numbers for Qlab5 integration to work'
-      },
+      }
     }
+    this.notes = 'Cues must have numbers for Qlab5 integration to work'
     
     // create server & client objects
     this.server = null

@@ -1,7 +1,7 @@
 <template>
-  <el-form label-width="100px" size="small" :rules="obsValidationRules" ref="obsForm" :model="obs">
+  <el-form label-width="150px" :rules="obsValidationRules" ref="obsForm" :model="obs">
         <el-row>
-            <el-form-item label="Enable OBS Output" label-width="160px">
+            <el-form-item label="Enable OBS Output">
               <el-switch v-model="obs.enabled"></el-switch>
             </el-form-item>
         </el-row>
@@ -25,9 +25,11 @@
           </el-col>
         </el-row>
         <el-row v-if="obs.enabled">
-          <el-form-item label="Name of text source to update" label-width="240px" prop="name">
-            <el-input v-model="obs.source"></el-input>
-          </el-form-item>
+          <el-col :span="22">
+            <el-form-item label="Name of text source to update" label-width="240px" prop="name">
+              <el-input v-model="obs.source"></el-input>
+            </el-form-item>
+          </el-col>
         </el-row>
         <el-row justify="center" v-if="obs.enabled">
           <p>OBS Needs to have the WebSocket Server enabled.<br />The socket server must have a password set. </p>

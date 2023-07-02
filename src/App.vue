@@ -221,6 +221,11 @@ body {
   background: none;
 }
 
+.darkMode .el-input-group__append button.el-button {
+  background: #3d3d3d;
+  border: 1px solid #ddd;
+}
+
 .darkMode #timer {
   color:#fff;
 }

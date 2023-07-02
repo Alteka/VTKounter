@@ -1,20 +1,19 @@
 <template>
-  <el-form label-width="100px" size="small" ref="obsForm">
+  <el-form label-width="125px" ref="obsForm">
         <el-row justify="center">
           <p style="margin-top: 0px;font-size:13px;">
             You can view the time remaining in a browser window:
           </p>
         </el-row>
         <el-row>
-          <el-col :span="21">
+          <el-col :span="24">
             <el-form-item label="Server URL">
-              <el-input v-model="url" :readonly="true"></el-input>
+              <el-input v-model="url" :readonly="true">
+                <template #append>
+                  <el-button type="success" @click="copyUrl(url)" ><i class="fas fa-copy white"></i>&nbsp;&nbsp;Copy</el-button>
+                </template>
+              </el-input>
             </el-form-item>
-          </el-col>
-          <el-col :span="3" style="text-align: center;">
-            <el-button type="success" size="small" round @click="copyUrl(url)">
-              <i class="fas fa-copy white"></i>&nbsp;&nbsp;Copy
-            </el-button>
           </el-col>
         </el-row>
         <el-row v-if="ipAddresses.length > 1">
@@ -42,7 +41,7 @@
           </el-col>
           <el-col :span="11">
           <el-form-item label="Align" label-width="50">
-           <el-radio-group v-model="webserver.align" size="small">
+           <el-radio-group v-model="webserver.align">
               <el-radio-button label="left">Left</el-radio-button>
               <el-radio-button label="center">Center</el-radio-button>
               <el-radio-button label="right">Right</el-radio-button>
@@ -59,7 +58,7 @@
           </el-col>
           <el-col v-if="webserver.showName" :span="16">
             <el-form-item label="Name Size" label-width="100">
-              <el-radio-group v-model="webserver.nameSize" size="small">
+              <el-radio-group v-model="webserver.nameSize">
                   <el-radio-button label="0.1">1/10</el-radio-button>
                   <el-radio-button label="0.166">1/6</el-radio-button>
                   <el-radio-button label="0.2">1/5</el-radio-button>
@@ -72,27 +71,25 @@
          <el-divider content-position="center">API</el-divider>
         <p style="text-align: center;font-size:13px;">A simple REST API exists here<br />It works perfectly in vMix as a Data Source</p>
         <el-row>
-          <el-col :span="21">
+          <el-col :span="24">
             <el-form-item label="API URL">
-              <el-input v-model="api" :readonly="true"></el-input>
+              <el-input v-model="api" :readonly="true">
+                <template #append>
+                  <el-button type="success" @click="copyUrl(api)" ><i class="fas fa-copy white"></i>&nbsp;&nbsp;Copy</el-button>
+                </template>
+              </el-input>
             </el-form-item>
-          </el-col>
-          <el-col :span="3" style="text-align: center;">
-            <el-button type="success" size="small" round @click="copyUrl(api)">
-              <i class="fas fa-copy white"></i>&nbsp;&nbsp;Copy
-            </el-button>
           </el-col>
         </el-row>
         <el-row>
-          <el-col :span="21">
+          <el-col :span="24">
             <el-form-item label="vMix API URL">
-              <el-input v-model="apivmix" :readonly="true"></el-input>
+              <el-input v-model="apivmix" :readonly="true">
+                <template #append>
+                  <el-button type="success" @click="copyUrl(apivmix)" ><i class="fas fa-copy white"></i>&nbsp;&nbsp;Copy</el-button>
+                </template>
+              </el-input>
             </el-form-item>
-          </el-col>
-          <el-col :span="3" style="text-align: center;">
-            <el-button type="success" size="small" round @click="copyUrl(apivmix)">
-              <i class="fas fa-copy white"></i>&nbsp;&nbsp;Copy
-            </el-button>
           </el-col>
         </el-row>
 

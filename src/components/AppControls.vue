@@ -1,5 +1,5 @@
 <template>
-  <el-form label-width="125px" size="small" :rules="appValidationRules" ref="appForm" :model="app" style="text-align: left;">
+  <el-form label-width="150px" :rules="appValidationRules" ref="appForm" :model="app" style="text-align: left;">
     <!-- output all controls for app -->
     <el-row v-for="(control, controlID) in appControl.controls" :key="controlID" justify="start">
       <el-col>
@@ -24,7 +24,9 @@
 
     <!-- output notes if app has any -->
     <el-row v-if="appControl.notes" justify="center">
-      <p class="notes" v-html="appControl.notes"></p>
+      <el-col :span="24" class="notes">
+        <span class="notes" v-html="appControl.notes"></span>
+      </el-col>
     </el-row>
   </el-form>
 </template>

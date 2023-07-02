@@ -1,7 +1,7 @@
 <template>
-  <el-form label-width="100px" size="small" :rules="oscValidationRules" ref="obsForm" :model="osc">
+  <el-form label-width="150px" :rules="oscValidationRules" ref="obsForm" :model="osc">
         <el-row>
-            <el-form-item label="Enable OSC Output" label-width="160px">
+            <el-form-item label="Enable OSC Output">
               <el-switch v-model="osc.enabled"></el-switch>
             </el-form-item>
         </el-row>
@@ -19,7 +19,7 @@
         </el-row>
         <el-row v-if="osc.enabled">
           <el-col :span="24">
-            <el-form-item label="OSC Address to send" label-width="160px" prop="name">
+            <el-form-item label="OSC Address to send" prop="name">
               <el-input v-model="osc.address"></el-input>
             </el-form-item>
           </el-col>
