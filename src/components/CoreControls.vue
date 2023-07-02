@@ -88,6 +88,7 @@
     },
     methods: {
       factoryReset: function() {
+        console.log('Request factory reset')
         window.ipcRenderer.send('factoryReset')
       }
     }

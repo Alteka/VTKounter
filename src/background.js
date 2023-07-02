@@ -10,6 +10,8 @@ const Store = require('electron-store')
 const path = require('path')
 const menu = require('./menu.js').menu
 
+const storeName = 'VTKounterConfig-v1.0.0'
+
 // Project Specific includes
 let nodeStatic = require('node-static')
 const { networkInterfaces } = require('os')
@@ -120,20 +122,16 @@ ipcMain.on('controlResize', (_, data) => {
   console.log('setting window size', config.window)
 })
 
-ipcMain.on('openLogs', () => {
-  const path = log.transports.file.findLogPath()
-  shell.showItemInFolder(path)
-})
-
 ipcMain.on('getConfig', (event) => {
   controlWindow.webContents.send('config', config)
   controlWindow.webContents.send('appControls', appControls)
 })
 
 ipcMain.on('factoryReset', () => {
+  console.log('Performing Factory Reset')
   config = getDefaultConfig()
   controlWindow.webContents.send('config', config)
-  store.set('VTKounterConfig', config)
+  store.set(storeName, config)
 })
 
 ipcMain.on('networkInfo', (event) => {
@@ -187,12 +185,12 @@ for(const name in apps) {
   })
 }
 
-let config = store.get('VTKounterConfig-1.0.0', getDefaultConfig())
+let config = store.get(storeName, getDefaultConfig())
 if (Object.keys(config.apps).length !== Object.keys(apps).length) {
   config = getDefaultConfig()
   log.info('Resetting config as structure has changed: Lazy migration...')
 }
-store.set('VTKounterConfig', config)
+store.set(storeName, config)
 
 function getDefaultConfig() {
   let defaultConfig = require('./defaultConfig.json')
@@ -291,7 +289,7 @@ ipcMain.on('showMode', (event, cfg) => {
   }
 
   showMode = true
-  store.set('VTKounterConfig', config)
+  store.set(storeName, config)
   clearTimer()
 })
 
@@ -530,28 +528,28 @@ httpServer.listen(56868)
 //========================//
 //     Update Checker     //
 //========================//
-setTimeout(function() {
-  axios.get('https://api.github.com/repos/alteka/vtkounter/releases/latest')
-      .then(function (response) {
-        let status = compareVersions(response.data.tag_name, require('./../package.json').version, '>')
-        if (status == 1) {
-          dialog.showMessageBox(controlWindow, {
-            type: 'question',
-            title: 'An Update Is Available',
-            message: 'Would you like to download version: ' + response.data.tag_name,
-            buttons: ['Cancel', 'Yes']
-          }).then(function (response) {
-            if (response.response == 1) {
-              shell.openExternal('https://alteka.solutions/vt-kounter')
-            }
-          });
-        } else if (status == 0) {
-          log.info('Running latest version')
-        } else if (status == -1) {
-          log.info('Running version newer than release')
-        }
-      })
-      .catch(function (error) {
-        console.log(error);
-      })
-}, 10000)
+// setTimeout(function() {
+//   axios.get('https://api.github.com/repos/alteka/vtkounter/releases/latest')
+//       .then(function (response) {
+//         let status = compareVersions(response.data.tag_name, require('./../package.json').version, '>')
+//         if (status == 1) {
+//           dialog.showMessageBox(controlWindow, {
+//             type: 'question',
+//             title: 'An Update Is Available',
+//             message: 'Would you like to download version: ' + response.data.tag_name,
+//             buttons: ['Cancel', 'Yes']
+//           }).then(function (response) {
+//             if (response.response == 1) {
+//               shell.openExternal('https://alteka.solutions/vt-kounter')
+//             }
+//           });
+//         } else if (status == 0) {
+//           log.info('Running latest version')
+//         } else if (status == -1) {
+//           log.info('Running version newer than release')
+//         }
+//       })
+//       .catch(function (error) {
+//         console.log(error);
+//       })
+// }, 10000)

@@ -7,9 +7,12 @@ import { contextBridge, ipcRenderer } from 'electron'
 contextBridge.exposeInMainWorld('ipcRenderer', {
   send: (channel, data) => {
     // whitelist channels
-    let validChannels = ['controlResize', 'getConfig', 'showMode', 'configMode', 'openLogs']
+    let validChannels = ['controlResize', 'getConfig', 'showMode', 'configMode', 'factoryReset']
     if (validChannels.includes(channel)) {
       ipcRenderer.send(channel, data)
+      console.debug('IPC Send:', channel)
+    } else {
+      console.warn('Ignoring IPC Request', channel)
     }
   },
   receive: (channel, func) => {

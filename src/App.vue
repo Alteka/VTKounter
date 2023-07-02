@@ -2,7 +2,7 @@
 <div style="position: relative; min-height:100vh; display:flex; flex-direction: column;" :class="{ darkMode : config.darkMode, showMode : showMode }">
   <el-row style="padding-top: 10px;">
     <el-col :span="18" class="title" >
-      <img src="~@/assets/bug.png" height="26" @click="openLogs()" /> VT Kounter
+      <img src="~@/assets/bug.png" height="26" /> VT Kounter
     </el-col>
     <el-col :span="6">
       <el-switch v-model="showMode" active-color="#6ab42f" active-text="Show" inactive-text="Setup"></el-switch>
@@ -93,9 +93,6 @@ export default {
         if (this.showMode) {
           window.ipcRenderer.send('controlResize', {width: document.getElementById('app').clientWidth, height: document.getElementById('app').clientHeight})
         }
-      },
-      openLogs: function() {
-        window.ipcRenderer.send('openLogs')
       }
     }
   }
