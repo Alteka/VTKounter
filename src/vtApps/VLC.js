@@ -33,7 +33,7 @@ class vtAppVLC extends vtApp {
             },
             info: {
                 label: 'Info',
-                notes: 'Please enable the Web server in "Main Interfaces" in settings, and set a password in the LUA HTTP section.'
+                notes: 'Enable the Web server in "Main Interfaces" in settings, and set a password in the LUA HTTP section.'
             },
             info2: {
                 label: ' ',
