@@ -3,7 +3,7 @@
 import { app, protocol, BrowserWindow, Menu, ipcMain, dialog, shell, nativeTheme } from 'electron'
 import { createProtocol } from 'vue-cli-plugin-electron-builder/lib'
 import installExtension, { VUEJS_DEVTOOLS } from 'electron-devtools-installer'
-import compareVersions from 'compare-versions'
+import { compareVersions } from 'compare-versions'
 const log = require('electron-log')
 const axios = require('axios').default
 const Store = require('electron-store')
@@ -543,28 +543,28 @@ httpServer.listen(56868)
 //========================//
 //     Update Checker     //
 //========================//
-// setTimeout(function() {
-//   axios.get('https://api.github.com/repos/alteka/vtkounter/releases/latest')
-//       .then(function (response) {
-//         let status = compareVersions(response.data.tag_name, require('./../package.json').version, '>')
-//         if (status == 1) {
-//           dialog.showMessageBox(controlWindow, {
-//             type: 'question',
-//             title: 'An Update Is Available',
-//             message: 'Would you like to download version: ' + response.data.tag_name,
-//             buttons: ['Cancel', 'Yes']
-//           }).then(function (response) {
-//             if (response.response == 1) {
-//               shell.openExternal('https://alteka.solutions/vt-kounter')
-//             }
-//           });
-//         } else if (status == 0) {
-//           log.info('Running latest version')
-//         } else if (status == -1) {
-//           log.info('Running version newer than release')
-//         }
-//       })
-//       .catch(function (error) {
-//         console.log(error);
-//       })
-// }, 10000)
+setTimeout(function() {
+  axios.get('https://api.github.com/repos/alteka/vtkounter/releases/latest')
+      .then(function (response) {
+        let status = compareVersions(response.data.tag_name, require('./../package.json').version)
+        if (status == 1) {
+          dialog.showMessageBox(controlWindow, {
+            type: 'question',
+            title: 'An Update Is Available',
+            message: 'Would you like to download version: ' + response.data.tag_name,
+            buttons: ['Cancel', 'Yes']
+          }).then(function (response) {
+            if (response.response == 1) {
+              shell.openExternal('https://alteka.solutions/vt-kounter')
+            }
+          });
+        } else if (status == 0) {
+          log.info('Running latest version')
+        } else if (status == -1) {
+          log.info('Running version newer than release')
+        }
+      })
+      .catch(function (error) {
+        console.log(error);
+      })
+}, 10000)
