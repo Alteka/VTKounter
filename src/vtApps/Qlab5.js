@@ -37,7 +37,7 @@ class vtAppQlab5 extends vtApp {
       },
       info: {
         label: 'Info',
-        notes: '! Cues must have numbers for Qlab5 integration to work correctly !'
+        notes: 'Cues must have numbers for Qlab5 integration to work'
       },
     }
     
