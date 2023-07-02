@@ -35,6 +35,10 @@
       <el-tab-pane label="Web Server" name="webserver">
         <webserver-controls v-model="config.webserver"></webserver-controls>
       </el-tab-pane>
+
+      <el-tab-pane label="OSC Output" name="osc">
+        <o-s-c-controls v-model="config.osc"></o-s-c-controls>
+      </el-tab-pane>
     </el-tabs>
 
   <resize-observer @notify="handleResize" :showTrigger="true" />
@@ -47,10 +51,11 @@ import ObsControls from './components/ObsControls'
 import AppControls from './components/AppControls'
 import CoreControls from './components/CoreControls'
 import WebserverControls from './components/WebserverControls'
+import OSCControls from './components/OSCControls'
 
 export default {
   name: 'App',
-  components: { ShowMode, ObsControls, AppControls, CoreControls, WebserverControls },
+  components: { ShowMode, ObsControls, AppControls, CoreControls, WebserverControls, OSCControls },
   data: function () {
       return {
         showMode: false,

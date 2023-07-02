@@ -18,6 +18,7 @@ const { networkInterfaces } = require('os')
 const OBSWebSocket = require('obs-websocket-js').default
 const obs = new OBSWebSocket()
 const moment = require('moment')
+const { Client } = require('node-osc')
 
 const store = new Store()
 
@@ -347,6 +348,9 @@ function updateTimer(time = '-') {
             }
         })
       }
+
+     sendOSC(time)
+
       lastSet = time
     }
   }
@@ -406,6 +410,17 @@ obs.on('ConnectionClosed', function(data) {
 
 
 
+/* -------------------------------------------------------------------------- */
+/*                               OSC Connection                               */
+/* -------------------------------------------------------------------------- */
+function sendOSC(time) {
+  if (config.osc.enabled) {
+    const client = new Client(config.osc.ip, config.osc.port);
+    client.send(config.osc.address, time, () => {
+      client.close();
+    })
+  }
+}
 
 /* -------------------------------------------------------------------------- */
 /*                             Web Server and API                             */

@@ -26,5 +26,11 @@
         "align": "center",
         "showName": true,
         "nameSize": 0.2
+    },
+    "osc": {
+        "enabled": false,
+        "ip": "127.0.0.1",
+        "port": "53000",
+        "address": "/cue/VTKounter/liveText"
     }
 }
