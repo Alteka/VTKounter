@@ -84,6 +84,8 @@ async function createWindow() {
   controlWindow = new BrowserWindow({
     width: getDefaultConfig().window.width,
     height: getDefaultConfig().window.height,
+    minWidth: 600,
+    minHeight: 240,
     show: false,
     useContentSize: true,
     maximizable: true,
