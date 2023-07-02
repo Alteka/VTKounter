@@ -7,7 +7,7 @@ import { contextBridge, ipcRenderer } from 'electron'
 contextBridge.exposeInMainWorld('ipcRenderer', {
   send: (channel, data) => {
     // whitelist channels
-    let validChannels = ['controlResize', 'getConfig', 'showMode', 'configMode', 'factoryReset']
+    let validChannels = ['controlResize', 'getConfig', 'showMode', 'configMode', 'factoryReset', 'networkInfo']
     if (validChannels.includes(channel)) {
       ipcRenderer.send(channel, data)
       console.debug('IPC Send:', channel)
