@@ -72,7 +72,7 @@ class vtAppQlab extends vtApp {
           this.timer.reset()
         }
         if (this.matchingCues.length == 1) {
-          i=0;
+          let i=0;
           while (data.data[i].type == 'Group') {
             i++;
           }
