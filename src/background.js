@@ -270,6 +270,7 @@ ipcMain.on('configMode', (event) => {
   controlWindow.resizable = false
 
   io.emit('cueName', 'Setup Mode')
+  io.emit('warning', false)
 })
 
 ipcMain.on('showMode', (event, cfg) => {
@@ -305,12 +306,17 @@ function setTimerInSeconds(seconds) {
 
   controlWindow.webContents.send('secondsLeft', seconds)
 
-  if (seconds <= 30 && seconds > 10) {
-    controlWindow.webContents.send('warning', 'close')
-  } else if (seconds <= 10) {
-    controlWindow.webContents.send('warning', 'closer')
-  } else {
-    controlWindow.webContents.send('warning', false)
+  if (config.textWarningColors) {
+    if (seconds <= 30 && seconds > 10) {
+      controlWindow.webContents.send('warning', 'close')
+      io.emit('warning', 'close')
+    } else if (seconds <= 10) {
+      controlWindow.webContents.send('warning', 'closer')
+      io.emit('warning', 'closer')
+    } else {
+      controlWindow.webContents.send('warning', false)
+      io.emit('warning', false)
+    }
   }
 }
 
@@ -542,6 +548,7 @@ io.on("connection", socket => {
   console.log('Socket IO Connection!')
   if (showMode) {
     io.emit('cueName', cueName)
+    
   } else {
     io.emit('cueName', 'Config Mode')
   }

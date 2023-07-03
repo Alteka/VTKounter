@@ -7,10 +7,12 @@ var app = new Vue({
       showName: false,
       fs: 48,
       fg: "0000ff",
-      a: "center"
+      a: "center",
+      warning: false
     },
     mounted: function() {
       console.log('setting up socket connection')
+      console.log('color!', this.warningColour)
       const socket = io();
 
       socket.on("connect", () => { console.log('connected to socket server') })
@@ -18,6 +20,10 @@ var app = new Vue({
 
       socket.on("timer", (msg) => { this.timer = msg })
       socket.on("cueName", (msg) => { this.cueName = msg })
+      socket.on("warning", (msg) => { 
+        this.warning = msg 
+        console.log('warning', msg)
+      })
 
       const urlParams = new URLSearchParams(window.location.search)
       if (urlParams.has('fs')) {
@@ -68,5 +74,16 @@ var app = new Vue({
         vm.fg = '000000'
        })
 
+    },
+    computed: {
+      warningColour: function() {
+        if (this.warning == 'close') {
+          return 'E28806'   
+        } else if (this.warning == 'closer') {
+          return 'ff3333'
+        } else {
+          return this.fg
+        }
+      }
     }
   })
