@@ -268,6 +268,8 @@ ipcMain.on('configMode', (event) => {
   controlWindow.webContents.send('obsStatus', false)
   controlWindow.setContentSize(getDefaultConfig().window.width,getDefaultConfig().window.height)
   controlWindow.resizable = false
+
+  io.emit('cueName', 'Setup Mode')
 })
 
 ipcMain.on('showMode', (event, cfg) => {
