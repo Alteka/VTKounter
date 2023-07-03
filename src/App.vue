@@ -115,6 +115,7 @@ body {
   font-family: Sansation, Helvetica, sans-serif;
   overflow: hidden !important;
   margin: 0;
+  user-select: none;
 }
 @font-face {
   font-family: Sansation;
