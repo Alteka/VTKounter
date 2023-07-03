@@ -6,7 +6,7 @@
           <span style="color:#999;font-weight:bold;">STBY:</span>&nbsp;{{ armedCueName }}
         </div>
         <div v-else-if="!showArmedCueName && cueName">
-          <span style="color:#9f9;font-weight:bold;">PLAY:</span> {{ cueName }}
+          <span style="color:#6ab42f;font-weight:bold;">PLAY:</span> {{ cueName }}
         </div>
       </div>
     </el-row>
