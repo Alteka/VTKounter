@@ -45,17 +45,18 @@ class vtAppQlab extends vtApp {
   }
 
   send() {
-    this.client.send('/cue/active/currentDuration', 200, () => { })
-    this.client.send('/cue/active/actionElapsed', 200, () => { })
-    this.client.send('/runningOrPausedCues', 200, () => { })
-    this.client.send('/cue/playhead/listName', 200, () => { })
+    this.client.send('/runningOrPausedCues')
+    this.client.send('/cue/playhead/listName')
   }
 
   receive(msg) {
     return new Promise((resolve,reject) => {
-      let cmd = msg[0].split('/')[4]
+
+      let replyAddress = msg[0].split('/')
+
+      let cmd = replyAddress.pop()
       let data = JSON.parse(msg[1])
-      let cue = msg[0].split('/')[3]
+      let cue = replyAddress.pop()
 
       if (cmd == 'runningOrPausedCues') {
         this.matchingCues = [];
@@ -72,7 +73,7 @@ class vtAppQlab extends vtApp {
         }  else {
           this.timer.reset()
         }
-        if (this.matchingCues.length == 1) {
+        if (this.matchingCues.length > 0) {
           let i=0;
           while (data.data[i].type == 'Group') {
             i++;
@@ -83,21 +84,26 @@ class vtAppQlab extends vtApp {
         if (this.matchingCues.length == 0) {
           this.timer.reset()
         }
-        if (this.matchingCues.length > 1) {
-          log.warn('Multiple matching QLab Cues are running', this.matchingCues)
-        }
+
+        this.client.send('/cue_id/' + this.matchingCues[0] + '/currentDuration')
+        this.client.send('/cue_id/' + this.matchingCues[0] + '/actionElapsed')
       }
+
+
+
       if (cmd == 'currentDuration' && this.matchingCues[0] == cue) {
         if (this.timer.total !== Math.round(data.data*1000)) {
           log.info('--==--  QLab VT Started with Duration ' + data.data + '  --==--')
         }
         this.timer.total = Math.round(data.data * 1000)
       }
+
       if (cmd == 'actionElapsed' && this.matchingCues[0] == cue) {
         this.timer.elapsed = Math.round(data.data * 1000)
       }
+
       if (cmd == 'listName' && this.matchingCues.length == 0) {
-        //log.debug(data)
+        log.debug(data)
         if (data.data != '') {
           this.timer.armedCueName = data.data
         } else {

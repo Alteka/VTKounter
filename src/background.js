@@ -160,7 +160,6 @@ let apps = {
   Ppp: require('./vtApps/Ppp.js'),
   PVP: require('./vtApps/PVP.js'),
   Qlab: require('./vtApps/Qlab.js'),
-  Qlab5: require('./vtApps/Qlab5.js'),
   Vmix: require('./vtApps/Vmix.js'),
   //Hyperdeck: require('./vtApps/Hyperdeck.js'),
   VLC: require('./vtApps/VLC.js'),
@@ -216,7 +215,7 @@ setInterval(function() {
 
     if( (new Date()).getTime() > apps[config.appChoice].timer.lastUpdated + config.timeout * 1000) {
       // the app hasn't responded for a while
-      appError(new Error(`Timeout (${config.timeout}) reached`))
+      // appError(new Error(`Timeout (${config.timeout}) reached`))
     }
   }
 
