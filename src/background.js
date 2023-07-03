@@ -333,6 +333,9 @@ function updateTimer(time = '-') {
     if (time != lastSet) {
       controlWindow.webContents.send('timer', time)
       io.emit('timer', time)
+      if (time == 0) {
+        io.emit('cueName', 'VT Finished')
+      }
 
       if (ConnectedToOBS) {
         let type = 'SetTextGDIPlusProperties'
@@ -537,7 +540,11 @@ const io = require("socket.io")(httpServer, {})
 
 io.on("connection", socket => { 
   console.log('Socket IO Connection!')
-  io.emit('cueName', cueName)
+  if (showMode) {
+    io.emit('cueName', cueName)
+  } else {
+    io.emit('cueName', 'Config Mode')
+  }
   if (lastSet != '') {
     io.emit('timer', lastSet)
   }
