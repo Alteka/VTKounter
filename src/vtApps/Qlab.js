@@ -42,11 +42,17 @@ class vtAppQlab extends vtApp {
 
     // to store filtered cues
     this.matchingCues = []
+
+    this.timeSinceLastListName
   }
 
   send() {
     this.client.send('/runningOrPausedCues')
     this.client.send('/cue/playhead/listName')
+
+    if (this.timeSinceLastListName < (new Date() - 600)) {
+      this.timer.armedCueName = null
+    }
   }
 
   receive(msg) {
@@ -103,7 +109,8 @@ class vtAppQlab extends vtApp {
       }
 
       if (cmd == 'listName' && this.matchingCues.length == 0) {
-        log.debug(data)
+        this.timeSinceLastListName = new Date()
+        // log.debug(data)
         if (data.data != '') {
           this.timer.armedCueName = data.data
         } else {
