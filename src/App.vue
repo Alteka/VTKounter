@@ -116,6 +116,7 @@ body {
   overflow: hidden !important;
   margin: 0;
   user-select: none;
+  background: #000;
 }
 @font-face {
   font-family: Sansation;
