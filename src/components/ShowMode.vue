@@ -10,7 +10,7 @@
 
     <el-row v-if="config.showPercentage" style="padding: 10px 20px; " justify="start">
       <el-col :span="24">
-        <el-progress :percentage="percentage" :show-text="false" :color="warningColour" />
+        <el-progress :percentage="percentage" :show-text="false" :color="warningColour"  :stroke-width="12"/>
       </el-col>
     </el-row>
 
