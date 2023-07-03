@@ -48,6 +48,7 @@ class vtAppQlab extends vtApp {
     this.client.send('/cue/active/currentDuration', 200, () => { })
     this.client.send('/cue/active/actionElapsed', 200, () => { })
     this.client.send('/runningOrPausedCues', 200, () => { })
+    this.client.send('/cue/playhead/listName', 200, () => { })
   }
 
   receive(msg) {
@@ -94,6 +95,14 @@ class vtAppQlab extends vtApp {
       }
       if (cmd == 'actionElapsed' && this.matchingCues[0] == cue) {
         this.timer.elapsed = Math.round(data.data * 1000)
+      }
+      if (cmd == 'listName' && this.matchingCues.length == 0) {
+        //log.debug(data)
+        if (data.data != '') {
+          this.timer.armedCueName = data.data
+        } else {
+          this.timer.armedCueName = "<Cue name not set>"
+        }
       }
 
       resolve()
