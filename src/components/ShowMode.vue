@@ -1,6 +1,6 @@
 <template>
     <el-row id="timer" justify="center" :style="{'font-size': size/1.5 + '%'}">
-      <span style="{'color': config.textWarningColors ? warningColour : 'inherit'}">{{ timer }}</span>
+      <span :style="{'color': config.textWarningColors ? warningColour : 'inherit'}">{{ timer }}</span>
     </el-row>
 
     <el-row v-if="config.showCueName" justify="center" style="{font-size: 50%}">
