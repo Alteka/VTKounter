@@ -333,7 +333,7 @@ function updateTimer(time = '-') {
     if (time != lastSet) {
       controlWindow.webContents.send('timer', time)
       io.emit('timer', time)
-      if (time == 0) {
+      if (time == config.noVTText) {
         io.emit('cueName', 'VT Finished')
       }
 
