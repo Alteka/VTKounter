@@ -1,18 +1,13 @@
 <template>
     <el-row id="timer" justify="center" :style="{'font-size': size/1.5 + '%'}">
       <span style="{'color': config.textWarningColors ? warningColour : 'inherit'}">{{ timer }}</span>
-      <div :style="{'font-size': '50%'}" style="margin-top:10px;" v-if="config.showCueName">
-        <div v-if="showArmedCueName && armedCueName">
-          <span style="color:#999;font-weight:bold;">STBY:</span>&nbsp;{{ armedCueName }}
-        </div>
-        <div v-else-if="!showArmedCueName && cueName">
-          <span style="color:#6ab42f;font-weight:bold;">PLAY:</span> {{ cueName }}
-        </div>
-      </div>
     </el-row>
-    <el-row justify="center">
 
+    <el-row v-if="config.showCueName" justify="center" style="{font-size: 50%}">
+      <span v-if="showArmedCueName && armedCueName" style="color:#999;font-weight:bold;">STBY: {{ armedCueName }}</span>
+      <span v-else-if="!showArmedCueName && cueName" style="color:#6ab42f;font-weight:bold;">PLAY: {{ cueName }}</span>
     </el-row>
+
     <el-row v-if="config.showPercentage" style="padding: 10px 20px; " justify="start">
       <el-col :span="24">
         <el-progress :percentage="percentage" :show-text="false" :color="warningColour" />
@@ -116,7 +111,7 @@ import CountdownSprite from '/static/CountdownSprite.mp3'
         } else if (this.warning == 'closer') {
           return '#ff3333'
         } else {
-          return '#fff'
+          return '#6ab42f'
         }
       },
       showArmedCueName: function(){
