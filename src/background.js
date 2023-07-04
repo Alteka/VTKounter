@@ -269,6 +269,9 @@ ipcMain.on('configMode', (event) => {
   controlWindow.setContentSize(getDefaultConfig().window.width,getDefaultConfig().window.height)
   controlWindow.resizable = false
 
+  updateCueName('')
+  updateCueNameHTML(false)
+
   io.emit('cueName', 'Setup Mode')
   io.emit('cueNameHTML', false)
   io.emit('warning', false)
