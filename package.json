@@ -1,6 +1,6 @@
 {
   "name": "vtkounter",
-  "version": "0.9.0-mjj-test",
+  "version": "0.9.0",
   "author": "Alteka Solutions <info@alteka.solutions>",
   "description": "A cross-platform app for showing time remaining on a VT playout",
   "license": "GPL-3.0-only",
