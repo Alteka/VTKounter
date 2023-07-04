@@ -96,11 +96,11 @@ export default {
     watch: {
       showMode: function(newVal) {
         if (newVal) {
-          // going into config mode
+          // going into show mode
           // console.log(JSON.parse(JSON.stringify(this.config)))
           window.ipcRenderer.send('showMode', JSON.parse(JSON.stringify(this.config)))
         } else {
-          // going into show mode
+          // going into config mode
           window.ipcRenderer.send('configMode')
         }
       }
