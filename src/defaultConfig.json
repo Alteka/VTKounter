@@ -5,7 +5,6 @@
     "darkMode": true,
     "showPercentage": true,
     "showCueName": true,
-    "showArmedCue": true,
     "textWarningColors": true,
     "audioCountdown": false,
     "timeout": 3,

@@ -145,7 +145,6 @@ class vtTimer {
    */
   reset() {
     this.elapsed = this.total = 0
-    this.cueName = ""
     this.noVT = true
   }
 }

@@ -26,11 +26,6 @@
           <el-switch v-model="config.showCueName"></el-switch>            
         </el-form-item>
       </el-col>
-      <el-col :span="8" v-if="config.appChoice.includes('Qlab')">
-        <el-form-item label="Show Armed VT Name" >
-          <el-switch v-model="config.showArmedCue"></el-switch>
-        </el-form-item>
-      </el-col>
     </el-row>
     <el-row>
       <el-col :span="8">

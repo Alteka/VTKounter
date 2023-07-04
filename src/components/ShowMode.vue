@@ -4,8 +4,8 @@
     </el-row>
 
     <el-row v-if="config.showCueName" justify="center" style="{font-size: 50%}">
-      <span v-if="showArmedCueName && armedCueName"><i class="fa-solid fa-pause green"></i> {{ armedCueName }}</span>
-      <span v-else-if="!showArmedCueName && cueName"><i class="fa-solid fa-play green"></i> {{ cueName }}</span>
+      <span v-if="cueNameHTML" v-html="cueNameHTML" :style="{'color': config.textWarningColors ? warningColour : 'inherit'}"></span>
+      <span v-else :style="{'color': config.textWarningColors ? warningColour : 'white'}">{{ cueName }}</span>
     </el-row>
 
     <el-row v-if="config.showPercentage" style="padding: 10px 20px; " justify="start">
@@ -45,9 +45,9 @@ import CountdownSprite from '/static/CountdownSprite.mp3'
         obsMessage: '',
         percentage: 0,
         cueName: '',
+        cueNameHTML: false,
         timer: 'No VT',
         warning: false,
-        armedCueName: '',
         secondsLeft: -1,
         sound: null,
         soundSprites: {
@@ -95,8 +95,8 @@ import CountdownSprite from '/static/CountdownSprite.mp3'
       window.ipcRenderer.receive('cueName', function(val) {
         vm.cueName = val
       })
-      window.ipcRenderer.receive('armedCueName', function(val) {
-        vm.armedCueName = val
+      window.ipcRenderer.receive('cueNameHTML', function(val) {
+        vm.cueNameHTML = val
       })
       window.ipcRenderer.receive('secondsLeft', function(val) {
         vm.secondsLeft = val
@@ -110,6 +110,8 @@ import CountdownSprite from '/static/CountdownSprite.mp3'
           return '#E28806'   
         } else if (this.warning == 'closer') {
           return '#ff3333'
+        } else if (this.timer == this.config.noVTText) {
+          return '#666'
         } else {
           return '#6ab42f'
         }

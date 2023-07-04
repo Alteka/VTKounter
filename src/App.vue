@@ -127,6 +127,9 @@ body {
   color: #6ab42f;
   margin-right: 5px;
 }
+.orange {
+  color: #E28806;
+}
 .red {
   color: #ff3333;
 }

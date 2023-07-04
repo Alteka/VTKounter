@@ -39,6 +39,11 @@ class vtAppQlab extends vtApp {
         type: "boolean",
         default: true,
       },
+      showPlayheadCue: {
+        label: "Show Selected Cue",
+        type: "boolean",
+        default: true,
+      },
     }
 
     // create server & client objects
@@ -48,15 +53,24 @@ class vtAppQlab extends vtApp {
     // to store filtered cues
     this.matchingCues = []
 
+    this.isPaused = false
+
     this.timeSinceLastListName
+    this.playheadCueNumber
   }
 
   send() {
     this.client.send('/runningOrPausedCues')
-    this.client.send('/cue/playhead/listName')
+
+    if (this.config.showPlayheadCue) {
+      this.client.send('/cue/playhead/number')
+      this.client.send('/cue/playhead/listName')
+    }
 
     if (this.timeSinceLastListName < (new Date() - 600)) {
-      this.timer.armedCueName = null
+      this.timer.cueNameHTML = false
+      this.timer.cueName = ''
+      this.playheadCueNumber = false
     }
   }
 
@@ -89,10 +103,17 @@ class vtAppQlab extends vtApp {
           while (data.data[i].type == 'Group') {
             i++;
           }
+          let icon = '<i class="fa-solid fa-play" style="margin-right:10px;"></i>'
+          if (this.isPaused) {
+            icon = '<i class="fa-solid fa-pause orange" style="margin-right:10px;"></i>'
+          }
           if (this.config.showCueNumber) {
             this.timer.cueName = '[Cue: ' + data.data[i].number + '] - ' + data.data[i].listName  
+            this.timer.cueNameHTML = icon + '<b style="color:white;margin-right:10px;">' + data.data[i].number + "</b>" + data.data[i].listName
+            // console.log(this.timer.cueNameHTML)
           } else {
             this.timer.cueName = data.data[i].listName
+            this.timer.cueNameHTML = icon + data.data[i].listName
           }
           this.timer.noVT = false
         }
@@ -102,6 +123,7 @@ class vtAppQlab extends vtApp {
 
         this.client.send('/cue_id/' + this.matchingCues[0] + '/currentDuration')
         this.client.send('/cue_id/' + this.matchingCues[0] + '/actionElapsed')
+        this.client.send('/cue_id/' + this.matchingCues[0] + '/isPaused')
       }
 
 
@@ -117,13 +139,28 @@ class vtAppQlab extends vtApp {
         this.timer.elapsed = Math.round(data.data * 1000)
       }
 
+      if (cmd == 'isPaused') {
+        this.isPaused = data.data
+      }
+
+      if (cmd == 'number' && this.matchingCues.length == 0 ) {
+        this.playheadCueNumber = data.data
+      }
+
       if (cmd == 'listName' && this.matchingCues.length == 0) {
         this.timeSinceLastListName = new Date()
-        // log.debug(data)
-        if (data.data != '') {
-          this.timer.armedCueName = data.data
+        
+        if (data.data !== '') {
+          if (this.config.showCueNumber) {
+            this.timer.cueName = 'STBY: [' + this.playheadCueNumber + '] ' + data.data
+            this.timer.cueNameHTML = '<i class="fa-solid fa-forward-step orange" style="margin-right: 10px;"></i><b style="margin-right: 10px;">' + this.playheadCueNumber + '</b>' + data.data
+          } else {
+            this.timer.cueName = 'STBY: ' + data.data
+            this.timer.cueNameHTML = '<i class="fa-solid fa-forward-step orange" style="margin-right: 10px;"></i>' + data.data
+          }
         } else {
-          this.timer.armedCueName = "<Cue name not set>"
+          this.timer.cueName = "<Cue name not set>"
+          this.timer.cueNameHTML = false
         }
       }
 

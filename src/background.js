@@ -227,16 +227,17 @@ setInterval(function() {
 /* ----------- Callback from successful response from selected app ---------- */
 function appSuccess() {
   controlWindow.webContents.send('vtStatus', true)
-  updateArmedCueName(apps[config.appChoice].timer.armedCueName)
+  
+  updateCueName(apps[config.appChoice].timer.cueName)
+  updateCueNameHTML(apps[config.appChoice].timer.cueNameHTML)
 
   if(apps[config.appChoice].timer.noVT) {
     // clear the timer when no VT is playing and stop
     clearTimer()
     return
   }
-
+  
   // update the GUI
-  updateCueName(apps[config.appChoice].timer.cueName)
   setTimerInSeconds(apps[config.appChoice].timer.seconds.remaining)
   setTimerProgress(apps[config.appChoice].timer.progress)
 }
@@ -269,6 +270,7 @@ ipcMain.on('configMode', (event) => {
   controlWindow.resizable = false
 
   io.emit('cueName', 'Setup Mode')
+  io.emit('cueNameHTML', false)
   io.emit('warning', false)
 })
 
@@ -329,8 +331,10 @@ function clearTimer() {
   updateTimer(config.noVTText)
   controlWindow.webContents.send('warning', false)
   controlWindow.webContents.send('percentage', 0)
-  controlWindow.webContents.send('cueName', '')
-  cueName = ''
+  // controlWindow.webContents.send('cueName', '')
+  // controlWindow.webContents.send('cueNameHTML', false)
+  // cueName = ''
+  // cueNameHTML = false
 }
 
 function updateTimer(time = '-') {
@@ -340,6 +344,7 @@ function updateTimer(time = '-') {
       io.emit('timer', time)
       if (time == config.noVTText) {
         io.emit('cueName', 'VT Finished')
+        io.emit('cueNameHTML', false)
       }
 
       if (ConnectedToOBS) {
@@ -377,12 +382,12 @@ function updateCueName(name) {
   }
 }
 
-let armedCueName = ''
-function updateArmedCueName(name) {
-  if (name != armedCueName) {
-    controlWindow.webContents.send('armedCueName', name)
-    armedCueName = name
-    io.emit('armedCueName', name)
+let cueNameHTML = ''
+function updateCueNameHTML(name) {
+  if (name != cueNameHTML) {
+    controlWindow.webContents.send('cueNameHTML', name)
+    cueNameHTML = name
+    io.emit('cueNameHTML', name)
   }
 }
 
@@ -547,9 +552,10 @@ io.on("connection", socket => {
   console.log('Socket IO Connection!')
   if (showMode) {
     io.emit('cueName', cueName)
-    
+    io.emit('cueNameHTML', cueNameHTML)
   } else {
     io.emit('cueName', 'Config Mode')
+    io.emit('cueNameHTML', false)
   }
   if (lastSet != '') {
     io.emit('timer', lastSet)
