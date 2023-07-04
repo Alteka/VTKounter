@@ -5,14 +5,18 @@
       <img src="~@/assets/bug.png" height="26" /> VT Kounter
     </el-col>
     <el-col :span="6">
-      <el-switch v-model="showMode" active-color="#6ab42f" active-text="Show" inactive-text="Setup"></el-switch>
-    </el-col>
-    <div class="sizeControls" v-if="showMode">Size&nbsp;
-      <el-button-group>
-        <el-button round type="success" size="small" @click="size-=25">-</el-button>
-        <el-button round type="success" size="small" @click="size+=25">+</el-button>
-      </el-button-group>
-    </div>
+      <transition name="fade">
+        <el-switch v-model="showMode" v-if="mouseIsAround || !showMode" active-color="#6ab42f" active-text="Show" inactive-text="Setup"></el-switch>
+      </transition>
+      </el-col>
+    <transition name = "fade">
+      <div class="sizeControls" v-if="showMode && mouseIsAround">Size&nbsp;
+        <el-button-group>
+          <el-button round type="success" size="small" @click="size-=25">-</el-button>
+          <el-button round type="success" size="small" @click="size+=25">+</el-button>
+        </el-button-group>
+      </div>
+    </transition>
     <div class="version" v-if="!showMode">v{{ version }}</div>
   </el-row>
 
@@ -63,7 +67,8 @@ export default {
         appControls: null,
         size: 400,
         version: require('./../package.json').version,
-        tab: 'core'
+        tab: 'core',
+        mouseIsAround: false
       }
     },
     mounted: function(){
@@ -80,6 +85,13 @@ export default {
         vm.appControls = appControls
       })
       window.ipcRenderer.send('getConfig')
+           
+      document.addEventListener('mouseenter', () => {
+        vm.mouseIsAround = true
+      });
+      document.addEventListener('mouseleave', () => {
+        vm.mouseIsAround = false
+      });
     },
     watch: {
       showMode: function(newVal) {
@@ -233,4 +245,12 @@ body {
 .darkMode #timer {
   color:#fff;
 }
+
+.fade-enter-active, .fade-leave-active {
+  transition: opacity .5s;
+}
+.fade-enter, .fade-leave-to  {
+  opacity: 0;
+}
+
 </style>

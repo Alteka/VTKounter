@@ -281,6 +281,7 @@ ipcMain.on('showMode', (event, cfg) => {
   // start connections based on config
   log.info('Going into show mode with config: ', cfg)
   controlWindow.resizable = true
+  controlWindow.setMinimumSize(600, 280)
   console.log(config.window)
   controlWindow.setContentSize(config.window.width,config.window.height)
 
