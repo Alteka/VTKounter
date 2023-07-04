@@ -3,9 +3,9 @@
       <span :style="{'color': config.textWarningColors ? warningColour : 'inherit'}">{{ timer }}</span>
     </el-row>
 
-    <el-row v-if="config.showCueName" justify="center" style="{font-size: 50%}">
-      <span v-if="cueNameHTML" v-html="cueNameHTML" :style="{'color': config.textWarningColors ? warningColour : 'inherit'}"></span>
-      <span v-else :style="{'color': config.textWarningColors ? warningColour : 'white'}">{{ cueName }}</span>
+    <el-row justify="center" style="{font-size: 50%; height: 20px}">&nbsp;
+      <span v-if="config.showCueName && cueNameHTML" v-html="cueNameHTML" :style="{'color': config.textWarningColors ? warningColour : 'inherit'}"></span>
+      <span v-else-if="config.showCueName" :style="{'color': config.textWarningColors ? warningColour : 'white'}">{{ cueName }}</span>
     </el-row>
 
     <el-row v-if="config.showPercentage" style="padding: 10px 20px; " justify="start">
