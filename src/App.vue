@@ -144,6 +144,9 @@ body {
 .red {
   color: #ff3333;
 }
+.blue {
+  color: #2236ce;
+}
 
 .title {
   font-size: 32px;

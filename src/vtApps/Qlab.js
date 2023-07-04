@@ -60,6 +60,7 @@ class vtAppQlab extends vtApp {
     this.cueWeCareAbout
 
     this.isPaused = false
+    this.isLooping = false
 
     this.timeSinceLastListName
     this.playheadCueNumber
@@ -109,7 +110,7 @@ class vtAppQlab extends vtApp {
 
           this.cueWeCareAbout = this.matchingCues[0]
 
-          let icon = '<i class="fa-solid fa-play" style="margin-right:10px;"></i>'
+          let icon = '<i class="fa-solid fa-play green" style="margin-right:10px;"></i>'
           if (this.isPaused) {
             icon = '<i class="fa-solid fa-pause orange" style="margin-right:10px;"></i>'
           }
@@ -119,6 +120,9 @@ class vtAppQlab extends vtApp {
           } else {
             this.timer.cueName = this.cueWeCareAbout.listName
             this.timer.cueNameHTML = icon + this.cueWeCareAbout.listName
+          }
+          if (this.isLooping) {
+            this.timer.cueNameHTML += ' <i class="fa-solid fa-repeat" style="color:#999;margin-left: 10px;"></i>'
           }
           this.timer.noVT = false
 
@@ -142,7 +146,12 @@ class vtAppQlab extends vtApp {
       }
 
       if (cmd == 'actionElapsed') {
-        this.timer.elapsed = Math.round(data.data * 1000)
+          this.timer.elapsed = Math.round(data.data * 1000) % this.timer.total // modulus to deal with looping cues
+          if (Math.round(data.data * 1000) > this.timer.total) {
+            this.isLooping = true
+          } else {
+            this.isLooping = false
+          }
       }
 
       if (cmd == 'isPaused') {
@@ -158,18 +167,18 @@ class vtAppQlab extends vtApp {
         
         if (data.data !== '') {
           if (this.config.showCueNumber) {
-            this.timer.cueNameHTML = '<i class="fa-solid fa-forward-step orange" style="margin-right: 10px;"></i><b style="margin-right: 10px;">' + this.playheadCueNumber + '</b>' + data.data
+            this.timer.cueNameHTML = '<i class="fa-solid fa-forward-step blue" style="margin-right: 10px;"></i><b style="margin-right: 10px;">' + this.playheadCueNumber + '</b>' + data.data
             this.timer.cueName = 'STBY: [' + this.playheadCueNumber + '] ' + data.data
           } else {
-            this.timer.cueNameHTML = '<i class="fa-solid fa-forward-step orange" style="margin-right: 10px;"></i>' + data.data
+            this.timer.cueNameHTML = '<i class="fa-solid fa-forward-step blue" style="margin-right: 10px;"></i>' + data.data
             this.timer.cueName = 'STBY: ' + data.data
           }
         } else {
           if (this.config.showCueNumber) {
-            this.timer.cueNameHTML = '<i class="fa-solid fa-forward-step orange" style="margin-right: 10px;"></i><b style="margin-right: 10px;">' + this.playheadCueNumber + '</b><i>Cue name not set</i>'
+            this.timer.cueNameHTML = '<i class="fa-solid fa-forward-step blue" style="margin-right: 10px;"></i><b style="margin-right: 10px;">' + this.playheadCueNumber + '</b><i>Cue name not set</i>'
             this.timer.cueName = '<Cue name not set>'
           } else {
-            this.timer.cueNameHTML = '<i class="fa-solid fa-forward-step orange" style="margin-right: 10px;"></i><Cue name not set>'
+            this.timer.cueNameHTML = '<i class="fa-solid fa-forward-step blue" style="margin-right: 10px;"></i><Cue name not set>'
             this.timer.cueName = '<Cue name not set>'
           }
         }
