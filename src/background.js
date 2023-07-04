@@ -122,7 +122,7 @@ async function createWindow() {
 ipcMain.on('controlResize', (_, data) => {
   config.window.width = data.width
   config.window.height = data.height
-  console.log('setting window size', config.window)
+  // console.log('setting window size', config.window)
 })
 
 ipcMain.on('getConfig', (event) => {
@@ -282,7 +282,7 @@ ipcMain.on('showMode', (event, cfg) => {
   log.info('Going into show mode with config: ', cfg)
   controlWindow.resizable = true
   controlWindow.setMinimumSize(600, 280)
-  console.log(config.window)
+  // console.log(config.window)
   controlWindow.setContentSize(config.window.width,config.window.height)
 
   config = cfg
