@@ -34,6 +34,11 @@ class vtAppQlab extends vtApp {
           {value: "Mic"},
         ]
       },
+      showCueNumber: {
+        label: "Show Cue Number",
+        type: "boolean",
+        default: true,
+      },
     }
 
     // create server & client objects
@@ -84,7 +89,11 @@ class vtAppQlab extends vtApp {
           while (data.data[i].type == 'Group') {
             i++;
           }
-          this.timer.cueName = data.data[i].listName
+          if (this.config.showCueNumber) {
+            this.timer.cueName = '[Cue: ' + data.data[i].number + '] - ' + data.data[i].listName  
+          } else {
+            this.timer.cueName = data.data[i].listName
+          }
           this.timer.noVT = false
         }
         if (this.matchingCues.length == 0) {
