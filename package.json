@@ -1,6 +1,6 @@
 {
   "name": "vtkounter",
-  "version": "0.9.0",
+  "version": "0.9.0-mjj-test",
   "author": "Alteka Solutions <info@alteka.solutions>",
   "description": "A cross-platform app for showing time remaining on a VT playout",
   "license": "GPL-3.0-only",
@@ -21,7 +21,7 @@
   },
   "dependencies": {
     "@babel/eslint-parser": "^7.22.5",
-    "@fortawesome/fontawesome-free": "^6.1.1",
+    "@fortawesome/fontawesome-free": "^6.4.0",
     "axios": "^1.4.0",
     "bufferutil": "^4.0.7",
     "compare-versions": "^5.0.3",

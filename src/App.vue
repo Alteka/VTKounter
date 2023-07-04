@@ -68,7 +68,8 @@ export default {
         size: 400,
         version: require('./../package.json').version,
         tab: 'core',
-        mouseIsAround: false
+        mouseIsAround: false,
+        timeoutHolder: null
       }
     },
     mounted: function(){
@@ -88,9 +89,10 @@ export default {
            
       document.addEventListener('mouseenter', () => {
         vm.mouseIsAround = true
+        if (vm.timeoutHolder) clearTimeout(vm.timeoutHolder)
       });
       document.addEventListener('mouseleave', () => {
-        vm.mouseIsAround = false
+        vm.timeoutHolder = setTimeout(function(){vm.mouseIsAround = false}, 3000)
       });
     },
     watch: {
@@ -249,7 +251,7 @@ body {
   color:#fff;
 }
 
-.fade-enter-active, .fade-leave-active {
+.fade-enter-amousective, .fade-leave-active {
   transition: opacity .5s;
 }
 .fade-enter, .fade-leave-to  {
