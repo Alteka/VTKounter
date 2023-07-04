@@ -2,7 +2,7 @@
 <div style="position: relative; min-height:100vh; display:flex; flex-direction: column;" :class="{ darkMode : config.darkMode, showMode : showMode }">
   <el-row style="padding-top: 10px;">
     <el-col :span="18" class="title" >
-      <img src="~@/assets/bug.png" height="26" /> VT Kounter
+      <img src="~@/assets/bug.png" height="32" style="margin-bottom: -5px;"/> VT Kounter
     </el-col>
     <el-col :span="6">
       <transition name="fade">
@@ -146,7 +146,7 @@ body {
 }
 
 .title {
-  font-size: 36px;
+  font-size: 32px;
   padding-left: 10px;
   text-align: left;
 }
