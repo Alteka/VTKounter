@@ -215,7 +215,7 @@ setInterval(function() {
 
     if( (new Date()).getTime() > apps[config.appChoice].timer.lastUpdated + config.timeout * 1000) {
       // the app hasn't responded for a while
-      // appError(new Error(`Timeout (${config.timeout}) reached`))
+      appError(new Error(`Timeout (${config.timeout}) reached`))
     }
   }
 
