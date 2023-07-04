@@ -4,8 +4,8 @@
     </el-row>
 
     <el-row v-if="config.showCueName" justify="center" style="{font-size: 50%}">
-      <span v-if="showArmedCueName && armedCueName" style="color:#999;"><b>STBY:</b> {{ armedCueName }}</span>
-      <span v-else-if="!showArmedCueName && cueName"><b class="green">AWAY:</b> {{ cueName }}</span>
+      <span v-if="showArmedCueName && armedCueName"><i class="fa-solid fa-pause green"></i> {{ armedCueName }}</span>
+      <span v-else-if="!showArmedCueName && cueName"><i class="fa-solid fa-play green"></i> {{ cueName }}</span>
     </el-row>
 
     <el-row v-if="config.showPercentage" style="padding: 10px 20px; " justify="start">
