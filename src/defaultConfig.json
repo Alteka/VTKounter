@@ -31,6 +31,7 @@
         "enabled": false,
         "ip": "127.0.0.1",
         "port": "53000",
-        "address": "/cue/VTKounter/liveText"
+        "address": "/cue/VTKounter/liveText",
+        "nameAddress": "/cue/VTKounterName/liveText"
     }
 }

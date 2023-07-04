@@ -383,6 +383,7 @@ function updateCueName(name) {
     controlWindow.webContents.send('cueName', name)
     cueName = name
     io.emit('cueName', name)
+    sendOSCName(name)
   }
 }
 
@@ -438,6 +439,14 @@ function sendOSC(time) {
   if (config.osc.enabled) {
     const client = new Client(config.osc.ip, config.osc.port);
     client.send(config.osc.address, time, () => {
+      client.close();
+    })
+  }
+}
+function sendOSCName(name) {
+  if (config.osc.enabled) {
+    const client = new Client(config.osc.ip, config.osc.port);
+    client.send(config.osc.nameAddress, name, () => {
       client.close();
     })
   }

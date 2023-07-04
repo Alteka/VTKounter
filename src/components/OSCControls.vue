@@ -18,16 +18,22 @@
           </el-col>
         </el-row>
         <el-row v-if="osc.enabled">
-          <el-col :span="24">
-            <el-form-item label="OSC Address to send" prop="name">
+          <el-col :span="24" style="margin-bottom: 20px">
+            <el-form-item label="OSC for VT Time" prop="name">
               <el-input v-model="osc.address"></el-input>
             </el-form-item>
+            Sends the VT Time as a string argument to the above address
           </el-col>
         </el-row>
-        <el-row justify="center" v-if="osc.enabled">
-          <p>Sends the VT time as a string argument to the above address.</p>
+        <el-row v-if="osc.enabled">
+          <el-col :span="24">
+            <el-form-item label="OSC for VT Name" prop="name">
+              <el-input v-model="osc.nameAddress"></el-input>
+            </el-form-item>
+            Sends the VT Name as a string argument to the above address
+          </el-col>
         </el-row>
-        </el-form>
+      </el-form>
 </template>
 
 <script>
