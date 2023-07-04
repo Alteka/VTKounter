@@ -109,7 +109,7 @@ class vtAppQlab extends vtApp {
           }
           if (this.config.showCueNumber) {
             this.timer.cueName = '[Cue: ' + data.data[i].number + '] - ' + data.data[i].listName  
-            this.timer.cueNameHTML = icon + '<b style="color:white;margin-right:10px;">' + data.data[i].number + "</b>" + data.data[i].listName
+            this.timer.cueNameHTML = icon + '<b style="color:#999;margin-right:10px;">' + data.data[i].number + "</b>" + data.data[i].listName
             // console.log(this.timer.cueNameHTML)
           } else {
             this.timer.cueName = data.data[i].listName
