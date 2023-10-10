@@ -15,7 +15,7 @@ const storeName = 'VTKounterConfig-v1.0.0'
 // Project Specific includes
 let nodeStatic = require('node-static')
 const { networkInterfaces } = require('os')
-const OBSWebSocket = require('obs-websocket-js').default
+const OBSWebSocket = require('obs-websocket-js')
 const obs = new OBSWebSocket()
 const moment = require('moment')
 const { Client } = require('node-osc')
