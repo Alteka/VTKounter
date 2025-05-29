@@ -18,7 +18,7 @@ const { networkInterfaces } = require('os')
 const OBSWebSocket = require('obs-websocket-js').default
 const obs = new OBSWebSocket()
 const moment = require('moment')
-const { Client } = require('node-osc')
+const { Client, Server } = require('node-osc')
 
 const store = new Store()
 
